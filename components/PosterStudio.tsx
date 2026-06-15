@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import {
   Download, Share2, ArrowLeft, Smartphone,
-  Sparkles, Loader2, Shuffle
+  Sparkles, Loader2, Shuffle, Settings, Save
 } from "lucide-react";
 import { toPng, toJpeg } from "html-to-image";
 import { formatIndianDate } from "@/utils/date";
@@ -14,6 +14,8 @@ import {
   POSTER_THEMES, pickNextTheme, type PosterTheme
 } from "@/lib/poster-themes";
 import { generateArtworkDataUrl } from "@/utils/poster-artwork-canvas";
+import type { PosterBrandSettings } from "@/lib/poster-brand";
+import { DEFAULT_POSTER_BRAND } from "@/lib/poster-brand";
 
 interface RateData {
   gold22k_1g: number;
@@ -24,11 +26,17 @@ interface RateData {
 }
 
 function toPosterDateLabel(date: string, dateDisplay: string): string {
-  const d = date ? new Date(date) : new Date(dateDisplay.replace(/(\d+)(st|nd|rd|th)/i, "$1"));
-  if (isNaN(d.getTime())) return dateDisplay.toUpperCase();
-  const months = ["JANUARY","FEBRUARY","MARCH","APRIL","MAY","JUNE","JULY","AUGUST","SEPTEMBER","OCTOBER","NOVEMBER","DECEMBER"];
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${day} ${months[d.getMonth()]} ${d.getFullYear()}`;
+  if (dateDisplay) {
+    return dateDisplay.replace(
+      /(\d+)(st|nd|rd|th)\s+(\w+)/i,
+      (_, d, suf, month) => `${d}${suf} ${month.toUpperCase()}`
+    ).replace(/\d{4}$/, (y) => y);
+  }
+  const formatted = formatIndianDate(date);
+  return formatted.replace(
+    /(\d+)(st|nd|rd|th)\s+(\w+)/i,
+    (_, d, suf, month) => `${d}${suf} ${month.toUpperCase()}`
+  );
 }
 
 export default function PosterStudio() {
@@ -42,6 +50,11 @@ export default function PosterStudio() {
   const [artworkUrl, setArtworkUrl] = useState("");
   const [generating, setGenerating] = useState(false);
   const [artSource, setArtSource] = useState("");
+  const [brand, setBrand] = useState<PosterBrandSettings>(DEFAULT_POSTER_BRAND);
+  const [brandDraft, setBrandDraft] = useState<PosterBrandSettings>(DEFAULT_POSTER_BRAND);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showBrandSettings, setShowBrandSettings] = useState(false);
+  const [savingBrand, setSavingBrand] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   const effectiveRates = useCallback((): RateData | null => {
@@ -54,6 +67,22 @@ export default function PosterStudio() {
       silver_1g: Number(manualRates.silver1g) || rates.silver_1g,
     };
   }, [rates, useManual, manualRates]);
+
+  const fetchBrand = useCallback(async () => {
+    const res = await fetch("/api/poster/brand");
+    if (res.ok) {
+      const data = await res.json() as PosterBrandSettings;
+      setBrand(data);
+      setBrandDraft(data);
+    }
+    const adminRes = await fetch("/api/admin/poster-brand");
+    setIsAdmin(adminRes.ok);
+    if (adminRes.ok) {
+      const adminData = await adminRes.json() as PosterBrandSettings;
+      setBrand(adminData);
+      setBrandDraft(adminData);
+    }
+  }, []);
 
   const fetchRates = useCallback(async () => {
     const res = await fetch("/api/rates");
@@ -106,8 +135,27 @@ export default function PosterStudio() {
     setGenerating(false);
   }, [lastThemeId, selectedThemeId]);
 
+  const saveBrandSettings = async () => {
+    setSavingBrand(true);
+    try {
+      const res = await fetch("/api/admin/poster-brand", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(brandDraft),
+      });
+      if (res.ok) {
+        const saved = await res.json() as PosterBrandSettings;
+        setBrand(saved);
+        setBrandDraft(saved);
+      }
+    } finally {
+      setSavingBrand(false);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
+    fetchBrand();
     fetchRates().then(() => generatePoster());
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -118,7 +166,7 @@ export default function PosterStudio() {
     const opts = { width: 1080, height: 1920, pixelRatio: 1, cacheBust: true };
     const dataUrl = type === "png"
       ? await toPng(node, opts)
-      : await toJpeg(node, { ...opts, quality: 0.95, backgroundColor: theme?.bg ?? "#6E1423" });
+      : await toJpeg(node, { ...opts, quality: 0.95, backgroundColor: "#0B3D45" });
 
     const link = document.createElement("a");
     link.href = dataUrl;
@@ -153,107 +201,156 @@ export default function PosterStudio() {
 
       <div className="text-center mb-10">
         <h1 className="font-serif text-3xl sm:text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
-          AI Poster Studio
+          Poster Studio
         </h1>
         <p className="text-xs sm:text-sm text-[#F3E5AB]/75 mt-2 max-w-2xl mx-auto">
-          Fixed brand template + AI jewellery artwork. Logo and contact info are never AI-generated.
-          Export 1080×1920 for Instagram Story / WhatsApp Status.
+          Official Sri Velmayil brand template — logo, typography, rate cards, and contact are locked.
+          Only the jewellery artwork changes daily. Export 1080×1920 for Story / Status.
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Controls */}
-        <div className="lg:col-span-4 bg-[#1a0b2e]/65 border border-[#D4AF37]/20 rounded-2xl p-5 space-y-5">
-          <h2 className="font-serif text-lg font-bold text-[#D4AF37] border-b border-[#D4AF37]/15 pb-2 uppercase tracking-wider">
-            Rates
-          </h2>
+        <div className="lg:col-span-4 space-y-5">
+          <div className="bg-[#1a0b2e]/65 border border-[#D4AF37]/20 rounded-2xl p-5 space-y-5">
+            <h2 className="font-serif text-lg font-bold text-[#D4AF37] border-b border-[#D4AF37]/15 pb-2 uppercase tracking-wider">
+              Live Rates
+            </h2>
 
-          <label className="flex items-center gap-2 text-xs text-[#F3E5AB]/70 cursor-pointer">
-            <input type="checkbox" checked={useManual} onChange={(e) => setUseManual(e.target.checked)} className="accent-[#D4AF37]" />
-            Manual rate override (admin)
-          </label>
+            <label className="flex items-center gap-2 text-xs text-[#F3E5AB]/70 cursor-pointer">
+              <input type="checkbox" checked={useManual} onChange={(e) => setUseManual(e.target.checked)} className="accent-[#D4AF37]" />
+              Manual rate override {isAdmin ? "(admin)" : ""}
+            </label>
 
-          {useManual ? (
-            <div className="space-y-2 text-sm">
-              <input type="number" placeholder="22K 1g" value={manualRates.gold1g} onChange={(e) => setManualRates((m) => ({ ...m, gold1g: e.target.value }))}
-                className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white" />
-              <input type="number" placeholder="22K 8g" value={manualRates.gold8g} onChange={(e) => setManualRates((m) => ({ ...m, gold8g: e.target.value }))}
-                className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white" />
-              <input type="number" placeholder="Silver 1g" value={manualRates.silver1g} onChange={(e) => setManualRates((m) => ({ ...m, silver1g: e.target.value }))}
-                className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white" />
+            {useManual ? (
+              <div className="space-y-2 text-sm">
+                <input type="number" placeholder="22K 1g" value={manualRates.gold1g} onChange={(e) => setManualRates((m) => ({ ...m, gold1g: e.target.value }))}
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white" />
+                <input type="number" placeholder="22K 8g" value={manualRates.gold8g} onChange={(e) => setManualRates((m) => ({ ...m, gold8g: e.target.value }))}
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white" />
+                <input type="number" placeholder="Silver 1g" value={manualRates.silver1g} onChange={(e) => setManualRates((m) => ({ ...m, silver1g: e.target.value }))}
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white" />
+              </div>
+            ) : r ? (
+              <div className="space-y-2 text-sm font-mono">
+                <p className="flex justify-between"><span className="text-[#F3E5AB]/60">22K 1g</span><span className="text-[#D4AF37]">₹{r.gold22k_1g.toLocaleString("en-IN")}</span></p>
+                <p className="flex justify-between"><span className="text-[#F3E5AB]/60">22K 8g</span><span className="text-[#D4AF37]">₹{r.gold22k_8g.toLocaleString("en-IN")}</span></p>
+                <p className="flex justify-between"><span className="text-[#F3E5AB]/60">Silver 1g</span><span className="text-[#D4AF37]">₹{r.silver_1g.toLocaleString("en-IN")}</span></p>
+                <p className="text-[#F3E5AB]/50 text-xs pt-1">Live from /api/rates</p>
+              </div>
+            ) : (
+              <Loader2 className="h-5 w-5 text-[#D4AF37] animate-spin mx-auto" />
+            )}
+
+            <div>
+              <label className="text-xs text-[#F3E5AB]/60 uppercase tracking-wider">Artwork Theme</label>
+              <select
+                value={selectedThemeId}
+                onChange={(e) => setSelectedThemeId(e.target.value)}
+                className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-sm"
+              >
+                <option value="">Random (no repeat)</option>
+                {POSTER_THEMES.map((t) => (
+                  <option key={t.id} value={t.id}>{t.name}</option>
+                ))}
+              </select>
             </div>
-          ) : r ? (
-            <div className="space-y-2 text-sm font-mono">
-              <p className="flex justify-between"><span className="text-[#F3E5AB]/60">22K 1g</span><span className="text-[#D4AF37]">₹{r.gold22k_1g.toLocaleString("en-IN")}</span></p>
-              <p className="flex justify-between"><span className="text-[#F3E5AB]/60">22K 8g</span><span className="text-[#D4AF37]">₹{r.gold22k_8g.toLocaleString("en-IN")}</span></p>
-              <p className="flex justify-between"><span className="text-[#F3E5AB]/60">Silver 1g</span><span className="text-[#D4AF37]">₹{r.silver_1g.toLocaleString("en-IN")}</span></p>
-              <p className="text-[#F3E5AB]/50 text-xs pt-1">Live from /api/rates</p>
-            </div>
-          ) : (
-            <Loader2 className="h-5 w-5 text-[#D4AF37] animate-spin mx-auto" />
-          )}
 
-          <div>
-            <label className="text-xs text-[#F3E5AB]/60 uppercase tracking-wider">Theme</label>
-            <select
-              value={selectedThemeId}
-              onChange={(e) => setSelectedThemeId(e.target.value)}
-              className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-sm"
+            {theme && (
+              <p className="text-[10px] text-[#F3E5AB]/50">
+                Artwork: <span className="text-[#D4AF37]">{theme.name}</span>
+                {artSource && <> · {artSource}</>}
+              </p>
+            )}
+
+            <button
+              onClick={() => generatePoster()}
+              disabled={generating}
+              className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-xs disabled:opacity-50"
             >
-              <option value="">Random (no repeat)</option>
-              {POSTER_THEMES.map((t) => (
-                <option key={t.id} value={t.id}>{t.name}</option>
-              ))}
-            </select>
+              {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
+              Generate Poster
+            </button>
+
+            <button
+              onClick={() => { setSelectedThemeId(""); generatePoster(); }}
+              disabled={generating}
+              className="w-full flex items-center justify-center py-2 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold rounded-lg uppercase"
+            >
+              <Shuffle className="h-3.5 w-3.5 mr-1.5" /> Shuffle Artwork
+            </button>
+
+            <div className="grid grid-cols-2 gap-2">
+              <button onClick={() => handleExport("png")} disabled={!artworkUrl || generating}
+                className="flex items-center justify-center py-2.5 border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg disabled:opacity-40">
+                <Download className="h-4 w-4 mr-1" /> PNG
+              </button>
+              <button onClick={() => handleExport("jpg")} disabled={!artworkUrl || generating}
+                className="flex items-center justify-center py-2.5 border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg disabled:opacity-40">
+                <Download className="h-4 w-4 mr-1" /> JPG
+              </button>
+            </div>
+
+            <button onClick={handleShareWhatsApp}
+              className="w-full flex items-center justify-center py-2 rounded bg-emerald-600/20 border border-emerald-600/30 text-emerald-400 text-xs font-bold">
+              <Share2 className="h-3.5 w-3.5 mr-1" /> Share Rates on WhatsApp
+            </button>
+
+            <div className="flex items-center gap-2 text-[10px] text-[#F3E5AB]/40">
+              <Smartphone className="h-3.5 w-3.5" />
+              <span>1080×1920 · Brand locked · Artwork unique daily</span>
+            </div>
           </div>
 
-          {theme && (
-            <p className="text-[10px] text-[#F3E5AB]/50">
-              Active: <span className="text-[#D4AF37]">{theme.name}</span>
-              {artSource && <> · Art: {artSource}</>}
-            </p>
+          {isAdmin && (
+            <div className="bg-[#1a0b2e]/65 border border-[#D4AF37]/20 rounded-2xl p-5 space-y-4">
+              <button
+                onClick={() => setShowBrandSettings((v) => !v)}
+                className="w-full flex items-center justify-between text-sm font-bold text-[#D4AF37] uppercase tracking-wider"
+              >
+                <span className="flex items-center gap-2"><Settings className="h-4 w-4" /> Brand Lock Settings</span>
+                <span className="text-[10px] opacity-60">{showBrandSettings ? "Hide" : "Show"}</span>
+              </button>
+
+              {showBrandSettings && (
+                <div className="space-y-3 text-sm">
+                  <div>
+                    <label className="text-xs text-[#F3E5AB]/60">Logo URL</label>
+                    <input value={brandDraft.logo} onChange={(e) => setBrandDraft((b) => ({ ...b, logo: e.target.value }))}
+                      className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-[#F3E5AB]/60">Phone</label>
+                    <input value={brandDraft.phone} onChange={(e) => setBrandDraft((b) => ({ ...b, phone: e.target.value }))}
+                      className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-[#F3E5AB]/60">Address</label>
+                    <input value={brandDraft.address} onChange={(e) => setBrandDraft((b) => ({ ...b, address: e.target.value }))}
+                      className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-[#F3E5AB]/60">BIS Hallmark Image URL</label>
+                    <input value={brandDraft.hallmarkImage} onChange={(e) => setBrandDraft((b) => ({ ...b, hallmarkImage: e.target.value }))}
+                      className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-xs" />
+                  </div>
+                  <div>
+                    <label className="text-xs text-[#F3E5AB]/60">Hallmark Label</label>
+                    <input value={brandDraft.hallmarkLabel} onChange={(e) => setBrandDraft((b) => ({ ...b, hallmarkLabel: e.target.value }))}
+                      className="w-full mt-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg px-3 py-2 text-white text-xs" />
+                  </div>
+                  <button
+                    onClick={saveBrandSettings}
+                    disabled={savingBrand}
+                    className="w-full flex items-center justify-center py-2 bg-[#D4AF37]/20 border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg"
+                  >
+                    {savingBrand ? <Loader2 className="h-4 w-4 animate-spin" /> : <><Save className="h-3.5 w-3.5 mr-1" /> Save Brand Settings</>}
+                  </button>
+                </div>
+              )}
+            </div>
           )}
-
-          <button
-            onClick={() => generatePoster()}
-            disabled={generating}
-            className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-xs disabled:opacity-50"
-          >
-            {generating ? <Loader2 className="h-4 w-4 mr-2 animate-spin" /> : <Sparkles className="h-4 w-4 mr-2" />}
-            Generate Poster
-          </button>
-
-          <button
-            onClick={() => { setSelectedThemeId(""); generatePoster(); }}
-            disabled={generating}
-            className="w-full flex items-center justify-center py-2 border border-[#D4AF37]/40 text-[#D4AF37] text-xs font-bold rounded-lg uppercase"
-          >
-            <Shuffle className="h-3.5 w-3.5 mr-1.5" /> Shuffle Theme
-          </button>
-
-          <div className="grid grid-cols-2 gap-2">
-            <button onClick={() => handleExport("png")} disabled={!artworkUrl || generating}
-              className="flex items-center justify-center py-2.5 border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg disabled:opacity-40">
-              <Download className="h-4 w-4 mr-1" /> PNG
-            </button>
-            <button onClick={() => handleExport("jpg")} disabled={!artworkUrl || generating}
-              className="flex items-center justify-center py-2.5 border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg disabled:opacity-40">
-              <Download className="h-4 w-4 mr-1" /> JPG
-            </button>
-          </div>
-
-          <button onClick={handleShareWhatsApp}
-            className="w-full flex items-center justify-center py-2 rounded bg-emerald-600/20 border border-emerald-600/30 text-emerald-400 text-xs font-bold">
-            <Share2 className="h-3.5 w-3.5 mr-1" /> Share Rates on WhatsApp
-          </button>
-
-          <div className="flex items-center gap-2 text-[10px] text-[#F3E5AB]/40">
-            <Smartphone className="h-3.5 w-3.5" />
-            <span>1080×1920 · Logo &amp; text are fixed HTML overlays</span>
-          </div>
         </div>
 
-        {/* Preview — scaled */}
         <div className="lg:col-span-8 flex flex-col items-center">
           <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-3">
             Live Preview (1080×1920)
@@ -264,9 +361,9 @@ export default function PosterStudio() {
             style={{ width: 270, height: 480 }}
           >
             <div style={{ transform: "scale(0.25)", transformOrigin: "top left", width: 1080, height: 1920 }}>
-              {theme && r && artworkUrl && !generating ? (
+              {r && artworkUrl && !generating ? (
                 <PosterTemplate
-                  theme={theme}
+                  brand={brand}
                   rates={{
                     gold22k_1g: r.gold22k_1g,
                     gold22k_8g: r.gold22k_8g,
@@ -276,7 +373,7 @@ export default function PosterStudio() {
                   artworkUrl={artworkUrl}
                 />
               ) : (
-                <div className="w-[1080px] h-[1920px] bg-[#6E1423] flex items-center justify-center">
+                <div className="w-[1080px] h-[1920px] bg-[#0B3D45] flex items-center justify-center">
                   <Loader2 className="h-12 w-12 text-[#D4AF37] animate-spin" />
                 </div>
               )}

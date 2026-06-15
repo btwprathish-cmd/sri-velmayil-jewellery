@@ -133,16 +133,18 @@ export function pickNextTheme(lastThemeId: string | null, overrideId?: string): 
 
 export function buildArtPrompt(theme: PosterTheme): string {
   return [
-    "Luxury jewellery product photography",
-    `${theme.name} style`,
-    `${theme.jewelryItem} displayed on ${theme.surface}`,
-    `${theme.palette} tones`,
-    `${theme.motifs} in soft bokeh background`,
-    "soft premium studio lighting",
-    "high resolution photorealistic",
-    "no text, no logos, no watermarks, no brand names",
-    "centered composition",
-    "empty dark margin at top 15% and bottom 15% for text overlay",
-    "vertical portrait 9:16 aspect ratio",
+    "Luxury South Indian jewellery product photography",
+    `${theme.name} campaign`,
+    `${theme.jewelryItem} on ${theme.surface}`,
+    `${theme.palette} colour palette`,
+    `${theme.motifs} softly blurred in background`,
+    "dark teal and gold luxury showroom atmosphere",
+    "dramatic spotlight on gold jewellery",
+    "photorealistic studio quality",
+    "no text, no logos, no watermarks, no brand names, no price tags",
+    "no poster layout, no rate cards, no footer",
+    "jewellery mannequin bust centered, flowers and foliage accents optional",
+    "unique composition and lighting every time",
+    "horizontal crop friendly 1080x1000 artwork zone only",
   ].join(", ");
 }

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" aria-hidden="true">
+  <defs>
+    <linearGradient id="bisGold" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#F3E5AB"/>
+      <stop offset="50%" stop-color="#D4AF37"/>
+      <stop offset="100%" stop-color="#B8860B"/>
+    </linearGradient>
+  </defs>
+  <polygon points="24,4 6,42 42,42" fill="none" stroke="url(#bisGold)" stroke-width="2.5"/>
+  <text x="24" y="36" text-anchor="middle" fill="url(#bisGold)" font-size="7" font-weight="bold" font-family="Arial,sans-serif">BIS</text>
+</svg>

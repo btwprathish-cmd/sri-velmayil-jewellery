@@ -136,15 +136,6 @@ function parsePosterDate(rates: PosterRates): { day: string; month: string; year
   };
 }
 
-function getTamilTrendMessage(trend?: number): string {
-  if (!trend || trend === 0) {
-    return "இன்றைய தங்க விலை நிலவரம் — ஸ்ரீ வேல்மயில் ஜூவல்லரி, திருப்பூர்";
-  }
-  const amt = Math.abs(Math.round(trend));
-  if (trend > 0) return `தங்கத்தின் விலை கிராமுக்கு ${amt} ரூபாய் அதிகரித்தது.`;
-  return `தங்கத்தின் விலை கிராமுக்கு ${amt} ரூபாய் குறைந்தது.`;
-}
-
 function renderPillBadge(x: number, y: number, label: string, fill: string, textColor: string): string {
   return `
     <rect x="${x}" y="${y}" width="52" height="24" rx="12" fill="${fill}"/>
@@ -265,19 +256,17 @@ function renderShowroomJewelryScene(config: PosterConfig, cx: number, cy: number
   `;
 }
 
-function renderShowroomFooter(config: PosterConfig, rates: PosterRates, y: number): string {
+function renderShowroomFooter(config: PosterConfig, _rates: PosterRates, y: number): string {
   const { palette, width: w, typography: t } = config;
-  const tamil = getTamilTrendMessage(rates.trend_gold);
 
   return `
-    <text x="${w / 2}" y="${y}" text-anchor="middle" fill="${palette.text}" font-size="15" font-family="${t.body}" opacity="0.95">${tamil}</text>
-    <g transform="translate(70, ${y + 55})">
+    <g transform="translate(70, ${y + 20})">
       <circle cx="10" cy="0" r="10" fill="${palette.accent}" opacity="0.2"/>
       <text x="10" y="4" text-anchor="middle" fill="${palette.accent}" font-size="12">📞</text>
       <text x="30" y="5" fill="${palette.text}" font-size="16" font-weight="bold" font-family="${t.body}">${BRAND.phone}</text>
       <text x="0" y="38" fill="${palette.muted}" font-size="13" font-family="${t.body}">📍 ${BRAND.address}</text>
     </g>
-    <g transform="translate(${w - 120}, ${y + 45})">
+    <g transform="translate(${w - 120}, ${y + 10})">
       <polygon points="0,-14 -16,14 16,14" fill="none" stroke="${palette.accent}" stroke-width="2"/>
       <text x="0" y="32" text-anchor="middle" fill="${palette.accent}" font-size="10" font-weight="bold" font-family="Arial, sans-serif">${BRAND.hallmark}</text>
     </g>
