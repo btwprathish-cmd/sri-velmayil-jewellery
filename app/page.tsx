@@ -1,11 +1,18 @@
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
+import dynamic from "next/dynamic";
 import { ArrowRight, Award, Gem, ShieldCheck, MapPin, Phone, Clock } from "lucide-react";
-import RateCalculator from "@/components/RateCalculator";
 import SchemaMarkup, { getJewelryStoreSchema } from "@/components/SchemaMarkup";
-import goldRatesData from "@/data/gold-rates.json";
+import { getLatestRate } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
 import { getSeoMetadata } from "@/utils/seo";
+
+const RateCalculator = dynamic(() => import("@/components/RateCalculator"), {
+  loading: () => (
+    <div className="h-48 rounded-2xl border border-[#D4AF37]/20 bg-[#1a0b2e]/40 animate-pulse" />
+  ),
+});
 
 export const metadata = getSeoMetadata({
   title: "Sri Velmayil Jewellery | Premium Gold Jewellery Shop in Tirupur",
@@ -13,9 +20,10 @@ export const metadata = getSeoMetadata({
   path: "/"
 });
 
-export default function HomePage() {
-  // Get latest gold rate from our local database
-  const latestRate = goldRatesData[0];
+export const revalidate = 1800;
+
+export default async function HomePage() {
+  const latestRate = await getLatestRate();
   const formattedDate = formatIndianDate(latestRate.date);
 
   const featuredCollections = [
@@ -95,7 +103,7 @@ export default function HomePage() {
 
               {/* Today's Rate Quick Card */}
               <div className="lg:col-span-5">
-                <div className="bg-[#1a0b2e]/60 border border-[#D4AF37]/25 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-md">
+                <div className="bg-[#1a0b2e]/80 border border-[#D4AF37]/25 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
                   <div className="absolute top-0 right-0 bg-[#D4AF37] text-[#1a0b2e] font-sans font-bold text-[10px] px-3 py-1 uppercase tracking-wider rounded-bl-lg">
                     Live Rates
                   </div>
@@ -199,11 +207,12 @@ export default function HomePage() {
                 className="group bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl overflow-hidden hover:border-[#D4AF37]/40 transition-all duration-300 flex flex-col justify-between shadow-xl"
               >
                 <div className="aspect-video relative overflow-hidden bg-gray-900">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
+                  <Image
                     src={col.image}
                     alt={`${col.name} at Sri Velmayil Jewellery Tirupur`}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 33vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418] via-transparent to-transparent opacity-80"></div>
                 </div>

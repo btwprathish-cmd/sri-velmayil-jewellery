@@ -1,0 +1,182 @@
+[
+  {
+    "file": "/images/generated-posters/poster-sample-01-minimal-luxury.svg",
+    "layout": "minimal-luxury",
+    "palette": "royal-purple",
+    "pattern": "dot-grid",
+    "typography": "'Book Antiqua'",
+    "jewelryType": "haram",
+    "seed": 3135267376338217000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-02-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "wine-noir",
+    "pattern": "radial-bokeh",
+    "typography": "Cambria",
+    "jewelryType": "mangalsutra",
+    "seed": 7783214291519216000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-03-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "rose-gold",
+    "pattern": "concentric-rings",
+    "typography": "Garamond",
+    "jewelryType": "mangalsutra",
+    "seed": 5416558791732155000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-04-floral-accent.svg",
+    "layout": "floral-accent",
+    "palette": "chocolate-velvet",
+    "pattern": "diagonal-lines",
+    "typography": "Cambria",
+    "jewelryType": "ring",
+    "seed": 1867351880721395000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-05-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "chocolate-velvet",
+    "pattern": "concentric-rings",
+    "typography": "Georgia",
+    "jewelryType": "earring",
+    "seed": 5858521595281350000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-06-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "chocolate-velvet",
+    "pattern": "dot-grid",
+    "typography": "'Times New Roman'",
+    "jewelryType": "ring",
+    "seed": 1555093800582868000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-07-geometric.svg",
+    "layout": "geometric",
+    "palette": "midnight-teal",
+    "pattern": "concentric-rings",
+    "typography": "Garamond",
+    "jewelryType": "mangalsutra",
+    "seed": 10672354011839430000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-08-geometric.svg",
+    "layout": "geometric",
+    "palette": "royal-purple",
+    "pattern": "scattered-sparkle",
+    "typography": "Cambria",
+    "jewelryType": "earring",
+    "seed": 16985125316471818000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-09-split-panel.svg",
+    "layout": "split-panel",
+    "palette": "rose-gold",
+    "pattern": "dot-grid",
+    "typography": "Cambria",
+    "jewelryType": "bangle",
+    "seed": 5002637132348236000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-10-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "rose-gold",
+    "pattern": "scattered-sparkle",
+    "typography": "'Book Antiqua'",
+    "jewelryType": "necklace",
+    "seed": 7523324988581159000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-11-bubble-rates.svg",
+    "layout": "bubble-rates",
+    "palette": "chocolate-velvet",
+    "pattern": "scattered-sparkle",
+    "typography": "'Times New Roman'",
+    "jewelryType": "mangalsutra",
+    "seed": 233992733747734300
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-12-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "deep-navy",
+    "pattern": "peacock-feather",
+    "typography": "Garamond",
+    "jewelryType": "choker",
+    "seed": 15819019217167030000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-13-geometric.svg",
+    "layout": "geometric",
+    "palette": "chocolate-velvet",
+    "pattern": "peacock-feather",
+    "typography": "Garamond",
+    "jewelryType": "mangalsutra",
+    "seed": 2578981859773253000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-14-minimal-luxury.svg",
+    "layout": "minimal-luxury",
+    "palette": "emerald-luxe",
+    "pattern": "diagonal-lines",
+    "typography": "Palatino",
+    "jewelryType": "earring",
+    "seed": 2123041041856731600
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-15-classic-header.svg",
+    "layout": "classic-header",
+    "palette": "royal-purple",
+    "pattern": "diagonal-lines",
+    "typography": "Cambria",
+    "jewelryType": "choker",
+    "seed": 14113018105159072000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-16-layered-cards.svg",
+    "layout": "layered-cards",
+    "palette": "burgundy-gold",
+    "pattern": "scattered-sparkle",
+    "typography": "Cambria",
+    "jewelryType": "necklace",
+    "seed": 7608283336629459000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-17-radial-glow.svg",
+    "layout": "radial-glow",
+    "palette": "wine-noir",
+    "pattern": "diagonal-lines",
+    "typography": "Cambria",
+    "jewelryType": "earring",
+    "seed": 16603368108294146000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-18-radial-glow.svg",
+    "layout": "radial-glow",
+    "palette": "royal-purple",
+    "pattern": "diagonal-lines",
+    "typography": "Georgia",
+    "jewelryType": "mangalsutra",
+    "seed": 4920728628454493000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-19-split-panel.svg",
+    "layout": "split-panel",
+    "palette": "rose-gold",
+    "pattern": "concentric-rings",
+    "typography": "Cambria",
+    "jewelryType": "necklace",
+    "seed": 4661130544262564000
+  },
+  {
+    "file": "/images/generated-posters/poster-sample-20-radial-glow.svg",
+    "layout": "radial-glow",
+    "palette": "emerald-luxe",
+    "pattern": "radial-bokeh",
+    "typography": "Cambria",
+    "jewelryType": "bangle",
+    "seed": 17606328649965170000
+  }
+]

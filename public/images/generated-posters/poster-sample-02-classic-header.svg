@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a0510"/>
+      <stop offset="100%" stop-color="#0a0206"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#e8c547"/>
+      <stop offset="50%" stop-color="#F3E5AB"/>
+      <stop offset="100%" stop-color="#e8c547"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bgGrad)"/><circle cx="37.13795389713529" cy="1809.065441683927" r="186.9066041586051" fill="#e8c547" opacity="0.08585411031810017"/><circle cx="480.388602298115" cy="1584.4329193089463" r="130.3397876120543" fill="#e8c547" opacity="0.08670615428751907"/><circle cx="604.0244506150713" cy="1633.6803779319675" r="145.50951192668595" fill="#e8c547" opacity="0.04033165024158698"/><circle cx="408.5548060839575" cy="1814.4553031534472" r="55.85674376772413" fill="#e8c547" opacity="0.0886651681304585"/><circle cx="425.7721659408623" cy="1693.8632679859766" r="116.66223413931414" fill="#e8c547" opacity="0.10997053031806883"/><circle cx="56.437610850145674" cy="545.659677894469" r="121.85142733329108" fill="#e8c547" opacity="0.11827863876081876"/><circle cx="588.9799984069355" cy="1398.821454456841" r="166.01576123946882" fill="#e8c547" opacity="0.04513092243590478"/><circle cx="664.9675942631137" cy="480.64004972636707" r="96.44391795289137" fill="#e8c547" opacity="0.03727303761269249"/><circle cx="215.325647290168" cy="1738.9524854523618" r="67.86870117100766" fill="#e8c547" opacity="0.06895965854540435"/><circle cx="539.778864607009" cy="112.67853777173771" r="95.68320614815056" fill="#e8c547" opacity="0.045551183433785274"/><circle cx="104.88665106230104" cy="479.9147294460933" r="40.57242251985932" fill="#e8c547" opacity="0.04164742815927363"/><circle cx="99.90823307997383" cy="1489.210747675235" r="43.75329569331677" fill="#e8c547" opacity="0.05342359145490787"/>
+  
+    
+    <g transform="translate(540, 120) scale(0.55)">
+      <circle cx="0" cy="0" r="50" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+      <path d="M0,-35 L6,-18 L0,-22 L-6,-18 Z" fill="url(#goldGrad)"/>
+      <rect x="-2" y="-22" width="4" height="14" fill="url(#goldGrad)"/>
+      <ellipse cx="0" cy="5" rx="14" ry="18" fill="url(#goldGrad)"/>
+      <circle cx="0" cy="-10" r="9" fill="url(#goldGrad)"/>
+      <g fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.8">
+        <path d="M-12,8 Q-28,-5 -32,-22"/>
+        <path d="M-6,12 Q-16,-2 -18,-25"/>
+        <path d="M0,14 Q0,-2 0,-28"/>
+        <path d="M6,12 Q16,-2 18,-25"/>
+        <path d="M12,8 Q28,-5 32,-22"/>
+      </g>
+    </g>
+  
+    <text x="540" y="185" text-anchor="middle" fill="url(#goldGrad)" font-size="24" font-family="Cambria, serif" font-weight="900" letter-spacing="3">SRI VELMAYIL JEWELLERY</text>
+    <text x="540" y="212" text-anchor="middle" fill="#d4a0a8" font-size="13" font-family="Calibri, sans-serif" letter-spacing="8" opacity="0.85">— TIRUPUR —</text>
+  
+    <text x="80" y="280" text-anchor="start" fill="#d4a0a8" font-size="18" font-family="Calibri, sans-serif">Today's</text>
+    <text x="200" y="280" text-anchor="start" fill="#ffffff" font-size="22" font-weight="900" font-family="Calibri, sans-serif"> GOLD RATE</text>
+    <text x="80" y="325" text-anchor="start" fill="#ffffff" font-size="30" font-weight="900" font-family="Cambria, serif">15TH JUNE 2026</text>
+  
+      <g transform="translate(60, 340)">
+        <rect width="300" height="120" rx="8" fill="#1a0510" fill-opacity="0.6" stroke="#e8c547" stroke-width="2"/>
+        <text x="150" y="35" text-anchor="middle" fill="#F3E5AB" font-size="14" font-weight="bold" letter-spacing="1">1GM 22K</text>
+        <text x="150" y="80" text-anchor="middle" fill="#ffffff" font-size="42" font-weight="900" font-family="Cambria, serif">₹12,152</text>
+        <line x1="300" y1="20" x2="300" y2="100" stroke="#e8c547" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+      </g>
+    
+      <g transform="translate(390, 340)">
+        <rect width="300" height="120" rx="8" fill="#1a0510" fill-opacity="0.6" stroke="#e8c547" stroke-width="2"/>
+        <text x="150" y="35" text-anchor="middle" fill="#F3E5AB" font-size="14" font-weight="bold" letter-spacing="1">8GM 22K</text>
+        <text x="150" y="80" text-anchor="middle" fill="#ffffff" font-size="42" font-weight="900" font-family="Cambria, serif">₹97,216</text>
+        <line x1="300" y1="20" x2="300" y2="100" stroke="#e8c547" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+      </g>
+    
+      <g transform="translate(720, 340)">
+        <rect width="300" height="120" rx="8" fill="#1a0510" fill-opacity="0.6" stroke="#e8c547" stroke-width="2"/>
+        <text x="150" y="35" text-anchor="middle" fill="#F3E5AB" font-size="14" font-weight="bold" letter-spacing="1">1GM SILVER</text>
+        <text x="150" y="80" text-anchor="middle" fill="#ffffff" font-size="42" font-weight="900" font-family="Cambria, serif">₹217</text>
+        
+      </g>
+    
+    <circle cx="540" cy="900" r="150" fill="#e8c547" opacity="0.08"/>
+    <circle cx="540" cy="900" r="140" fill="none" stroke="#e8c547" stroke-width="2" opacity="0.4"/>
+    <g transform="translate(540, 900)"><ellipse cx="0" cy="0" rx="56" ry="21" fill="none" stroke="#e8c547" stroke-width="2.152404616728802"/><ellipse cx="0" cy="25" rx="51" ry="21" fill="none" stroke="#e8c547" stroke-width="2.152404616728802"/><circle cx="0" cy="70" r="17.56974076625867" fill="#e8c547" stroke="#F3E5AB" stroke-width="1"/></g>
+  <ellipse cx="144.93946772994423" cy="1235.612508941081" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(0 144.93946772994423 1235.612508941081)"/><ellipse cx="137.40926376711892" cy="1251.2491385904416" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(51.43235972877004 137.40926376711892 1251.2491385904416)"/><ellipse cx="120.48904905081795" cy="1255.1110671847175" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(102.86471945754008 120.48904905081795 1255.1110671847175)"/><ellipse cx="106.92009037189587" cy="1244.2901837234322" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(154.29707918631013 106.92009037189587 1244.2901837234322)"/><ellipse cx="106.92009037189585" cy="1226.9348341587297" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(205.72943891508015 106.92009037189585 1226.9348341587297)"/><ellipse cx="120.48904905081795" cy="1216.1139506974444" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(257.1617986438502 120.48904905081795 1216.1139506974444)"/><ellipse cx="137.40926376711892" cy="1219.9758792917203" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(308.59415837262026 137.40926376711892 1219.9758792917203)"/><circle cx="124.93946772994424" cy="1235.612508941081" r="8" fill="#F3E5AB" opacity="0.2"/><ellipse cx="961.5110369180431" cy="1122.3181214056146" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(0 961.5110369180431 1122.3181214056146)"/><ellipse cx="955.6531725417741" cy="1136.4602570293455" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(45.00331476267378 955.6531725417741 1136.4602570293455)"/><ellipse cx="941.5110369180431" cy="1142.3181214056146" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(90.00662952534756 941.5110369180431 1142.3181214056146)"/><ellipse cx="927.3689012943122" cy="1136.4602570293455" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(135.00994428802136 927.3689012943122 1136.4602570293455)"/><ellipse cx="921.5110369180431" cy="1122.3181214056146" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(180.01325905069513 921.5110369180431 1122.3181214056146)"/><ellipse cx="927.3689012943122" cy="1108.1759857818838" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(225.01657381336892 927.3689012943122 1108.1759857818838)"/><ellipse cx="941.5110369180431" cy="1102.3181214056146" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(270.0198885760427 941.5110369180431 1102.3181214056146)"/><ellipse cx="955.6531725417741" cy="1108.1759857818836" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(315.0232033387165 955.6531725417741 1108.1759857818836)"/><circle cx="941.5110369180431" cy="1122.3181214056146" r="8" fill="#F3E5AB" opacity="0.2"/><ellipse cx="139.78726734387436" cy="1115.009375686766" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(0 139.78726734387436 1115.009375686766)"/><ellipse cx="129.78726734387436" cy="1132.3298837624548" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(60.00441968356504 129.78726734387436 1132.3298837624548)"/><ellipse cx="109.78726734387435" cy="1132.3298837624548" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(120.00883936713008 109.78726734387435 1132.3298837624548)"/><ellipse cx="99.78726734387435" cy="1115.009375686766" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(180.01325905069513 99.78726734387435 1115.009375686766)"/><ellipse cx="109.78726734387433" cy="1097.688867611077" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(240.01767873426016 109.78726734387433 1097.688867611077)"/><ellipse cx="129.78726734387436" cy="1097.688867611077" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(300.02209841782525 129.78726734387436 1097.688867611077)"/><circle cx="119.78726734387435" cy="1115.009375686766" r="8" fill="#F3E5AB" opacity="0.2"/><ellipse cx="982.8371128699157" cy="794.3036956138012" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(0 982.8371128699157 794.3036956138012)"/><ellipse cx="975.3069089070904" cy="809.9403252631618" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(51.43235972877004 975.3069089070904 809.9403252631618)"/><ellipse cx="958.3866941907894" cy="813.8022538574377" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(102.86471945754008 958.3866941907894 813.8022538574377)"/><ellipse cx="944.8177355118673" cy="802.9813703961523" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(154.29707918631013 944.8177355118673 802.9813703961523)"/><ellipse cx="944.8177355118673" cy="785.6260208314501" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(205.72943891508015 944.8177355118673 785.6260208314501)"/><ellipse cx="958.3866941907894" cy="774.8051373701647" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(257.1617986438502 958.3866941907894 774.8051373701647)"/><ellipse cx="975.3069089070904" cy="778.6670659644407" rx="12" ry="8" fill="#e8c547" opacity="0.12" transform="rotate(308.59415837262026 975.3069089070904 778.6670659644407)"/><circle cx="962.8371128699157" cy="794.3036956138012" r="8" fill="#F3E5AB" opacity="0.2"/>
+    <rect x="0" y="1820" width="1080" height="120" fill="#1a0510" fill-opacity="0.85"/>
+    <line x1="60" y1="1840" x2="1020" y2="1840" stroke="#e8c547" stroke-width="1" opacity="0.3"/>
+    <g transform="translate(80, 1875)">
+      <polygon points="0,-12 -14,12 14,12" fill="none" stroke="#e8c547" stroke-width="2"/>
+      <text x="0" y="28" text-anchor="middle" fill="#e8c547" font-size="9" font-weight="bold">916 BIS HUID</text>
+    </g>
+    <text x="540" y="1880" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">📞 9443476183</text>
+    <text x="1000" y="1875" text-anchor="end" fill="#d4a0a8" font-size="12" opacity="0.85">📍 89 New Market Street, Tirupur</text>
+  
+</svg>

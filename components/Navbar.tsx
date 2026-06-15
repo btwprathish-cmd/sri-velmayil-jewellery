@@ -12,6 +12,7 @@ export default function Navbar() {
   const navLinks = [
     { name: "Home", href: "/" },
     { name: "Today's Rate", href: "/gold-rate-today-tirupur" },
+    { name: "Silver Rate", href: "/silver-rate-today-tirupur" },
     { name: "Rate History", href: "/gold-rate-history" },
     { name: "Poster Studio", href: "/poster-generator" },
     { name: "Collections", href: "/jewellery-collections" },
@@ -24,7 +25,7 @@ export default function Navbar() {
   const isActive = (path: string) => pathname === path;
 
   return (
-    <nav className="sticky top-0 z-50 bg-[#1a0b2e] border-b border-[#D4AF37]/30 shadow-xl backdrop-blur-md bg-opacity-90">
+    <nav className="sticky top-0 z-50 bg-[#1a0b2e]/95 border-b border-[#D4AF37]/30 shadow-xl">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-20">
           {/* Logo / Brand Name */}

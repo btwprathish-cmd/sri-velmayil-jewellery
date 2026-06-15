@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, ArrowDownRight, Clock, Calendar, ShieldCheck } from "lucide-react";
 import SchemaMarkup, { getBreadcrumbSchema } from "@/components/SchemaMarkup";
-import goldRatesData from "@/data/gold-rates.json";
+import { getRateByDate, getAllRates } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
 import { getSeoMetadata } from "@/utils/seo";
 
@@ -11,16 +11,16 @@ interface DatePageProps {
   params: Promise<{ date: string }>;
 }
 
-// Pre-render pages for all dates in our JSON file
+export const revalidate = 1800;
+
 export async function generateStaticParams() {
-  return goldRatesData.map((rate) => ({
-    date: rate.date
-  }));
+  const rates = await getAllRates();
+  return rates.map((rate) => ({ date: rate.date }));
 }
 
 export async function generateMetadata({ params }: DatePageProps) {
   const { date } = await params;
-  const rate = goldRatesData.find((r) => r.date === date);
+  const rate = await getRateByDate(date);
   if (!rate) return {};
 
   const formattedDate = formatIndianDate(date);
@@ -33,7 +33,7 @@ export async function generateMetadata({ params }: DatePageProps) {
 
 export default async function DateRatePage({ params }: DatePageProps) {
   const { date } = await params;
-  const rate = goldRatesData.find((r) => r.date === date);
+  const rate = await getRateByDate(date);
   if (!rate) {
     notFound();
   }
@@ -105,13 +105,6 @@ export default async function DateRatePage({ params }: DatePageProps) {
             Recorded price list in Tirupur, Tamil Nadu. Verified at Sri Velmayil Jewellery.
           </p>
 
-          {/* Rate caps */}
-          {rate.message && (
-            <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/20 px-4 py-3 rounded-lg text-sm text-[#F3E5AB] font-semibold text-center mb-8">
-              {rate.message}
-            </div>
-          )}
-
           <div className="space-y-4 font-sans mb-8">
             {/* 22K */}
             <div className="flex justify-between items-center bg-[#0c0418]/60 p-4 rounded-xl border border-[#D4AF37]/10">
@@ -179,11 +172,11 @@ export default async function DateRatePage({ params }: DatePageProps) {
             
             <div className="flex items-center space-x-4">
               <span>Trend:</span>
-              {rate.trend_gold !== 0 ? (
+              {(rate.trend_gold ?? 0) !== 0 ? (
                 <span className={`inline-flex items-center font-bold ${
-                  rate.trend_gold > 0 ? "text-red-400" : "text-emerald-400"
+                  (rate.trend_gold ?? 0) > 0 ? "text-red-400" : "text-emerald-400"
                 }`}>
-                  {rate.trend_gold > 0 ? (
+                  {(rate.trend_gold ?? 0) > 0 ? (
                     <>
                       <ArrowUpRight className="h-3.5 w-3.5 mr-1" />
                       +{rate.trend_gold}

@@ -1,14 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import { ArrowUpRight, ArrowDownRight, Award, History, Landmark, ShieldCheck } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import SchemaMarkup, { getBreadcrumbSchema } from "@/components/SchemaMarkup";
 import RateCalculator from "@/components/RateCalculator";
-import goldRatesData from "@/data/gold-rates.json";
+import { getLatestRate, getAllRates, getDerivedRates } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
 import { getSeoMetadata } from "@/utils/seo";
 
-// Revalidate this page every 1 hour (3600 seconds) for ISR
-export const revalidate = 3600;
+export const revalidate = 1800;
 
 export const metadata = getSeoMetadata({
   title: "Gold Rate Today in Tirupur | Live 22K & 24K Gold Rates",
@@ -16,13 +16,13 @@ export const metadata = getSeoMetadata({
   path: "/gold-rate-today-tirupur"
 });
 
-export default function TodayRatePage() {
-  const latestRate = goldRatesData[0];
+export default async function TodayRatePage() {
+  const latestRate = await getLatestRate();
+  const rateHistory = await getAllRates();
   const formattedDate = formatIndianDate(latestRate.date);
-
-  // Derive 24K and 18K rates
-  const gold24k_1g = Math.round(latestRate.gold22k_1g / 0.916);
-  const gold18k_1g = Math.round(latestRate.gold22k_1g * (18 / 22));
+  const derived = getDerivedRates(latestRate);
+  const gold24k_1g = derived.gold24k_1g;
+  const gold18k_1g = derived.gold18k_1g;
 
   // FAQ Schema dynamic answers
   const faqData = {
@@ -63,12 +63,10 @@ export default function TodayRatePage() {
 
   return (
     <>
-      {/* Inject Schemas */}
       <SchemaMarkup data={faqData} />
-      <SchemaMarkup data={breadcrumbData} />
 
       <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Page Title */}
+        <Breadcrumbs items={[{ name: "Gold Rate Today", href: "/gold-rate-today-tirupur" }]} />
         <div className="text-center mb-12">
           <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
             Today's Gold Rate in Tirupur
@@ -87,33 +85,26 @@ export default function TodayRatePage() {
                 <h2 className="font-serif text-xl sm:text-2xl font-bold text-white">
                   Board Rates Summary
                 </h2>
-                {latestRate.trend_gold !== 0 && (
+                {(latestRate.trend_gold ?? 0) !== 0 && (
                   <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold font-sans ${
-                    latestRate.trend_gold > 0 
+                    (latestRate.trend_gold ?? 0) > 0 
                       ? "bg-red-500/10 text-red-400 border border-red-500/25" 
                       : "bg-emerald-500/10 text-emerald-400 border border-emerald-500/25"
                   }`}>
-                    {latestRate.trend_gold > 0 ? (
+                    {(latestRate.trend_gold ?? 0) > 0 ? (
                       <>
                         <ArrowUpRight className="h-3.5 w-3.5 mr-1" />
-                        Increased by ₹{Math.abs(latestRate.trend_gold)}/g
+                        Increased by ₹{Math.abs(latestRate.trend_gold ?? 0)}/g
                       </>
                     ) : (
                       <>
                         <ArrowDownRight className="h-3.5 w-3.5 mr-1" />
-                        Decreased by ₹{Math.abs(latestRate.trend_gold)}/g
+                        Decreased by ₹{Math.abs(latestRate.trend_gold ?? 0)}/g
                       </>
                     )}
                   </span>
                 )}
               </div>
-
-              {/* Tamil rate caption from user screenshots */}
-              {latestRate.message && (
-                <div className="bg-[#D4AF37]/10 border border-[#D4AF37]/20 px-4 py-3 rounded-lg text-sm text-[#F3E5AB] font-semibold text-center mb-6 leading-relaxed">
-                  {latestRate.message}
-                </div>
-              )}
 
               <div className="space-y-4 font-sans">
                 {/* 22K Row */}
@@ -217,7 +208,7 @@ export default function TodayRatePage() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-[#D4AF37]/10 font-sans">
-                  {goldRatesData.slice(0, 5).map((rate) => (
+                  {rateHistory.slice(0, 5).map((rate) => (
                     <tr key={rate.date} className="hover:bg-[#D4AF37]/5 transition-colors">
                       <td className="py-3">
                         <Link href={`/gold-rate/${rate.date}`} className="hover:text-[#D4AF37] hover:underline font-medium">

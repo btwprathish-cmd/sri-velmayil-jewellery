@@ -60,8 +60,8 @@ export function getSeoMetadata(options: SeoOptions): Metadata {
       description,
       images: [resolvedOgImage],
     },
-    other: {
-      "google-site-verification": "NEXT_PUBLIC_GSC_VERIFICATION_PLACEHOLDER",
-    },
+    ...(process.env.NEXT_PUBLIC_GSC_VERIFICATION
+      ? { verification: { google: process.env.NEXT_PUBLIC_GSC_VERIFICATION } }
+      : {}),
   };
 }

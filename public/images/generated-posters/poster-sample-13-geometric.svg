@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+  viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1f1008"/>
+      <stop offset="100%" stop-color="#0d0804"/>
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#F3E5AB"/>
+      <stop offset="100%" stop-color="#D4AF37"/>
+    </linearGradient>
+  </defs>
+  <rect width="1080" height="1920" fill="url(#bgGrad)"/><ellipse cx="25.2225890245499" cy="988.5546496776441" rx="52.8646984769634" ry="126.57752643951916" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(353.948209242847 25.2225890245499 988.5546496776441)"/><ellipse cx="502.65837541097625" cy="745.4578674821722" rx="53.70801991662758" ry="79.24370012175636" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(235.47400043855794 502.65837541097625 745.4578674821722)"/><ellipse cx="394.57903596999034" cy="870.8673985962452" rx="43.23896920144462" ry="73.24018145747499" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(190.92142605308578 394.57903596999034 870.8673985962452)"/><ellipse cx="409.22699213887284" cy="778.7771154742475" rx="36.95283089946288" ry="71.21267547943879" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(325.74959816946614 409.22699213887284 778.7771154742475)"/><ellipse cx="1060.4901068103406" cy="741.7338911646361" rx="73.78953191338994" ry="97.19325048587586" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(227.8453175424089 1060.4901068103406 741.7338911646361)"/><ellipse cx="228.75890827622163" cy="1832.8498854421543" rx="35.93815905129365" ry="64.75113584636816" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(89.3633482692422 228.75890827622163 1832.8498854421543)"/><ellipse cx="29.389437278164024" cy="690.2765444389325" rx="51.820104398597124" ry="114.89072596644118" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(193.72637094345538 29.389437278164024 690.2765444389325)"/><ellipse cx="357.35324358321094" cy="277.28099252775405" rx="40.98057994244674" ry="61.09331650761265" fill="none" stroke="#D4AF37" stroke-width="1" opacity="0.08" transform="rotate(61.48495691035404 357.35324358321094 277.28099252775405)"/>
+  <polygon points="540,250 1020,450 1020,1100 60,1100 60,450" fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.3"/>
+    
+    <g transform="translate(540, 100) scale(0.55)">
+      <circle cx="0" cy="0" r="50" fill="none" stroke="url(#goldGrad)" stroke-width="3"/>
+      <path d="M0,-35 L6,-18 L0,-22 L-6,-18 Z" fill="url(#goldGrad)"/>
+      <rect x="-2" y="-22" width="4" height="14" fill="url(#goldGrad)"/>
+      <ellipse cx="0" cy="5" rx="14" ry="18" fill="url(#goldGrad)"/>
+      <circle cx="0" cy="-10" r="9" fill="url(#goldGrad)"/>
+      <g fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.8">
+        <path d="M-12,8 Q-28,-5 -32,-22"/>
+        <path d="M-6,12 Q-16,-2 -18,-25"/>
+        <path d="M0,14 Q0,-2 0,-28"/>
+        <path d="M6,12 Q16,-2 18,-25"/>
+        <path d="M12,8 Q28,-5 32,-22"/>
+      </g>
+    </g>
+  
+    <text x="540" y="165" text-anchor="middle" fill="url(#goldGrad)" font-size="22" font-family="Garamond, serif" font-weight="700" letter-spacing="3">SRI VELMAYIL JEWELLERY</text>
+    <text x="540" y="192" text-anchor="middle" fill="#c4a882" font-size="13" font-family="Tahoma, sans-serif" letter-spacing="8" opacity="0.85">— TIRUPUR —</text>
+  
+    <circle cx="540" cy="600" r="140" fill="#D4AF37" opacity="0.08"/>
+    <circle cx="540" cy="600" r="130" fill="none" stroke="#D4AF37" stroke-width="2" opacity="0.4"/>
+    <g transform="translate(540, 600)"><ellipse cx="0" cy="0" rx="52" ry="19.5" fill="none" stroke="#D4AF37" stroke-width="3.359149732961459"/><ellipse cx="0" cy="25" rx="47" ry="19.5" fill="none" stroke="#D4AF37" stroke-width="3.359149732961459"/><ellipse cx="0" cy="50" rx="42" ry="19.5" fill="none" stroke="#D4AF37" stroke-width="3.359149732961459"/><circle cx="0" cy="65" r="17.676214679774098" fill="#D4AF37" stroke="#F3E5AB" stroke-width="1"/></g>
+  
+      <g transform="translate(60, 1250)">
+        <rect width="300" height="120" rx="8" fill="#1f1008" fill-opacity="0.6" stroke="#D4AF37" stroke-width="2"/>
+        <text x="150" y="35" text-anchor="middle" fill="#F3E5AB" font-size="14" font-weight="bold" letter-spacing="1">1GM 22K</text>
+        <text x="150" y="80" text-anchor="middle" fill="#ffffff" font-size="40" font-weight="700" font-family="Garamond, serif">₹12,152</text>
+        <line x1="300" y1="20" x2="300" y2="100" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+      </g>
+    
+      <g transform="translate(390, 1250)">
+        <rect width="300" height="120" rx="8" fill="#1f1008" fill-opacity="0.6" stroke="#D4AF37" stroke-width="2"/>
+        <text x="150" y="35" text-anchor="middle" fill="#F3E5AB" font-size="14" font-weight="bold" letter-spacing="1">8GM 22K</text>
+        <text x="150" y="80" text-anchor="middle" fill="#ffffff" font-size="40" font-weight="700" font-family="Garamond, serif">₹97,216</text>
+        <line x1="300" y1="20" x2="300" y2="100" stroke="#D4AF37" stroke-width="1" stroke-dasharray="4,4" opacity="0.4"/>
+      </g>
+    
+      <g transform="translate(720, 1250)">
+        <rect width="300" height="120" rx="8" fill="#1f1008" fill-opacity="0.6" stroke="#D4AF37" stroke-width="2"/>
+        <text x="150" y="35" text-anchor="middle" fill="#F3E5AB" font-size="14" font-weight="bold" letter-spacing="1">1GM SILVER</text>
+        <text x="150" y="80" text-anchor="middle" fill="#ffffff" font-size="40" font-weight="700" font-family="Garamond, serif">₹217</text>
+        
+      </g>
+    
+    <text x="540" y="1180" text-anchor="middle" fill="#c4a882" font-size="18" font-family="Tahoma, sans-serif">Today's</text>
+    <text x="540" y="1180" text-anchor="middle" fill="#ffffff" font-size="22" font-weight="700" font-family="Tahoma, sans-serif"> GOLD RATE</text>
+    <text x="540" y="1225" text-anchor="middle" fill="#ffffff" font-size="28" font-weight="700" font-family="Garamond, serif">15TH JUNE 2026</text>
+  
+    <rect x="0" y="1820" width="1080" height="120" fill="#1f1008" fill-opacity="0.85"/>
+    <line x1="60" y1="1840" x2="1020" y2="1840" stroke="#D4AF37" stroke-width="1" opacity="0.3"/>
+    <g transform="translate(80, 1875)">
+      <polygon points="0,-12 -14,12 14,12" fill="none" stroke="#D4AF37" stroke-width="2"/>
+      <text x="0" y="28" text-anchor="middle" fill="#D4AF37" font-size="9" font-weight="bold">916 BIS HUID</text>
+    </g>
+    <text x="540" y="1880" text-anchor="middle" fill="#ffffff" font-size="16" font-weight="bold">📞 9443476183</text>
+    <text x="1000" y="1875" text-anchor="end" fill="#c4a882" font-size="12" opacity="0.85">📍 89 New Market Street, Tirupur</text>
+  
+</svg>

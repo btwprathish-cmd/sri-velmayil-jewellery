@@ -2,7 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { ArrowLeft, ArrowUpRight, ArrowDownRight, TrendingUp } from "lucide-react";
 import SchemaMarkup, { getBreadcrumbSchema } from "@/components/SchemaMarkup";
-import goldRatesData from "@/data/gold-rates.json";
+import { getAllRates } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
 import { getSeoMetadata } from "@/utils/seo";
 
@@ -12,7 +12,10 @@ export const metadata = getSeoMetadata({
   path: "/gold-rate-history"
 });
 
-export default function HistoryPage() {
+export const revalidate = 1800;
+
+export default async function HistoryPage() {
+  const goldRatesData = await getAllRates();
   const breadcrumbData = getBreadcrumbSchema([
     { name: "Home", item: "https://srivelmayiljewellery.com" },
     { name: "Today's Gold Rate", item: "https://srivelmayiljewellery.com/gold-rate-today-tirupur" },
@@ -125,11 +128,11 @@ export default function HistoryPage() {
                       ₹{rate.silver_1g.toLocaleString("en-IN")}
                     </td>
                     <td className="py-4 text-right font-mono">
-                      {rate.trend_gold !== 0 ? (
+                      {(rate.trend_gold ?? 0) !== 0 ? (
                         <span className={`inline-flex items-center text-xs font-bold ${
-                          rate.trend_gold > 0 ? "text-red-400" : "text-emerald-400"
+                          (rate.trend_gold ?? 0) > 0 ? "text-red-400" : "text-emerald-400"
                         }`}>
-                          {rate.trend_gold > 0 ? (
+                          {(rate.trend_gold ?? 0) > 0 ? (
                             <>
                               <ArrowUpRight className="h-3.5 w-3.5 mr-1" />
                               +{rate.trend_gold}

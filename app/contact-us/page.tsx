@@ -1,7 +1,9 @@
 import React from "react";
-import SchemaMarkup, { getBreadcrumbSchema } from "@/components/SchemaMarkup";
+import ContactForm from "@/components/ContactForm";
+import Breadcrumbs from "@/components/Breadcrumbs";
 import { getSeoMetadata } from "@/utils/seo";
-import { MapPin, Phone, Clock, Mail, Send } from "lucide-react";
+import { MapPin, Phone, Clock, Mail } from "lucide-react";
+import { BRAND, getWhatsAppUrl } from "@/utils/brand";
 
 export const metadata = getSeoMetadata({
   title: "Contact Us | Sri Velmayil Jewellery Tirupur",
@@ -10,17 +12,10 @@ export const metadata = getSeoMetadata({
 });
 
 export default function ContactPage() {
-  const breadcrumbData = getBreadcrumbSchema([
-    { name: "Home", item: "https://srivelmayiljewellery.com" },
-    { name: "Contact Us", item: "https://srivelmayiljewellery.com/contact-us" }
-  ]);
-
   return (
     <>
-      <SchemaMarkup data={breadcrumbData} />
-
       <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Page Header */}
+        <Breadcrumbs items={[{ name: "Contact Us", href: "/contact-us" }]} />
         <div className="text-center mb-16">
           <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
             Contact Our Showroom
@@ -97,10 +92,12 @@ export default function ContactPage() {
                   Get Directions on Maps
                 </a>
                 <a
-                  href="tel:+919443476183"
-                  className="w-full flex justify-center items-center py-3 border border-[#D4AF37] rounded-lg text-[#D4AF37] hover:bg-[#D4AF37]/10 font-bold text-sm transition-all"
+                  href={getWhatsAppUrl(`Hi, I would like to visit ${BRAND.name} showroom in Tirupur.`)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full flex justify-center items-center py-3 border border-emerald-500/40 rounded-lg text-emerald-400 hover:bg-emerald-500/10 font-bold text-sm transition-all"
                 >
-                  Call Store Now
+                  Chat on WhatsApp
                 </a>
               </div>
             </div>
@@ -113,65 +110,7 @@ export default function ContactPage() {
                 Send An Inquiry
               </h2>
               
-              <form className="space-y-5">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div>
-                    <label className="block text-xs font-semibold text-[#F3E5AB]/75 uppercase tracking-wider mb-2">
-                      Full Name
-                    </label>
-                    <input
-                      type="text"
-                      required
-                      className="w-full bg-[#1a0b2e] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
-                      placeholder="Enter your name"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-semibold text-[#F3E5AB]/75 uppercase tracking-wider mb-2">
-                      Phone Number
-                    </label>
-                    <input
-                      type="tel"
-                      required
-                      className="w-full bg-[#1a0b2e] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
-                      placeholder="Enter phone number"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#F3E5AB]/75 uppercase tracking-wider mb-2">
-                    Email Address (Optional)
-                  </label>
-                  <input
-                    type="email"
-                    className="w-full bg-[#1a0b2e] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
-                    placeholder="Enter email address"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#F3E5AB]/75 uppercase tracking-wider mb-2">
-                    Message / Inquiry Details
-                  </label>
-                  <textarea
-                    rows={4}
-                    required
-                    className="w-full bg-[#1a0b2e] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
-                    placeholder="Describe what you are looking for (e.g. Weight of bridal haram, making charges, custom necklace timeline)..."
-                  ></textarea>
-                </div>
-
-                <div className="pt-2">
-                  <button
-                    type="submit"
-                    className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg shadow-lg hover:brightness-110 active:scale-[0.99] transition-all"
-                  >
-                    <span>Send Message</span>
-                    <Send className="ml-2 h-4 w-4" />
-                  </button>
-                </div>
-              </form>
+              <ContactForm />
             </div>
           </div>
         </div>

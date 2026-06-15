@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" role="img" aria-label="Sri Velmayil Jewellery Logo Tirupur">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#D4AF37"/>
+      <stop offset="50%" stop-color="#F3E5AB"/>
+      <stop offset="100%" stop-color="#D4AF37"/>
+    </linearGradient>
+  </defs>
+  <circle cx="100" cy="100" r="96" fill="#1a0b2e" stroke="url(#gold)" stroke-width="4"/>
+  <!-- Vel (spear) -->
+  <path d="M100 28 L108 52 L100 48 L92 52 Z" fill="url(#gold)"/>
+  <rect x="98" y="48" width="4" height="18" fill="url(#gold)"/>
+  <!-- Peacock body -->
+  <ellipse cx="100" cy="108" rx="22" ry="28" fill="url(#gold)"/>
+  <circle cx="100" cy="88" r="14" fill="url(#gold)"/>
+  <circle cx="104" cy="86" r="3" fill="#1a0b2e"/>
+  <!-- Tail feathers -->
+  <g fill="none" stroke="url(#gold)" stroke-width="3">
+    <path d="M78 110 Q55 80 50 55"/>
+    <path d="M88 118 Q70 85 68 50"/>
+    <path d="M100 122 Q95 80 95 45"/>
+    <path d="M112 118 Q130 85 132 50"/>
+    <path d="M122 110 Q145 80 150 55"/>
+  </g>
+  <g fill="url(#gold)" opacity="0.8">
+    <circle cx="50" cy="55" r="6"/>
+    <circle cx="68" cy="50" r="6"/>
+    <circle cx="95" cy="45" r="6"/>
+    <circle cx="132" cy="50" r="6"/>
+    <circle cx="150" cy="55" r="6"/>
+  </g>
+</svg>

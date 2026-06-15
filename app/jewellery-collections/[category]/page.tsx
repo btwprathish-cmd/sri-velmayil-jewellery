@@ -1,10 +1,12 @@
 import React from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, Award, HelpCircle } from "lucide-react";
-import SchemaMarkup, { getBreadcrumbSchema } from "@/components/SchemaMarkup";
+import { Award, HelpCircle } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import EnquiryButtons from "@/components/EnquiryButtons";
+import SchemaMarkup from "@/components/SchemaMarkup";
 import collectionsData from "@/data/collections.json";
-import goldRatesData from "@/data/gold-rates.json";
+import { getLatestRate } from "@/utils/rates";
 import { getSeoMetadata } from "@/utils/seo";
 
 interface CategoryPageProps {
@@ -31,7 +33,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
   }
 
   // Get current 22K gold rate
-  const latestRate = goldRatesData[0];
+  const latestRate = await getLatestRate();
   const goldRate22k = latestRate.gold22k_1g;
 
   // Unsplash fallbacks for product images to keep layout premium
@@ -76,31 +78,17 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
     };
   });
 
-  const breadcrumbData = getBreadcrumbSchema([
-    { name: "Home", item: "https://srivelmayiljewellery.com" },
-    { name: "Jewellery Collections", item: "https://srivelmayiljewellery.com/jewellery-collections" },
-    { name: category.name, item: `https://srivelmayiljewellery.com/jewellery-collections/${slug}` }
-  ]);
-
   return (
     <>
-      {/* Inject Breadcrumbs and Product Schemas */}
-      <SchemaMarkup data={breadcrumbData} />
       {productSchemas.map((schema, index) => (
         <SchemaMarkup key={index} data={schema} />
       ))}
 
       <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Back navigation */}
-        <div className="mb-8">
-          <Link
-            href="/jewellery-collections"
-            className="inline-flex items-center text-sm font-semibold text-[#D4AF37] hover:text-[#F3E5AB]"
-          >
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back to Collections
-          </Link>
-        </div>
+        <Breadcrumbs items={[
+          { name: "Jewellery Collections", href: "/jewellery-collections" },
+          { name: category.name, href: `/jewellery-collections/${slug}` },
+        ]} />
 
         {/* Header */}
         <div className="text-center md:text-left border-b border-[#D4AF37]/20 pb-8 mb-12">
@@ -130,9 +118,10 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                 <div className="aspect-square relative overflow-hidden bg-gray-900">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={productImages[item.id] || "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=500"}
-                    alt={`${item.name} at Sri Velmayil Jewellery Tirupur`}
+                    src={item.image.startsWith("/uploads") ? item.image : (productImages[item.id] || item.image)}
+                    alt={`${item.name} - Gold Jewellery at Sri Velmayil Jewellery Tirupur`}
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418] via-transparent to-transparent opacity-80"></div>
                   <div className="absolute top-3 left-3 bg-[#1a0b2e] border border-[#D4AF37]/30 text-[#D4AF37] text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
@@ -179,14 +168,7 @@ export default async function CategoryPage({ params }: CategoryPageProps) {
                     </p>
                   </div>
 
-                  <a
-                    href={`https://wa.me/919443476183?text=Hi,%20I%20am%20interested%20in%20the%20${encodeURIComponent(item.name)}%20(${item.weight_g}g)%20shown%20on%20your%20website.`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="w-full flex justify-center items-center py-2 bg-[#D4AF37]/10 hover:bg-[#D4AF37] text-[#D4AF37] hover:text-[#1a0b2e] border border-[#D4AF37]/35 font-bold text-xs rounded-lg uppercase tracking-wider transition-all"
-                  >
-                    Inquire on WhatsApp
-                  </a>
+                  <EnquiryButtons productName={item.name} />
                 </div>
               </div>
             );
