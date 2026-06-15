@@ -1,4 +1,5 @@
 import { getSeoMetadata } from "@/utils/seo";
+import { cinzel, poppins } from "@/app/fonts";
 
 export const metadata = getSeoMetadata({
   title: "Daily Gold Rate Poster Generator | Sri Velmayil Jewellery Tirupur",
@@ -19,5 +20,9 @@ export default function PosterGeneratorLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return (
+    <div className={`${cinzel.variable} ${poppins.variable}`}>
+      {children}
+    </div>
+  );
 }

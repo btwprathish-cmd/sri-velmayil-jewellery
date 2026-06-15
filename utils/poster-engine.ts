@@ -5,6 +5,8 @@ export interface PosterRates {
   gold22k_8g: number;
   silver_1g: number;
   dateDisplay: string;
+  date?: string;
+  trend_gold?: number;
 }
 
 export interface PosterConfig {
@@ -14,6 +16,7 @@ export interface PosterConfig {
   pattern: string;
   jewelryType: string;
   composition: string;
+  flowerHue: string;
   typography: (typeof TYPOGRAPHY_STYLES)[number];
   width: number;
   height: number;
@@ -33,8 +36,9 @@ const JEWELRY_TYPES = ["necklace", "ring", "bangle", "earring", "pendant", "chok
 const COMPOSITIONS = ["center-focus", "top-heavy", "bottom-heavy", "diagonal-flow", "symmetric", "asymmetric"] as const;
 
 const PALETTES: ColorPalette[] = [
+  { name: "classic-maroon", bg1: "#5c0a1a", bg2: "#3d0612", accent: "#D4AF37", accentLight: "#F3E5AB", text: "#ffffff", muted: "#F3E5AB" },
+  { name: "burgundy-gold", bg1: "#4a0818", bg2: "#2d020d", accent: "#D4AF37", accentLight: "#F3E5AB", text: "#ffffff", muted: "#e8d5a3" },
   { name: "royal-purple", bg1: "#1a0b2e", bg2: "#0c0418", accent: "#D4AF37", accentLight: "#F3E5AB", text: "#ffffff", muted: "#F3E5AB" },
-  { name: "burgundy-gold", bg1: "#2d020d", bg2: "#120105", accent: "#D4AF37", accentLight: "#F3E5AB", text: "#ffffff", muted: "#e8d5a3" },
   { name: "emerald-luxe", bg1: "#07221e", bg2: "#020e0c", accent: "#D4AF37", accentLight: "#c9f0e8", text: "#ffffff", muted: "#a8d4c8" },
   { name: "midnight-teal", bg1: "#0a1f2e", bg2: "#051018", accent: "#D4AF37", accentLight: "#F3E5AB", text: "#ffffff", muted: "#8ecae6" },
   { name: "chocolate-velvet", bg1: "#1f1008", bg2: "#0d0804", accent: "#D4AF37", accentLight: "#F3E5AB", text: "#ffffff", muted: "#c4a882" },
@@ -43,7 +47,8 @@ const PALETTES: ColorPalette[] = [
   { name: "rose-gold", bg1: "#1f0f14", bg2: "#0f0709", accent: "#e8b4b8", accentLight: "#F3E5AB", text: "#ffffff", muted: "#d4a0a8" },
 ];
 
-const LAYOUTS = ["classic-header", "bubble-rates", "split-panel", "minimal-luxury", "floral-accent", "geometric", "radial-glow", "layered-cards"] as const;
+const LAYOUTS = ["velmayil-showroom", "velmayil-showroom", "velmayil-showroom", "classic-header", "bubble-rates", "split-panel", "minimal-luxury", "floral-accent"] as const;
+const FLOWER_HUES = ["#e891a8", "#f4a0b8", "#d4789a", "#ffb6c8", "#e8a0c0"] as const;
 const PATTERNS = ["radial-bokeh", "diagonal-lines", "dot-grid", "peacock-feather", "concentric-rings", "scattered-sparkle"] as const;
 
 const TYPOGRAPHY_STYLES = [
@@ -99,11 +104,12 @@ export function generatePosterConfig(seed?: number, format: "story" | "post" = "
 
   return {
     seed: actualSeed,
-    layout: rng.pick(LAYOUTS),
-    palette: rng.pick(PALETTES),
+    layout: "velmayil-showroom",
+    palette: rng.pick(PALETTES.slice(0, 4)), // maroon/burgundy family preferred
     pattern: rng.pick(PATTERNS),
     jewelryType: rng.pick(JEWELRY_TYPES),
     composition: rng.pick(COMPOSITIONS),
+    flowerHue: rng.pick(FLOWER_HUES),
     typography: rng.pick(TYPOGRAPHY_STYLES),
     ...dims,
   };
@@ -111,6 +117,182 @@ export function generatePosterConfig(seed?: number, format: "story" | "post" = "
 
 function fmt(n: number): string {
   return n.toLocaleString("en-IN");
+}
+
+function parsePosterDate(rates: PosterRates): { day: string; month: string; year: string } {
+  const months = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+  let date: Date;
+  if (rates.date) {
+    date = new Date(rates.date);
+  } else {
+    const m = rates.dateDisplay.match(/(\d+)(?:st|nd|rd|th)?\s+(\w+)\s+(\d{4})/i);
+    date = m ? new Date(`${m[1]} ${m[2]} ${m[3]}`) : new Date();
+  }
+  if (isNaN(date.getTime())) date = new Date();
+  return {
+    day: String(date.getDate()).padStart(2, "0"),
+    month: months[date.getMonth()],
+    year: String(date.getFullYear()),
+  };
+}
+
+function getTamilTrendMessage(trend?: number): string {
+  if (!trend || trend === 0) {
+    return "இன்றைய தங்க விலை நிலவரம் — ஸ்ரீ வேல்மயில் ஜூவல்லரி, திருப்பூர்";
+  }
+  const amt = Math.abs(Math.round(trend));
+  if (trend > 0) return `தங்கத்தின் விலை கிராமுக்கு ${amt} ரூபாய் அதிகரித்தது.`;
+  return `தங்கத்தின் விலை கிராமுக்கு ${amt} ரூபாய் குறைந்தது.`;
+}
+
+function renderPillBadge(x: number, y: number, label: string, fill: string, textColor: string): string {
+  return `
+    <rect x="${x}" y="${y}" width="52" height="24" rx="12" fill="${fill}"/>
+    <text x="${x + 26}" y="${y + 17}" text-anchor="middle" fill="${textColor}" font-size="11" font-weight="bold" font-family="Arial, sans-serif">${label}</text>
+  `;
+}
+
+function renderShowroomRateBar(config: PosterConfig, rates: PosterRates, y: number): string {
+  const { palette, width: w, typography: t } = config;
+  const boxX = 70;
+  const boxW = w - 140;
+  const boxH = 132;
+  const colW = boxW / 3;
+
+  const cols = [
+    { badge: "1GM", sub: "22K", value: rates.gold22k_1g, badgeFill: palette.accent, badgeText: palette.bg2 },
+    { badge: "8GM", sub: "22K", value: rates.gold22k_8g, badgeFill: palette.accent, badgeText: palette.bg2 },
+    { badge: "1GM", sub: "SILVER", value: rates.silver_1g, badgeFill: "#c0c0c0", badgeText: "#333" },
+  ];
+
+  let colsSvg = "";
+  cols.forEach((col, i) => {
+    const cx = boxX + colW * i + colW / 2;
+    colsSvg += `
+      <g>
+        ${renderPillBadge(cx - 26, y + 22, col.badge, col.badgeFill, col.badgeText)}
+        <text x="${cx + 32}" y="${y + 40}" text-anchor="start" fill="${palette.accent}" font-size="13" font-weight="bold" font-family="Arial, sans-serif">${col.sub}</text>
+        <text x="${cx}" y="${y + 98}" text-anchor="middle" fill="${palette.text}" font-size="${t.rateSize}" font-weight="${t.weight}" font-family="${t.body}">₹${fmt(col.value)}</text>
+        ${i < 2 ? `<line x1="${boxX + colW * (i + 1)}" y1="${y + 18}" x2="${boxX + colW * (i + 1)}" y2="${y + boxH - 18}" stroke="${palette.accent}" stroke-width="1.5" stroke-dasharray="5,5" opacity="0.55"/>` : ""}
+      </g>
+    `;
+  });
+
+  return `
+    <rect x="${boxX}" y="${y}" width="${boxW}" height="${boxH}" rx="14" fill="${palette.bg1}" fill-opacity="0.35" stroke="${palette.accent}" stroke-width="2"/>
+    ${colsSvg}
+  `;
+}
+
+function renderShowroomDateRow(config: PosterConfig, rates: PosterRates, y: number): string {
+  const { palette, width: w, typography: t } = config;
+  const d = parsePosterDate(rates);
+
+  return `
+    <g font-family="${t.body}">
+      <text x="90" y="${y + 58}" fill="${palette.text}" font-size="72" font-weight="900">${d.day}</text>
+      <text x="175" y="${y + 28}" fill="${palette.text}" font-size="22" font-weight="bold">${d.month}</text>
+      <text x="175" y="${y + 58}" fill="${palette.text}" font-size="22" font-weight="bold">${d.year}</text>
+      <text x="${w - 90}" y="${y + 22}" text-anchor="end" fill="${palette.text}" font-size="20" font-weight="normal" opacity="0.9">Today's</text>
+      <text x="${w - 90}" y="${y + 58}" text-anchor="end" fill="${palette.text}" font-size="34" font-weight="900">GOLD RATE</text>
+    </g>
+  `;
+}
+
+function renderDahlia(cx: number, cy: number, scale: number, color: string, rng: SeededRandom): string {
+  const petals = rng.int(14, 18);
+  let svg = `<g transform="translate(${cx}, ${cy}) scale(${scale})">`;
+  for (let ring = 0; ring < 2; ring++) {
+    for (let p = 0; p < petals; p++) {
+      const angle = (p / petals) * Math.PI * 2 + ring * 0.2;
+      const px = Math.cos(angle) * (22 + ring * 10);
+      const py = Math.sin(angle) * (22 + ring * 10);
+      svg += `<ellipse cx="${px}" cy="${py}" rx="14" ry="8" fill="${color}" opacity="${0.85 - ring * 0.15}" transform="rotate(${angle * 57.3} ${px} ${py})"/>`;
+    }
+  }
+  svg += `<circle cx="0" cy="0" r="10" fill="#ffd4a8" opacity="0.9"/>`;
+  svg += `</g>`;
+  return svg;
+}
+
+function renderJewelryBust(cx: number, cy: number, scale: number): string {
+  const s = scale;
+  return `
+    <g transform="translate(${cx}, ${cy}) scale(${s})">
+      <ellipse cx="0" cy="30" rx="95" ry="75" fill="#d4a0a8" opacity="0.95"/>
+      <ellipse cx="0" cy="-20" rx="55" ry="65" fill="#e0b0b8"/>
+      <path d="M-40,-55 Q0,-85 40,-55 Q30,-35 0,-30 Q-30,-35 -40,-55" fill="#e8c0c8"/>
+      <ellipse cx="0" cy="95" rx="110" ry="25" fill="#000" opacity="0.15"/>
+    </g>
+  `;
+}
+
+function renderShowcaseNecklace(cx: number, cy: number, rng: SeededRandom): string {
+  const silver = "#e8e8e8";
+  const gem = "#ffffff";
+  const leafCount = rng.int(9, 13);
+  let svg = `<g transform="translate(${cx}, ${cy})">`;
+  svg += `<path d="M-120,-10 Q0,80 120,-10" fill="none" stroke="${silver}" stroke-width="3"/>`;
+  for (let i = 0; i < leafCount; i++) {
+    const t = i / (leafCount - 1);
+    const x = -110 + t * 220;
+    const y = -8 + Math.sin(t * Math.PI) * 35;
+    const rot = rng.range(-30, 30);
+    svg += `<ellipse cx="${x}" cy="${y}" rx="10" ry="6" fill="${silver}" stroke="${gem}" stroke-width="0.5" transform="rotate(${rot} ${x} ${y})"/>`;
+    svg += `<circle cx="${x}" cy="${y - 4}" r="${rng.range(2, 4)}" fill="${gem}" opacity="0.95"/>`;
+  }
+  const pendY = 45 + rng.range(0, 15);
+  svg += `<line x1="0" y1="25" x2="0" y2="${pendY - 10}" stroke="${silver}" stroke-width="2"/>`;
+  svg += `<polygon points="0,${pendY} -12,${pendY - 18} 12,${pendY - 18}" fill="${silver}"/>`;
+  svg += `<circle cx="0" cy="${pendY - 8}" r="8" fill="${gem}" opacity="0.95"/>`;
+  svg += `</g>`;
+  return svg;
+}
+
+function renderShowroomJewelryScene(config: PosterConfig, cx: number, cy: number, rng: SeededRandom): string {
+  const flowerColor = config.flowerHue;
+  const leftX = cx - rng.range(150, 190);
+  const rightX = cx + rng.range(150, 190);
+  const flowerY = cy + rng.range(-20, 30);
+  const bustScale = rng.range(0.95, 1.08);
+
+  return `
+    ${renderDahlia(leftX, flowerY, rng.range(1.1, 1.4), flowerColor, rng)}
+    ${renderDahlia(rightX, flowerY + rng.range(-15, 15), rng.range(1.0, 1.35), flowerColor, rng)}
+    ${renderDahlia(cx + rng.range(80, 140), cy - rng.range(80, 120), rng.range(0.5, 0.75), flowerColor, rng)}
+    ${renderJewelryBust(cx, cy + 40, bustScale)}
+    ${renderShowcaseNecklace(cx, cy - 10, rng)}
+  `;
+}
+
+function renderShowroomFooter(config: PosterConfig, rates: PosterRates, y: number): string {
+  const { palette, width: w, typography: t } = config;
+  const tamil = getTamilTrendMessage(rates.trend_gold);
+
+  return `
+    <text x="${w / 2}" y="${y}" text-anchor="middle" fill="${palette.text}" font-size="15" font-family="${t.body}" opacity="0.95">${tamil}</text>
+    <g transform="translate(70, ${y + 55})">
+      <circle cx="10" cy="0" r="10" fill="${palette.accent}" opacity="0.2"/>
+      <text x="10" y="4" text-anchor="middle" fill="${palette.accent}" font-size="12">📞</text>
+      <text x="30" y="5" fill="${palette.text}" font-size="16" font-weight="bold" font-family="${t.body}">${BRAND.phone}</text>
+      <text x="0" y="38" fill="${palette.muted}" font-size="13" font-family="${t.body}">📍 ${BRAND.address}</text>
+    </g>
+    <g transform="translate(${w - 120}, ${y + 45})">
+      <polygon points="0,-14 -16,14 16,14" fill="none" stroke="${palette.accent}" stroke-width="2"/>
+      <text x="0" y="32" text-anchor="middle" fill="${palette.accent}" font-size="10" font-weight="bold" font-family="Arial, sans-serif">${BRAND.hallmark}</text>
+    </g>
+  `;
+}
+
+function renderVelmayilShowroom(config: PosterConfig, rates: PosterRates, rng: SeededRandom): string {
+  const { width: w, height: h } = config;
+  return `
+    ${renderBrandHeader(config, 100)}
+    ${renderShowroomDateRow(config, rates, 230)}
+    ${renderShowroomRateBar(config, rates, 340)}
+    ${renderShowroomJewelryScene(config, w / 2, 920, rng)}
+    ${renderShowroomFooter(config, rates, h - 130)}
+  `;
 }
 
 function renderBackground(config: PosterConfig, rng: SeededRandom): string {
@@ -372,7 +554,9 @@ export function generatePosterSvg(config: PosterConfig, rates: PosterRates): str
 
   let content = "";
 
-  if (layout === "classic-header") {
+  if (layout === "velmayil-showroom") {
+    content += renderVelmayilShowroom(config, rates, rng);
+  } else if (layout === "classic-header") {
     content += renderBrandHeader(config, isStory ? 120 : 80);
     content += renderDateHeader(config, rates, isStory ? 280 : 200, "left");
     content += renderRateBoxesClassic(config, rates, isStory ? 340 : 260);
