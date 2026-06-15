@@ -35,23 +35,27 @@ async function readHistory(): Promise<HistoryStore> {
 }
 
 async function appendToHistory(record: LiveRateRecord): Promise<void> {
-  const store = await readHistory();
-  const existing = store.records.findIndex((r) => r.date === record.date);
-  if (existing >= 0) {
-    const prev = store.records[existing];
-    record.trend_gold = record.gold22k_1g - (store.records[existing + 1]?.gold22k_1g ?? prev.gold22k_1g);
-    record.trend_silver = record.silver_1g - (store.records[existing + 1]?.silver_1g ?? prev.silver_1g);
-    store.records[existing] = record;
-  } else {
-    if (store.records.length > 0) {
-      record.trend_gold = record.gold22k_1g - store.records[0].gold22k_1g;
-      record.trend_silver = record.silver_1g - store.records[0].silver_1g;
+  try {
+    const store = await readHistory();
+    const existing = store.records.findIndex((r) => r.date === record.date);
+    if (existing >= 0) {
+      const prev = store.records[existing];
+      record.trend_gold = record.gold22k_1g - (store.records[existing + 1]?.gold22k_1g ?? prev.gold22k_1g);
+      record.trend_silver = record.silver_1g - (store.records[existing + 1]?.silver_1g ?? prev.silver_1g);
+      store.records[existing] = record;
+    } else {
+      if (store.records.length > 0) {
+        record.trend_gold = record.gold22k_1g - store.records[0].gold22k_1g;
+        record.trend_silver = record.silver_1g - store.records[0].silver_1g;
+      }
+      store.records.unshift(record);
     }
-    store.records.unshift(record);
+    store.records = store.records.slice(0, 90);
+    await fs.mkdir(path.dirname(HISTORY_FILE), { recursive: true });
+    await fs.writeFile(HISTORY_FILE, JSON.stringify(store.records, null, 2));
+  } catch {
+    // Serverless hosts (e.g. Vercel) have read-only filesystem — skip history persistence
   }
-  store.records = store.records.slice(0, 90);
-  await fs.mkdir(path.dirname(HISTORY_FILE), { recursive: true });
-  await fs.writeFile(HISTORY_FILE, JSON.stringify(store.records, null, 2));
 }
 
 function buildRecord(
