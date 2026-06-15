@@ -13,6 +13,7 @@ import {
   POSTER_THEMES, pickNextTheme, type PosterTheme
 } from "@/lib/poster-themes";
 import { generateArtworkDataUrl } from "@/utils/poster-artwork-canvas";
+import { getFreeAiSourceLabel } from "@/lib/free-poster-ai";
 import type { PosterBrandSettings } from "@/lib/poster-brand";
 import { DEFAULT_POSTER_BRAND } from "@/lib/poster-brand";
 
@@ -203,8 +204,8 @@ export default function PosterStudio() {
           Poster Studio
         </h1>
         <p className="text-xs sm:text-sm text-[#F3E5AB]/75 mt-2 max-w-2xl mx-auto">
-          Official brand-locked template with ChatGPT-designed jewellery artwork.
-          Every poster is unique — logo, rate cards, and contact never change.
+          Brand-locked template + <span className="text-[#D4AF37]">100% free AI</span> jewellery artwork.
+          Flux HD quality — no payment needed. Every poster is unique.
         </p>
       </div>
 
@@ -257,7 +258,7 @@ export default function PosterStudio() {
             {theme && (
               <p className="text-[10px] text-[#F3E5AB]/50">
                 Artwork: <span className="text-[#D4AF37]">{theme.name}</span>
-                {artSource && <> · {artSource}</>}
+                {artSource && <> · {getFreeAiSourceLabel(artSource)}</>}
               </p>
             )}
 

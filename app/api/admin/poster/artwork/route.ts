@@ -5,12 +5,13 @@ import {
   generateUniqueSeed,
   recordGeneration,
 } from "@/lib/poster-uniqueness";
+import { generateBestFreeArtwork } from "@/lib/free-poster-ai";
 
 export const maxDuration = 60;
 
 async function generateWithOpenAI(prompt: string): Promise<string | null> {
   const apiKey = process.env.OPENAI_API_KEY;
-  if (!apiKey) return null;
+  if (!apiKey || process.env.USE_PAID_AI !== "true") return null;
 
   const res = await fetch("https://api.openai.com/v1/images/generations", {
     method: "POST",
@@ -29,48 +30,47 @@ async function generateWithOpenAI(prompt: string): Promise<string | null> {
     }),
   });
 
-  if (!res.ok) {
-    console.error("OpenAI image error:", await res.text().catch(() => ""));
-    return null;
-  }
+  if (!res.ok) return null;
   const data = await res.json();
   const b64 = data?.data?.[0]?.b64_json;
   if (!b64) return null;
   return `data:image/png;base64,${b64}`;
 }
 
-async function generateWithPollinations(prompt: string, seed: number): Promise<string | null> {
-  try {
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=1080&height=1000&seed=${seed}&nologo=true&enhance=true&model=flux`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(55000) });
-    if (!res.ok) return null;
-    const buffer = await res.arrayBuffer();
-    const b64 = Buffer.from(buffer).toString("base64");
-    const mime = res.headers.get("content-type") || "image/jpeg";
-    return `data:${mime};base64,${b64}`;
-  } catch {
-    return null;
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const themeId = (body.themeId as string) || "bridal";
+    const themeId = (body.themeId as string) || "velmayil-teal";
     const theme = getThemeById(themeId);
     const seed = body.seed ? Number(body.seed) : await generateUniqueSeed(themeId);
     const prompt = buildUniqueArtPrompt(theme, seed);
 
+    // 1. Best free AI (Pollinations Flux + optional Hugging Face) — no payment
+    const free = await generateBestFreeArtwork(prompt, seed);
+    if (free) {
+      await recordGeneration(themeId, seed, prompt);
+      return NextResponse.json({
+        imageData: free.imageData,
+        source: free.source,
+        themeId,
+        seed,
+        prompt,
+        cost: "free",
+      });
+    }
+
+    // 2. Optional paid ChatGPT — only if USE_PAID_AI=true
     const openai = await generateWithOpenAI(prompt);
     if (openai) {
       await recordGeneration(themeId, seed, prompt);
-      return NextResponse.json({ imageData: openai, source: "chatgpt-dalle", themeId, seed, prompt });
-    }
-
-    const pollinations = await generateWithPollinations(prompt, seed);
-    if (pollinations) {
-      await recordGeneration(themeId, seed, prompt);
-      return NextResponse.json({ imageData: pollinations, source: "ai-flux", themeId, seed, prompt });
+      return NextResponse.json({
+        imageData: openai,
+        source: "chatgpt-dalle",
+        themeId,
+        seed,
+        prompt,
+        cost: "paid",
+      });
     }
 
     return NextResponse.json({ fallback: true, themeId, seed, prompt });
