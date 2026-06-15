@@ -28,7 +28,15 @@ export default function AdminLoginForm() {
       const redirect = searchParams.get("redirect") || "/admin/dashboard";
       router.push(redirect);
     } else {
-      setError("Invalid username or password");
+      const data = await res.json().catch(() => ({}));
+      const apiError = typeof data.error === "string" ? data.error : "";
+      if (res.status === 503) {
+        setError("Admin login is not configured on the server yet. Set ADMIN_USERNAME, ADMIN_PASSWORD, and ADMIN_SESSION_SECRET in Vercel, then redeploy.");
+      } else if (res.status === 429) {
+        setError(apiError || "Too many login attempts. Please wait and try again.");
+      } else {
+        setError(apiError || "Invalid username or password");
+      }
       setLoading(false);
     }
   };
