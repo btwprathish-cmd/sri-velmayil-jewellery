@@ -17,7 +17,7 @@ export default async function AdminDashboardPage() {
     { title: "Live Rates", value: rates.length, icon: TrendingUp, href: "/admin/rates", color: "text-[#D4AF37]" },
     { title: "Products", value: totalProducts, icon: Package, href: "/admin/collections", color: "text-emerald-400" },
     { title: "Collections", value: collectionsData.length, icon: LayoutDashboard, href: "/admin/collections", color: "text-sky-400" },
-    { title: "Poster Generator", value: "Auto", icon: Image, href: "/poster-generator", color: "text-purple-400" },
+    { title: "Poster Studio", value: "AI", icon: Image, href: "/admin/poster-studio", color: "text-purple-400" },
   ];
 
   return (
@@ -56,7 +56,7 @@ export default async function AdminDashboardPage() {
             <Link href="/admin/collections" className="py-3 px-4 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg text-sm font-bold text-[#F3E5AB] hover:border-[#D4AF37]/50 transition-colors text-center">
               Manage Products
             </Link>
-            <Link href="/poster-generator" className="py-3 px-4 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg text-sm font-bold text-[#F3E5AB] hover:border-[#D4AF37]/50 transition-colors text-center">
+            <Link href="/admin/poster-studio" className="py-3 px-4 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg text-sm font-bold text-[#F3E5AB] hover:border-[#D4AF37]/50 transition-colors text-center">
               Generate Daily Poster
             </Link>
           </div>

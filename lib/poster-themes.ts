@@ -14,6 +14,19 @@ export interface PosterTheme {
 
 export const POSTER_THEMES: PosterTheme[] = [
   {
+    id: "velmayil-teal",
+    name: "Velmayil Showroom Teal",
+    bg: "#0B3D45",
+    bgGradient: "linear-gradient(180deg, #0B3D45 0%, #061e22 100%)",
+    accent: "#D4AF37",
+    text: "#ffffff",
+    muted: "#a8d4c8",
+    jewelryItem: "heavy traditional South Indian gold haram necklace with peacock pendant and matching choker",
+    surface: "dark teal jewellery mannequin bust",
+    palette: "deep teal, emerald, and antique gold",
+    motifs: "soft pink dahlia flowers and green foliage on sides",
+  },
+  {
     id: "peacock",
     name: "Peacock Jewellery Collection",
     bg: "#1a0b2e",

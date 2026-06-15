@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import Link from "next/link";
 import {
-  Download, Share2, ArrowLeft, Smartphone,
+  Download, Share2, Smartphone,
   Sparkles, Loader2, Shuffle, Settings, Save
 } from "lucide-react";
 import { toPng, toJpeg } from "html-to-image";
@@ -111,7 +110,7 @@ export default function PosterStudio() {
     setLastThemeId(nextTheme.id);
 
     try {
-      const res = await fetch("/api/poster/artwork", {
+      const res = await fetch("/api/admin/poster/artwork", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ themeId: nextTheme.id, seed }),
@@ -194,9 +193,9 @@ export default function PosterStudio() {
   return (
     <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-6">
-        <Link href="/gold-rate-today-tirupur" className="inline-flex items-center text-xs font-bold text-[#D4AF37] hover:underline uppercase tracking-wider">
-          <ArrowLeft className="mr-1 h-3.5 w-3.5" /> Back to Gold Rate
-        </Link>
+        <p className="text-xs text-[#F3E5AB]/50 uppercase tracking-widest text-center">
+          Admin Only · AI Poster Studio
+        </p>
       </div>
 
       <div className="text-center mb-10">
@@ -204,8 +203,8 @@ export default function PosterStudio() {
           Poster Studio
         </h1>
         <p className="text-xs sm:text-sm text-[#F3E5AB]/75 mt-2 max-w-2xl mx-auto">
-          Official Sri Velmayil brand template — logo, typography, rate cards, and contact are locked.
-          Only the jewellery artwork changes daily. Export 1080×1920 for Story / Status.
+          Official brand-locked template with ChatGPT-designed jewellery artwork.
+          Every poster is unique — logo, rate cards, and contact never change.
         </p>
       </div>
 

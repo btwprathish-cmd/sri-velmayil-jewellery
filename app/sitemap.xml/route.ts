@@ -18,7 +18,6 @@ export async function GET() {
     "/gold-rate-today-tirupur",
     "/silver-rate-today-tirupur",
     "/gold-rate-history",
-    "/poster-generator",
     "/faq",
     "/blog",
   ];

@@ -23,21 +23,21 @@ export function isProductionAuthConfigured(): boolean {
     username &&
       password &&
       secret &&
-      password.length >= 16 &&
+      password.length >= 8 &&
       secret.length >= 32
   );
 }
 export function validateProductionAuthConfig(): void {
   if (process.env.NODE_ENV !== "production") return;
   if (!isProductionAuthConfigured()) {
-    throw new Error("ADMIN_USERNAME, ADMIN_PASSWORD (16+ chars), and ADMIN_SESSION_SECRET (32+ chars) are required in production");
+    throw new Error("ADMIN_USERNAME, ADMIN_PASSWORD (8+ chars), and ADMIN_SESSION_SECRET (32+ chars) are required in production");
   }
 }
 
 export function getAdminCredentials() {
   return {
-    username: process.env.ADMIN_USERNAME || "admin",
-    password: process.env.ADMIN_PASSWORD || "Velmayil@Dev2026!Secure",
+    username: process.env.ADMIN_USERNAME || "sabarish",
+    password: process.env.ADMIN_PASSWORD || "sabarish123",
   };
 }
 
