@@ -16,6 +16,8 @@ interface PosterTemplateProps {
   rates: PosterRates;
   artworkUrl: string;
   brand?: PosterBrandSettings;
+  /** Theme tints artwork zone edge blend only — logo/fonts/contact never change */
+  accentBg?: string;
 }
 
 const MAROON = "#4a0818";
@@ -55,9 +57,10 @@ function RatePill({ label, sub }: { label: string; sub: string }) {
   );
 }
 
-export default function PosterTemplate({ rates, artworkUrl, brand }: PosterTemplateProps) {
+export default function PosterTemplate({ rates, artworkUrl, brand, accentBg }: PosterTemplateProps) {
   const b = brand ?? DEFAULT_POSTER_BRAND;
   const d = parseDateParts(rates.dateLabel);
+  const headerBg = accentBg ?? MAROON;
 
   const cols = [
     { label: "1GM", sub: "22K", value: rates.gold22k_1g },
@@ -72,12 +75,15 @@ export default function PosterTemplate({ rates, artworkUrl, brand }: PosterTempl
       style={{
         width: 1080,
         height: 1920,
-        background: `linear-gradient(180deg, ${MAROON} 0%, ${MAROON_DARK} 100%)`,
+        background: `linear-gradient(180deg, ${headerBg} 0%, ${MAROON_DARK} 100%)`,
         fontFamily: "var(--font-poppins), Poppins, sans-serif",
       }}
     >
-      {/* ZONE 1 — Logo + brand (locked) */}
-      <div className="flex flex-col items-center justify-center shrink-0 pt-8 pb-2" style={{ height: 300 }}>
+      {/* ZONE 1 — Logo + brand (LOCKED — never AI generated) */}
+      <div
+        className="flex flex-col items-center justify-center shrink-0 pt-8 pb-2"
+        style={{ height: 300, background: `linear-gradient(180deg, ${headerBg} 0%, ${MAROON} 100%)` }}
+      >
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={b.logo}
@@ -142,24 +148,37 @@ export default function PosterTemplate({ rates, artworkUrl, brand }: PosterTempl
         </div>
       </div>
 
-      {/* ZONE 3 — Artwork (variable — AI or reference-style canvas) */}
+      {/* ZONE 3 — AI artwork (UNIQUE every generation) */}
       <div className="relative shrink-0 overflow-hidden flex-1" style={{ minHeight: 1100 }}>
         {artworkUrl ? (
           // eslint-disable-next-line @next/next/no-img-element
           <img
+            key={artworkUrl.slice(-48)}
             src={artworkUrl}
             alt="Jewellery artwork"
             className="w-full h-full object-cover object-center"
             crossOrigin="anonymous"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center opacity-40 text-white text-sm">
-            Generating artwork…
+          <div
+            className="w-full h-full flex flex-col items-center justify-center gap-3"
+            style={{ background: `linear-gradient(180deg, ${MAROON} 0%, ${MAROON_DARK} 100%)` }}
+          >
+            <div className="w-10 h-10 border-2 border-[#D4AF37] border-t-transparent rounded-full animate-spin" />
+            <p className="text-white/70 text-sm">Creating unique AI jewellery scene…</p>
           </div>
         )}
+        <div
+          className="absolute inset-x-0 top-0 h-16 pointer-events-none"
+          style={{ background: `linear-gradient(to bottom, ${MAROON} 0%, transparent 100%)` }}
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-20 pointer-events-none"
+          style={{ background: `linear-gradient(to top, ${MAROON_DARK} 0%, transparent 100%)` }}
+        />
       </div>
 
-      {/* ZONE 4 — Contact footer (locked, no Tamil promo text) */}
+      {/* ZONE 4 — Contact footer (LOCKED — never AI generated) */}
       <div
         className="shrink-0 flex items-end justify-between px-12 pb-8 pt-4"
         style={{ height: 200, borderTop: `1px solid ${GOLD}44` }}

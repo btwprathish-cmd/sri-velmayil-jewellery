@@ -10,7 +10,7 @@ import { formatIndianDate } from "@/utils/date";
 import { BRAND, getWhatsAppUrl } from "@/utils/brand";
 import PosterTemplate from "@/components/PosterTemplate";
 import {
-  POSTER_THEMES, pickNextTheme, type PosterTheme
+  POSTER_THEMES, pickUniqueTheme, type PosterTheme
 } from "@/lib/poster-themes";
 import { generateArtworkDataUrl } from "@/utils/poster-artwork-canvas";
 import { getFreeAiSourceLabel } from "@/lib/free-poster-ai";
@@ -45,7 +45,6 @@ export default function PosterStudio() {
   const [manualRates, setManualRates] = useState({ gold1g: "", gold8g: "", silver1g: "" });
   const [useManual, setUseManual] = useState(false);
   const [theme, setTheme] = useState<PosterTheme | null>(null);
-  const [lastThemeId, setLastThemeId] = useState<string | null>(null);
   const [selectedThemeId, setSelectedThemeId] = useState<string>("");
   const [artworkUrl, setArtworkUrl] = useState("");
   const [generating, setGenerating] = useState(false);
@@ -55,7 +54,9 @@ export default function PosterStudio() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showBrandSettings, setShowBrandSettings] = useState(false);
   const [savingBrand, setSavingBrand] = useState(false);
-  const [noApiMode, setNoApiMode] = useState(true);
+  const [lastThemeIds, setLastThemeIds] = useState<string[]>([]);
+  const [generateCount, setGenerateCount] = useState(0);
+  const [noApiMode, setNoApiMode] = useState(false);
   const posterRef = useRef<HTMLDivElement>(null);
 
   const effectiveRates = useCallback((): RateData | null => {
@@ -106,15 +107,17 @@ export default function PosterStudio() {
 
   const generatePoster = useCallback(async (themeOverride?: string) => {
     setGenerating(true);
-    const seed = Date.now();
-    const nextTheme = pickNextTheme(lastThemeId, themeOverride || selectedThemeId || undefined);
+    setArtworkUrl("");
+    const seed = Date.now() + Math.floor(Math.random() * 1_000_000);
+    const nextTheme = pickUniqueTheme(lastThemeIds, themeOverride || selectedThemeId || undefined);
     setTheme(nextTheme);
-    setLastThemeId(nextTheme.id);
+    setLastThemeIds((prev) => [nextTheme.id, ...prev].slice(0, 4));
 
     if (noApiMode) {
       const local = generateArtworkDataUrl(nextTheme, seed);
       setArtworkUrl(local);
       setArtSource("reference-style");
+      setGenerateCount((c) => c + 1);
       setGenerating(false);
       return;
     }
@@ -130,19 +133,22 @@ export default function PosterStudio() {
       if (data.imageData) {
         setArtworkUrl(data.imageData);
         setArtSource(data.source || "ai");
+        setGenerateCount((c) => c + 1);
       } else {
         const fallback = generateArtworkDataUrl(nextTheme, seed);
         setArtworkUrl(fallback);
         setArtSource("canvas-fallback");
+        setGenerateCount((c) => c + 1);
       }
     } catch {
       const fallback = generateArtworkDataUrl(nextTheme, seed);
       setArtworkUrl(fallback);
       setArtSource("canvas-fallback");
+      setGenerateCount((c) => c + 1);
     }
 
     setGenerating(false);
-  }, [lastThemeId, selectedThemeId, noApiMode]);
+  }, [lastThemeIds, selectedThemeId, noApiMode]);
 
   const saveBrandSettings = async () => {
     setSavingBrand(true);
@@ -213,8 +219,8 @@ export default function PosterStudio() {
           Poster Studio
         </h1>
         <p className="text-xs sm:text-sm text-[#F3E5AB]/75 mt-2 max-w-2xl mx-auto">
-          Brand-locked maroon template matching your ChatGPT sample.
-          Toggle <strong className="text-[#D4AF37]">Reference Style</strong> for zero API, or off for free AI photos.
+          Brand-locked logo, fonts &amp; contact. <span className="text-[#D4AF37]">Free AI</span> creates a unique
+          ChatGPT-quality jewellery photo every time you generate.
         </p>
       </div>
 
@@ -227,7 +233,7 @@ export default function PosterStudio() {
 
             <label className="flex items-center gap-2 text-xs text-[#F3E5AB]/70 cursor-pointer">
               <input type="checkbox" checked={noApiMode} onChange={(e) => setNoApiMode(e.target.checked)} className="accent-[#D4AF37]" />
-              Reference Style (No API) — maroon layout like your ChatGPT sample
+              Offline illustrated mode (no internet — lower quality)
             </label>
 
             <label className="flex items-center gap-2 text-xs text-[#F3E5AB]/70 cursor-pointer">
@@ -269,12 +275,13 @@ export default function PosterStudio() {
               </select>
             </div>
 
-            {theme && (
-              <p className="text-[10px] text-[#F3E5AB]/50">
-                Artwork: <span className="text-[#D4AF37]">{theme.name}</span>
-                {artSource && <> · {getFreeAiSourceLabel(artSource)}</>}
-              </p>
-            )}
+          {theme && (
+            <p className="text-[10px] text-[#F3E5AB]/50">
+              Theme: <span className="text-[#D4AF37]">{theme.name}</span>
+              {artSource && <> · {getFreeAiSourceLabel(artSource)}</>}
+              {generateCount > 0 && <> · {generateCount} unique poster{generateCount > 1 ? "s" : ""} this session</>}
+            </p>
+          )}
 
             <button
               onClick={() => generatePoster()}
@@ -375,16 +382,17 @@ export default function PosterStudio() {
             style={{ width: 270, height: 480 }}
           >
             <div style={{ transform: "scale(0.25)", transformOrigin: "top left", width: 1080, height: 1920 }}>
-              {r && artworkUrl && !generating ? (
+              {r ? (
                 <PosterTemplate
                   brand={brand}
+                  accentBg={theme?.bg}
                   rates={{
                     gold22k_1g: r.gold22k_1g,
                     gold22k_8g: r.gold22k_8g,
                     silver_1g: r.silver_1g,
                     dateLabel: toPosterDateLabel(r.date, r.dateDisplay),
                   }}
-                  artworkUrl={artworkUrl}
+                  artworkUrl={generating ? "" : artworkUrl}
                 />
               ) : (
                 <div className="w-[1080px] h-[1920px] bg-[#0B3D45] flex items-center justify-center">

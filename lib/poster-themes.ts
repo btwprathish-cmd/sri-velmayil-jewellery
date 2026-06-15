@@ -144,6 +144,15 @@ export function pickNextTheme(lastThemeId: string | null, overrideId?: string): 
   return pool[Math.floor(Math.random() * pool.length)];
 }
 
+/** Pick theme avoiding recent IDs for maximum visual variety */
+export function pickUniqueTheme(lastIds: string[], overrideId?: string): PosterTheme {
+  if (overrideId) return getThemeById(overrideId);
+  const avoid = new Set(lastIds.filter(Boolean));
+  let pool = POSTER_THEMES.filter((t) => !avoid.has(t.id));
+  if (pool.length === 0) pool = POSTER_THEMES;
+  return pool[Math.floor(Math.random() * pool.length)];
+}
+
 export function buildArtPrompt(theme: PosterTheme): string {
   return [
     "Luxury South Indian jewellery product photography",

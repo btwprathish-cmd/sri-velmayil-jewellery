@@ -39,7 +39,7 @@ async function pollinations(
   seed: number,
   model: string,
   width = 1080,
-  height = 1000
+  height = 1100
 ): Promise<string | null> {
   const params = new URLSearchParams({
     width: String(width),
