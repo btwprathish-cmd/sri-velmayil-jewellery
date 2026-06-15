@@ -1,153 +1,213 @@
 "use client";
 
-import React, { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import {
-  Download, Share2, RefreshCw, ArrowLeft, Smartphone,
-  Sparkles, Check, Loader2
-} from "lucide-react";
-import { formatIndianDate } from "@/utils/date";
-import { BRAND, getWhatsAppUrl } from "@/utils/brand";
-import {
-  generatePosterConfig, generatePosterSvg, type PosterConfig
-} from "@/utils/poster-engine";
+import { Download, RefreshCw, ArrowLeft, Sparkles, Loader2 } from "lucide-react";
+import { BRAND } from "@/utils/brand";
+import { PosterFormData } from "@/utils/build-poster-prompt";
 
-interface RateData {
-  gold22k_1g: number;
-  gold22k_8g: number;
-  silver_1g: number;
-  date: string;
-  dateDisplay: string;
-}
+
 
 export default function PosterStudio() {
-  const [mounted, setMounted] = useState(false);
-  const [rates, setRates] = useState<RateData | null>(null);
-  const [config, setConfig] = useState<PosterConfig | null>(null);
-  const [svgContent, setSvgContent] = useState("");
-  const [generating, setGenerating] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const [format] = useState<"story" | "post">("story");
-  const svgRef = useRef<HTMLDivElement>(null);
+  const [rates, setRates] = useState<{
+    gold22k_1g: string;
+    gold22k_8g: string;
+    silver_1g: string;
+    fetchedAt: string;
+    source: string;
+  } | null>(null);
 
-  const fetchRates = useCallback(async () => {
-    const res = await fetch("/api/rates");
-    const data = await res.json();
-    setRates({
-      gold22k_1g: data.gold22k_1g,
-      gold22k_8g: data.gold22k_8g,
-      silver_1g: data.silver_1g,
-      date: data.date,
-      dateDisplay: data.dateDisplay || formatIndianDate(data.date),
-    });
-  }, []);
+  const [formData, setFormData] = useState<PosterFormData>({
+    companyName: process.env.NEXT_PUBLIC_ADMIN_COMPANY_NAME || BRAND.name,
+    phone: process.env.NEXT_PUBLIC_ADMIN_PHONE || BRAND.phone,
+    address: process.env.NEXT_PUBLIC_ADMIN_ADDRESS || BRAND.address,
+    date: new Date().toLocaleDateString("en-IN", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+    }),
+    gold1g: '',
+    gold8g: '',
+    silver1g: '',
+  });
 
-  const generateNewPoster = useCallback(async (rateData?: RateData) => {
-    const currentRates = rateData || rates;
-    if (!currentRates) return;
+  const [customLogo, setCustomLogo] = useState<string | null>(BRAND.logo);
 
-    setGenerating(true);
-    const newConfig = generatePosterConfig(undefined, format);
-    const svg = generatePosterSvg(newConfig, {
-      gold22k_1g: currentRates.gold22k_1g,
-      gold22k_8g: currentRates.gold22k_8g,
-      silver_1g: currentRates.silver_1g,
-      dateDisplay: currentRates.dateDisplay,
-    });
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setCustomLogo(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
 
-    setConfig(newConfig);
-    setSvgContent(svg);
-    setGenerating(false);
-  }, [rates, format]);
+  const [generatedPoster, setGeneratedPoster] = useState<string | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [isFetchingRates, setIsFetchingRates] = useState(false);
+  const [ratesError, setRatesError] = useState<string | null>(null);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+  const [generateCount, setGenerateCount] = useState(0);
 
   useEffect(() => {
-    setMounted(true);
-    fetchRates().then(async () => {
-      const res = await fetch("/api/rates");
-      const data = await res.json();
-      const rateData: RateData = {
-        gold22k_1g: data.gold22k_1g,
-        gold22k_8g: data.gold22k_8g,
-        silver_1g: data.silver_1g,
-        date: data.date,
-        dateDisplay: data.dateDisplay || formatIndianDate(data.date),
-      };
-      setRates(rateData);
-      generateNewPoster(rateData);
-    });
-  }, [fetchRates, generateNewPoster]);
+    fetchLiveRates();
+  }, []);
 
-  const targetDims = format === "story"
-    ? { width: 1080, height: 1920 }
-    : { width: 1080, height: 1080 };
-
-  const previewDims = format === "story"
-    ? { width: 270, height: 480 }
-    : { width: 380, height: 380 };
-
-  const handleExport = async (fileType: "png" | "jpg") => {
-    if (!svgContent) return;
-
-    const blob = new Blob([svgContent], { type: "image/svg+xml;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const image = new Image();
-    image.crossOrigin = "anonymous";
-
-    image.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = targetDims.width;
-      canvas.height = targetDims.height;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      if (fileType === "jpg") {
-        ctx.fillStyle = "#0c0418";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
+  const fetchLiveRates = async () => {
+    setIsFetchingRates(true);
+    setRatesError(null);
+    try {
+      const res = await fetch('/api/rates');
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Failed to fetch rates');
       }
+      const data = await res.json();
+      setRates(data);
+      setFormData(prev => ({
+        ...prev,
+        gold1g: data.gold22k_1g.toString(),
+        gold8g: data.gold22k_8g.toString(),
+        silver1g: data.silver_1g.toString(),
+      }));
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setRatesError('Could not fetch live rates. Enter manually or try again. (' + message + ')');
+    } finally {
+      setIsFetchingRates(false);
+    }
+  };
 
-      ctx.drawImage(image, 0, 0);
-      const dataUrl = canvas.toDataURL(fileType === "jpg" ? "image/jpeg" : "image/png", 1.0);
-      const link = document.createElement("a");
-      link.href = dataUrl;
-      link.download = `sri-velmayil-gold-rate-${rates?.date || "today"}-story.${fileType}`;
+  const handleGenerate = async () => {
+    setIsGenerating(true);
+    setGenerateError(null);
+    try {
+      const res = await fetch('/api/admin/generate-poster', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || 'Generation failed');
+      }
+      const data = await res.json();
+      
+      if (!data.imageUrl) {
+        throw new Error("No image generated.");
+      }
+      
+      const canvas = document.createElement("canvas");
+      canvas.width = 1080;
+      canvas.height = 1920;
+      const ctx = canvas.getContext("2d");
+      
+      if (ctx) {
+        // Load the generated image
+        const generatedImg = new Image();
+        generatedImg.crossOrigin = "anonymous";
+        await new Promise((resolve, reject) => {
+          generatedImg.onload = resolve;
+          generatedImg.onerror = reject;
+          generatedImg.src = data.imageUrl;
+        });
+
+        ctx.drawImage(generatedImg, 0, 0, 1080, 1920);
+        
+        if (customLogo) {
+          try {
+            const logoImg = new Image();
+            logoImg.crossOrigin = "anonymous";
+            await new Promise((resolve, reject) => {
+              logoImg.onload = resolve;
+              logoImg.onerror = reject;
+              logoImg.src = customLogo;
+            });
+            
+            const maxWidth = 500;
+            const maxHeight = 300;
+            let width = logoImg.width;
+            let height = logoImg.height;
+
+            if (width > maxWidth || height > maxHeight) {
+              const ratio = Math.min(maxWidth / width, maxHeight / height);
+              width = width * ratio;
+              height = height * ratio;
+            }
+
+            const x = (1080 - width) / 2;
+            const y = 80;
+
+            ctx.drawImage(logoImg, x, y, width, height);
+          } catch (e) {
+            console.error("Failed to composite logo", e);
+          }
+        }
+        setGeneratedPoster(canvas.toDataURL("image/jpeg", 0.9));
+      } else {
+        setGeneratedPoster(data.imageUrl);
+      }
+      
+      setGenerateCount(prev => prev + 1);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Unknown error';
+      setGenerateError(message);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
+  const handleDownload = async () => {
+    if (!generatedPoster) return;
+    try {
+      if (generatedPoster.startsWith("data:")) {
+        const link = document.createElement("a");
+        link.href = generatedPoster;
+        link.download = `gold-rate-${formData.date.replace(/\s/g, '-')}.png`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        return;
+      }
+      
+      const res = await fetch(
+        `/api/admin/download-poster?url=${encodeURIComponent(generatedPoster)}`
+      );
+      if (!res.ok) throw new Error('Download failed');
+      const blob = await res.blob();
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `gold-rate-${formData.date.replace(/\s/g, '-')}.png`;
+      document.body.appendChild(link);
       link.click();
-      URL.revokeObjectURL(url);
-    };
-
-    image.onerror = () => URL.revokeObjectURL(url);
-    image.src = url;
+      document.body.removeChild(link);
+      URL.revokeObjectURL(link.href);
+    } catch {
+      alert('Download failed. Right-click the poster and save manually.');
+    }
   };
 
-  const handleShareWhatsApp = () => {
-    if (!rates) return;
-    const text = `${BRAND.name} ${BRAND.location} — Daily Rates\n\n22K Gold 1g: ₹${rates.gold22k_1g.toLocaleString("en-IN")}\n22K Gold 8g: ₹${rates.gold22k_8g.toLocaleString("en-IN")}\nSilver 1g: ₹${rates.silver_1g.toLocaleString("en-IN")}\n\nDate: ${rates.dateDisplay}\nhttps://srivelmayiljewellery.com/gold-rate-today-tirupur`;
-    window.open(getWhatsAppUrl(text), "_blank");
+  const formatTime = (isoString: string) => {
+    const d = new Date(isoString);
+    let hours = d.getHours();
+    const minutes = d.getMinutes();
+    const ampm = hours >= 12 ? 'PM' : 'AM';
+    hours = hours % 12;
+    hours = hours ? hours : 12; // the hour '0' should be '12'
+    const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+    return `${hours}:${minutesStr} ${ampm}`;
   };
-
-  const handleCopyRates = () => {
-    if (!rates) return;
-    const text = `${BRAND.name} Rates — ${rates.dateDisplay}\nGold 22K 1g: ₹${rates.gold22k_1g}\nGold 22K 8g: ₹${rates.gold22k_8g}\nSilver 1g: ₹${rates.silver_1g}`;
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-[#0c0418] flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-[#D4AF37] animate-spin" />
-      </div>
-    );
-  }
 
   return (
     <div className="py-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="mb-6">
         <Link
-          href="/gold-rate-today-tirupur"
+          href="/admin"
           className="inline-flex items-center text-xs font-bold text-[#D4AF37] hover:underline uppercase tracking-wider"
         >
-          <ArrowLeft className="mr-1 h-3.5 w-3.5" /> Back to Gold Rate
+          <ArrowLeft className="mr-1 h-3.5 w-3.5" /> Back to Dashboard
         </Link>
       </div>
 
@@ -162,129 +222,218 @@ export default function PosterStudio() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* Control Panel */}
-        <div className="lg:col-span-4 bg-[#1a0b2e]/65 border border-[#D4AF37]/20 rounded-2xl p-5 space-y-5 shadow-xl">
-          <h2 className="font-serif text-lg font-bold text-[#D4AF37] border-b border-[#D4AF37]/15 pb-2 uppercase tracking-wider">
-            Live Rates (Auto)
-          </h2>
-
-          {rates ? (
-            <div className="space-y-3 font-sans text-sm">
-              <div className="flex justify-between bg-[#0c0418]/60 p-3 rounded-lg border border-[#D4AF37]/10">
-                <span className="text-[#F3E5AB]/70">22K Gold (1g)</span>
-                <span className="font-mono font-bold text-[#D4AF37]">₹{rates.gold22k_1g.toLocaleString("en-IN")}</span>
+        {/* LEFT COLUMN — Form panel */}
+        <div className="lg:col-span-4 bg-[#1a0b2e]/65 border border-[#D4AF37]/20 rounded-2xl p-5 space-y-6 shadow-xl">
+          
+          {/* Section 1: Brand Details */}
+          <div className="space-y-4">
+            <h2 className="font-serif text-lg font-bold text-[#D4AF37] border-b border-[#D4AF37]/15 pb-2 uppercase tracking-wider">
+              Brand Details
+            </h2>
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">Brand Logo</label>
+                <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3">
+                  {customLogo && (
+                    <img src={customLogo} alt="Logo" className="h-10 w-auto bg-[#0c0418] border border-[#D4AF37]/30 rounded p-1 object-contain" />
+                  )}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="w-full text-xs text-[#F3E5AB]/70 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-bold file:bg-[#D4AF37]/20 file:text-[#D4AF37] hover:file:bg-[#D4AF37]/30 cursor-pointer"
+                  />
+                </div>
               </div>
-              <div className="flex justify-between bg-[#0c0418]/60 p-3 rounded-lg border border-[#D4AF37]/10">
-                <span className="text-[#F3E5AB]/70">22K Gold (8g)</span>
-                <span className="font-mono font-bold text-[#D4AF37]">₹{rates.gold22k_8g.toLocaleString("en-IN")}</span>
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">Phone</label>
+                <input
+                  type="text"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  className="w-full bg-[#0c0418]/60 border border-[#D4AF37]/10 rounded-lg p-2.5 text-[#F3E5AB] text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
               </div>
-              <div className="flex justify-between bg-[#0c0418]/60 p-3 rounded-lg border border-[#D4AF37]/10">
-                <span className="text-[#F3E5AB]/70">Silver (1g)</span>
-                <span className="font-mono font-bold text-[#D4AF37]">₹{rates.silver_1g.toLocaleString("en-IN")}</span>
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">Address</label>
+                <input
+                  type="text"
+                  value={formData.address}
+                  onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                  className="w-full bg-[#0c0418]/60 border border-[#D4AF37]/10 rounded-lg p-2.5 text-[#F3E5AB] text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
               </div>
-              <div className="flex justify-between bg-[#0c0418]/60 p-3 rounded-lg border border-[#D4AF37]/10">
-                <span className="text-[#F3E5AB]/70">Date</span>
-                <span className="font-bold text-white">{rates.dateDisplay}</span>
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">Date</label>
+                <input
+                  type="text"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                  className="w-full bg-[#0c0418]/60 border border-[#D4AF37]/10 rounded-lg p-2.5 text-[#F3E5AB] text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
               </div>
             </div>
-          ) : (
-            <div className="flex items-center justify-center py-8">
-              <Loader2 className="h-6 w-6 text-[#D4AF37] animate-spin" />
-            </div>
-          )}
+          </div>
 
-          {config && (
-            <div className="text-[10px] text-[#F3E5AB]/50 space-y-1 border-t border-[#D4AF37]/10 pt-3">
-              <p>Layout: <span className="text-[#D4AF37] capitalize">{config.layout.replace(/-/g, " ")}</span></p>
-              <p>Palette: <span className="text-[#D4AF37] capitalize">{config.palette.name.replace(/-/g, " ")}</span></p>
-              <p>Pattern: <span className="text-[#D4AF37] capitalize">{config.pattern.replace(/-/g, " ")}</span></p>
-              <p>Jewelry: <span className="text-[#D4AF37] capitalize">{config.jewelryType}</span> (AI procedural)</p>
-              <p>Typography: <span className="text-[#D4AF37]">{config.typography.heading.split(",")[0]}</span></p>
-              <p>Seed: <span className="text-[#D4AF37] font-mono">{config.seed}</span></p>
+          {/* Section 2: Live Gold Rates */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-[#D4AF37]/15 pb-2">
+              <h2 className="font-serif text-lg font-bold text-[#D4AF37] uppercase tracking-wider">
+                Live Gold Rates
+              </h2>
             </div>
-          )}
 
-          <button
-            onClick={() => generateNewPoster()}
-            disabled={generating || !rates}
-            className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-xs hover:brightness-110 transition-all disabled:opacity-50"
-          >
-            {generating ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-            ) : (
-              <Sparkles className="h-4 w-4 mr-2" />
+            {rates && (
+              <p className="text-[10px] text-[#F3E5AB]/50 italic">
+                Fetched at {formatTime(rates.fetchedAt)} via {rates.source}
+              </p>
             )}
-            Generate New Unique Poster
-          </button>
+            
+            {ratesError && (
+              <p className="text-xs text-red-400 mt-1">{ratesError}</p>
+            )}
 
-          <div className="grid grid-cols-2 gap-2">
             <button
-              onClick={() => handleExport("png")}
-              disabled={!svgContent}
-              className="flex items-center justify-center py-2.5 bg-[#1a0b2e] border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg uppercase disabled:opacity-50"
+              onClick={fetchLiveRates}
+              disabled={isFetchingRates}
+              className="w-full flex items-center justify-center py-2 bg-[#1a0b2e] border border-[#D4AF37]/30 hover:border-[#D4AF37]/60 text-[#D4AF37] text-xs font-bold rounded-lg uppercase transition-all disabled:opacity-50"
             >
-              <Download className="h-4 w-4 mr-1.5" /> PNG
+              {isFetchingRates ? (
+                <>
+                  <Loader2 className="h-3.5 w-3.5 mr-1.5 animate-spin" /> Fetching...
+                </>
+              ) : (
+                <>
+                  <RefreshCw className="h-3.5 w-3.5 mr-1.5" /> ↻ Refresh Rates
+                </>
+              )}
             </button>
-            <button
-              onClick={() => handleExport("jpg")}
-              disabled={!svgContent}
-              className="flex items-center justify-center py-2.5 bg-[#1a0b2e] border border-[#D4AF37] text-[#D4AF37] text-xs font-bold rounded-lg uppercase disabled:opacity-50"
-            >
-              <Download className="h-4 w-4 mr-1.5" /> JPEG
-            </button>
+
+            <div className="space-y-3 pt-2">
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">22K Gold 1GM (₹)</label>
+                <input
+                  type="text"
+                  value={formData.gold1g}
+                  onChange={(e) => setFormData({ ...formData, gold1g: e.target.value })}
+                  className="w-full bg-[#0c0418]/60 border border-[#D4AF37]/10 rounded-lg p-2.5 text-[#D4AF37] font-mono font-bold text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">22K Gold 8GM (₹)</label>
+                <input
+                  type="text"
+                  value={formData.gold8g}
+                  onChange={(e) => setFormData({ ...formData, gold8g: e.target.value })}
+                  className="w-full bg-[#0c0418]/60 border border-[#D4AF37]/10 rounded-lg p-2.5 text-[#D4AF37] font-mono font-bold text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-[#F3E5AB]/70 mb-1">Silver 1GM (₹)</label>
+                <input
+                  type="text"
+                  value={formData.silver1g}
+                  onChange={(e) => setFormData({ ...formData, silver1g: e.target.value })}
+                  className="w-full bg-[#0c0418]/60 border border-[#D4AF37]/10 rounded-lg p-2.5 text-[#D4AF37] font-mono font-bold text-sm focus:outline-none focus:border-[#D4AF37]/50"
+                />
+              </div>
+            </div>
+
+            <p className="text-[10px] text-[#F3E5AB]/40 mt-2">
+              Rates are pre-filled from live data. You may edit before generating.
+            </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-2 pt-2 border-t border-[#D4AF37]/10">
+          {/* Action buttons */}
+          <div className="pt-2 border-t border-[#D4AF37]/15">
             <button
-              onClick={handleShareWhatsApp}
-              className="flex items-center justify-center py-2 rounded bg-emerald-600/20 hover:bg-emerald-600/35 border border-emerald-600/30 text-emerald-400 text-xs font-bold transition-colors"
+              onClick={handleGenerate}
+              disabled={isGenerating}
+              className="w-full flex items-center justify-center py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-xs hover:brightness-110 transition-all disabled:opacity-50"
             >
-              <Share2 className="h-3.5 w-3.5 mr-1" /> WhatsApp
+              {isGenerating ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" /> Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="h-4 w-4 mr-2" /> ✦ Generate Post
+                </>
+              )}
             </button>
-            <button
-              onClick={handleCopyRates}
-              className="flex items-center justify-center py-2 rounded bg-purple-600/20 hover:bg-purple-600/35 border border-purple-600/30 text-purple-400 text-xs font-bold transition-colors"
-            >
-              {copied ? <Check className="h-3.5 w-3.5 mr-1" /> : null}
-              {copied ? "Copied" : "Copy Rates"}
-            </button>
-          </div>
 
-          <div className="flex items-center gap-2 text-[10px] text-[#F3E5AB]/40 pt-2">
-            <Smartphone className="h-3.5 w-3.5" />
-            <span>Format: Instagram Story / WhatsApp Status (9:16)</span>
+            {generateError && (
+              <p className="text-xs text-red-400 mt-3 text-center">{generateError}</p>
+            )}
+
+            {generateCount > 0 && (
+              <p className="text-[10px] text-emerald-400 mt-3 text-center font-bold">
+                ✓ {generateCount} poster(s) generated this session
+              </p>
+            )}
           </div>
         </div>
 
-        {/* Preview */}
+        {/* RIGHT COLUMN — Preview panel */}
         <div className="lg:col-span-8 flex flex-col items-center">
           <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-3 font-sans">
-            Live Preview ({targetDims.width}×{targetDims.height})
+            Live Preview (1080×1920)
           </span>
 
-          <div
-            style={{ width: previewDims.width, height: previewDims.height }}
-            className="bg-[#0c0418] border border-[#D4AF37]/35 rounded-2xl overflow-hidden shadow-2xl"
-          >
-            {generating ? (
-              <div className="w-full h-full flex items-center justify-center">
-                <Loader2 className="h-8 w-8 text-[#D4AF37] animate-spin" />
-              </div>
-            ) : (
-              <div
-                ref={svgRef}
-                className="w-full h-full"
-                dangerouslySetInnerHTML={{ __html: svgContent }}
-              />
-            )}
+          <div className="bg-[#0c0418] border border-[#D4AF37]/35 rounded-2xl overflow-hidden shadow-2xl aspect-[9/16] w-full max-w-[400px]">
+            <PosterPreview imageUrl={generatedPoster} isGenerating={isGenerating} />
           </div>
 
-          <p className="text-[10px] text-[#F3E5AB]/40 italic mt-4 text-center max-w-md">
-            Each generation creates a unique layout, color palette, background pattern, and jewellery visual.
-            Brand details ({BRAND.name}, {BRAND.phone}, {BRAND.address}) are always included.
-          </p>
+          {generatedPoster && (
+            <div className="mt-6 w-full max-w-[400px]">
+              <button
+                onClick={handleDownload}
+                disabled={isGenerating}
+                className="w-full flex items-center justify-center py-3 bg-[#1a0b2e] border border-[#D4AF37] text-[#D4AF37] text-sm font-bold rounded-lg uppercase disabled:opacity-50 hover:bg-[#D4AF37]/10 transition-colors"
+              >
+                <Download className="h-5 w-5 mr-2" /> ⬇ Download PNG
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
   );
 }
+
+const PosterPreview = React.memo(({
+  imageUrl,
+  isGenerating,
+}: {
+  imageUrl: string | null;
+  isGenerating: boolean;
+}) => {
+  if (isGenerating) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full gap-3">
+        <div className="animate-spin w-8 h-8 border-2 border-yellow-500 border-t-transparent rounded-full" />
+        <p className="text-yellow-400 text-sm font-medium">Generating your poster...</p>
+        <p className="text-gray-500 text-xs">This takes 15–20 seconds</p>
+      </div>
+    );
+  }
+  if (!imageUrl) {
+    return (
+      <div className="flex flex-col items-center justify-center w-full h-full gap-2 text-gray-600">
+        <div className="w-16 h-16 border-2 border-dashed border-gray-700 rounded-lg flex items-center justify-center">
+          <span className="text-3xl">🖼️</span>
+        </div>
+        <p className="text-sm text-gray-500">Click Generate Post to create your poster</p>
+      </div>
+    );
+  }
+  return (
+    <img
+      src={imageUrl}
+      alt="Generated gold rate poster"
+      className="w-full h-full object-contain rounded-lg"
+    />
+  );
+});
+
+PosterPreview.displayName = 'PosterPreview';

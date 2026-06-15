@@ -8,7 +8,7 @@ export const BRAND = {
   fullAddress: "89 New Market Street, Tirupur, Tamil Nadu 641604",
   email: "info@srivelmayiljewellery.com",
   whatsapp: "919443476183",
-  logo: "/images/sri-velmayil-jewellery-logo-tirupur.svg",
+  logo: "/images/sri-velmayil-jewellery-logo-tirupur.png",
   logoPng: "/images/sri-velmayil-jewellery-logo-tirupur.png",
   hallmark: "916 BIS HUID",
 } as const;

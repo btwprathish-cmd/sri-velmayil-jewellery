@@ -1,14 +1,25 @@
 [
   {
-    "date": "2026-06-15",
-    "gold22k_1g": 12153,
-    "gold22k_8g": 97224,
-    "silver_1g": 217,
-    "gold24k_1g": 13267,
+    "date": "2026-06-16",
+    "gold22k_1g": 12024,
+    "gold22k_8g": 96192,
+    "silver_1g": 214,
+    "gold24k_1g": 13127,
     "source": "gold-api.com + frankfurter.app",
-    "fetchedAt": "2026-06-15T10:42:37.822Z",
-    "trend_gold": -1707,
-    "trend_silver": -53
+    "fetchedAt": "2026-06-15T21:06:14.809Z",
+    "trend_gold": -34,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-15",
+    "gold22k_1g": 12058,
+    "gold22k_8g": 96464,
+    "silver_1g": 214,
+    "gold24k_1g": 13164,
+    "source": "gold-api.com + frankfurter.app",
+    "fetchedAt": "2026-06-15T18:12:29.108Z",
+    "trend_gold": -1802,
+    "trend_silver": -56
   },
   {
     "date": "2026-06-14",
