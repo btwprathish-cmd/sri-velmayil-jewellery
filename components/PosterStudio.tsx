@@ -55,6 +55,7 @@ export default function PosterStudio() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showBrandSettings, setShowBrandSettings] = useState(false);
   const [savingBrand, setSavingBrand] = useState(false);
+  const [noApiMode, setNoApiMode] = useState(true);
   const posterRef = useRef<HTMLDivElement>(null);
 
   const effectiveRates = useCallback((): RateData | null => {
@@ -110,6 +111,14 @@ export default function PosterStudio() {
     setTheme(nextTheme);
     setLastThemeId(nextTheme.id);
 
+    if (noApiMode) {
+      const local = generateArtworkDataUrl(nextTheme, seed);
+      setArtworkUrl(local);
+      setArtSource("reference-style");
+      setGenerating(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/admin/poster/artwork", {
         method: "POST",
@@ -133,7 +142,7 @@ export default function PosterStudio() {
     }
 
     setGenerating(false);
-  }, [lastThemeId, selectedThemeId]);
+  }, [lastThemeId, selectedThemeId, noApiMode]);
 
   const saveBrandSettings = async () => {
     setSavingBrand(true);
@@ -166,7 +175,7 @@ export default function PosterStudio() {
     const opts = { width: 1080, height: 1920, pixelRatio: 1, cacheBust: true };
     const dataUrl = type === "png"
       ? await toPng(node, opts)
-      : await toJpeg(node, { ...opts, quality: 0.95, backgroundColor: "#0B3D45" });
+      : await toJpeg(node, { ...opts, quality: 0.95, backgroundColor: "#4a0818" });
 
     const link = document.createElement("a");
     link.href = dataUrl;
@@ -204,8 +213,8 @@ export default function PosterStudio() {
           Poster Studio
         </h1>
         <p className="text-xs sm:text-sm text-[#F3E5AB]/75 mt-2 max-w-2xl mx-auto">
-          Brand-locked template + <span className="text-[#D4AF37]">100% free AI</span> jewellery artwork.
-          Flux HD quality — no payment needed. Every poster is unique.
+          Brand-locked maroon template matching your ChatGPT sample.
+          Toggle <strong className="text-[#D4AF37]">Reference Style</strong> for zero API, or off for free AI photos.
         </p>
       </div>
 
@@ -215,6 +224,11 @@ export default function PosterStudio() {
             <h2 className="font-serif text-lg font-bold text-[#D4AF37] border-b border-[#D4AF37]/15 pb-2 uppercase tracking-wider">
               Live Rates
             </h2>
+
+            <label className="flex items-center gap-2 text-xs text-[#F3E5AB]/70 cursor-pointer">
+              <input type="checkbox" checked={noApiMode} onChange={(e) => setNoApiMode(e.target.checked)} className="accent-[#D4AF37]" />
+              Reference Style (No API) — maroon layout like your ChatGPT sample
+            </label>
 
             <label className="flex items-center gap-2 text-xs text-[#F3E5AB]/70 cursor-pointer">
               <input type="checkbox" checked={useManual} onChange={(e) => setUseManual(e.target.checked)} className="accent-[#D4AF37]" />

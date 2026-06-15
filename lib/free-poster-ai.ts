@@ -109,7 +109,8 @@ export function getFreeAiSourceLabel(source: string): string {
     "free-turbo": "Free AI · Turbo",
     "free-flux-standard": "Free AI · Flux",
     "chatgpt-dalle": "ChatGPT · DALL-E (paid)",
-    "canvas-fallback": "Basic fallback",
+    "reference-style": "Reference Style · No API",
+    "canvas-fallback": "Reference Style · No API",
   };
   return labels[source] || source;
 }
