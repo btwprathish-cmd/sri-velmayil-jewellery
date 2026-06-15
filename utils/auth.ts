@@ -36,8 +36,8 @@ export function validateProductionAuthConfig(): void {
 
 export function getAdminCredentials() {
   return {
-    username: process.env.ADMIN_USERNAME || "sabarish",
-    password: process.env.ADMIN_PASSWORD || "sabarish123",
+    username: process.env.ADMIN_USERNAME || "9994376183",
+    password: process.env.ADMIN_PASSWORD || "sabarish6183",
   };
 }
 
