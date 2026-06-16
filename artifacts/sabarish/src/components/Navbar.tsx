@@ -8,14 +8,10 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Today's Rate", href: "/gold-rate-today-tirupur" },
-    { name: "Silver Rate", href: "/silver-rate-today-tirupur" },
-    { name: "Rate History", href: "/gold-rate-history" },
-    { name: "Collections", href: "/jewellery-collections" },
-    { name: "Blog", href: "/blog" },
-    { name: "FAQ", href: "/faq" },
     { name: "About Us", href: "/about-us" },
-    { name: "Contact", href: "/contact-us" },
+    { name: "Collections", href: "/jewellery-collections" },
+    { name: "Today's Rate", href: "/gold-rate-today-tirupur" },
+    { name: "Contact Us", href: "/contact-us" },
   ];
 
   const isActive = (path: string) => location === path;
@@ -57,12 +53,6 @@ export default function Navbar() {
           </div>
 
           <div className="hidden lg:flex items-center gap-3">
-            <Link
-              href="/admin/login"
-              className="inline-flex items-center px-4 py-2 text-sm font-semibold rounded-full text-[#F3E5AB]/80 border border-[#F3E5AB]/20 hover:border-[#D4AF37]/50 hover:text-[#D4AF37] transition-all duration-300"
-            >
-              Admin Login
-            </Link>
             <a
               href="tel:+919443476183"
               className="inline-flex items-center px-4 py-2 border border-[#D4AF37] text-sm font-semibold rounded-full text-[#D4AF37] bg-transparent hover:bg-[#D4AF37] hover:text-[#1a0b2e] shadow-[0_0_15px_rgba(212,175,55,0.1)] hover:shadow-[0_0_20px_rgba(212,175,55,0.4)] transition-all duration-300 transform hover:-translate-y-0.5"
@@ -70,6 +60,7 @@ export default function Navbar() {
               Call Store
             </a>
           </div>
+
           <div className="md:hidden">
             <button
               onClick={() => setIsOpen(!isOpen)}
@@ -99,14 +90,7 @@ export default function Navbar() {
                 {link.name}
               </Link>
             ))}
-            <div className="pt-4 px-3 space-y-2">
-              <Link
-                href="/admin/login"
-                onClick={() => setIsOpen(false)}
-                className="w-full flex justify-center items-center py-3 border border-[#F3E5AB]/30 text-base font-bold rounded-md text-[#F3E5AB]/90 hover:border-[#D4AF37] hover:text-[#D4AF37]"
-              >
-                Admin Login
-              </Link>
+            <div className="pt-4 px-3">
               <a
                 href="tel:+919443476183"
                 className="w-full flex justify-center items-center py-3 border border-[#D4AF37] text-base font-bold rounded-md text-[#D4AF37] bg-transparent"
