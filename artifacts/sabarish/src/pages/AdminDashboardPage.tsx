@@ -28,7 +28,7 @@ export default function AdminDashboardPage() {
     { title: "Collections", value: collectionsData.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
     { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
     { title: "Live Rates", value: "Live", icon: TrendingUp, href: "/gold-rate-today-tirupur", color: "text-[#D4AF37]" },
-    { title: "Poster Studio", value: "AI", icon: Image, href: "/admin/poster-studio", color: "text-purple-400" },
+    { title: "Blog Posts", value: "5", icon: Image, href: "/blog", color: "text-purple-400" },
   ];
 
   return (

@@ -46,8 +46,13 @@ export function verifySessionToken(token: string): { username: string } | null {
 
 export function validateCredentials(username: string, password: string): boolean {
   if (!ADMIN_USERNAME || !ADMIN_PASSWORD) return false;
-  const userOk = crypto.timingSafeEqual(Buffer.from(username), Buffer.from(ADMIN_USERNAME));
-  const passOk = crypto.timingSafeEqual(Buffer.from(password), Buffer.from(ADMIN_PASSWORD));
+  const userBuf = Buffer.from(username);
+  const adminUserBuf = Buffer.from(ADMIN_USERNAME);
+  const passBuf = Buffer.from(password);
+  const adminPassBuf = Buffer.from(ADMIN_PASSWORD);
+  if (userBuf.length !== adminUserBuf.length || passBuf.length !== adminPassBuf.length) return false;
+  const userOk = crypto.timingSafeEqual(userBuf, adminUserBuf);
+  const passOk = crypto.timingSafeEqual(passBuf, adminPassBuf);
   return userOk && passOk;
 }
 
