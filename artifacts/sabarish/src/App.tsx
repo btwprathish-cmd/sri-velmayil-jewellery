@@ -1,0 +1,114 @@
+import React from "react";
+import { Switch, Route, Router as WouterRouter } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
+import WhatsAppWidget from "@/components/WhatsAppWidget";
+
+import HomePage from "@/pages/HomePage";
+import GoldRateTodayPage from "@/pages/GoldRateTodayPage";
+import GoldRateHistoryPage from "@/pages/GoldRateHistoryPage";
+import GoldRateDatePage from "@/pages/GoldRateDatePage";
+import SilverRatePage from "@/pages/SilverRatePage";
+import CollectionsPage from "@/pages/CollectionsPage";
+import CategoryPage from "@/pages/CategoryPage";
+import BlogPage from "@/pages/BlogPage";
+import BlogPostPage from "@/pages/BlogPostPage";
+import AboutPage from "@/pages/AboutPage";
+import ContactPage from "@/pages/ContactPage";
+import FaqPage from "@/pages/FaqPage";
+import AdminLoginPage from "@/pages/AdminLoginPage";
+import AdminDashboardPage from "@/pages/AdminDashboardPage";
+
+const queryClient = new QueryClient();
+
+function Layout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="min-h-screen bg-[#0c0418] text-[#fbf6e8] flex flex-col">
+      <Navbar />
+      <main className="flex-grow">{children}</main>
+      <Footer />
+      <WhatsAppWidget />
+    </div>
+  );
+}
+
+function AdminLayout({ children }: { children: React.ReactNode }) {
+  return <div className="min-h-screen bg-[#0c0418] text-[#fbf6e8]">{children}</div>;
+}
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/admin/login">
+        <AdminLayout><AdminLoginPage /></AdminLayout>
+      </Route>
+      <Route path="/admin/dashboard">
+        <AdminLayout><AdminDashboardPage /></AdminLayout>
+      </Route>
+      <Route path="/admin">
+        {() => { window.location.replace("/admin/dashboard"); return null; }}
+      </Route>
+
+      <Route path="/">
+        <Layout><HomePage /></Layout>
+      </Route>
+      <Route path="/gold-rate-today-tirupur">
+        <Layout><GoldRateTodayPage /></Layout>
+      </Route>
+      <Route path="/gold-rate-history">
+        <Layout><GoldRateHistoryPage /></Layout>
+      </Route>
+      <Route path="/gold-rate/:date">
+        <Layout><GoldRateDatePage /></Layout>
+      </Route>
+      <Route path="/silver-rate-today-tirupur">
+        <Layout><SilverRatePage /></Layout>
+      </Route>
+      <Route path="/jewellery-collections">
+        <Layout><CollectionsPage /></Layout>
+      </Route>
+      <Route path="/jewellery-collections/:category">
+        <Layout><CategoryPage /></Layout>
+      </Route>
+      <Route path="/blog">
+        <Layout><BlogPage /></Layout>
+      </Route>
+      <Route path="/blog/:slug">
+        <Layout><BlogPostPage /></Layout>
+      </Route>
+      <Route path="/about-us">
+        <Layout><AboutPage /></Layout>
+      </Route>
+      <Route path="/contact-us">
+        <Layout><ContactPage /></Layout>
+      </Route>
+      <Route path="/faq">
+        <Layout><FaqPage /></Layout>
+      </Route>
+
+      <Route>
+        <Layout>
+          <div className="py-32 text-center">
+            <h1 className="font-serif text-4xl font-bold text-[#D4AF37] mb-4">404 — Page Not Found</h1>
+            <p className="text-[#F3E5AB]/60 mb-8">The page you're looking for doesn't exist.</p>
+            <a href="/" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg">
+              Back to Home
+            </a>
+          </div>
+        </Layout>
+      </Route>
+    </Switch>
+  );
+}
+
+export default function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+        <Router />
+      </WouterRouter>
+    </QueryClientProvider>
+  );
+}

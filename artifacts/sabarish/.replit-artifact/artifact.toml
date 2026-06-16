@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Sri Velmayil Jewellery"
+version = "1.0.0"
+id = "artifacts/sabarish"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 24846
+
+[services.development]
+run = "pnpm --filter @workspace/sabarish run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/sabarish", "run", "build" ]
+publicDir = "artifacts/sabarish/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "24846"
+BASE_PATH = "/"
