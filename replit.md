@@ -60,7 +60,7 @@ _Populate as you build — explicit user instructions worth remembering across s
 
 - The API server reads `rate-history.json` using `REPL_HOME` env var to find the workspace root. If deploying, ensure the data file is accessible.
 - Admin login returns 503 if `ADMIN_USERNAME`, `ADMIN_PASSWORD`, `ADMIN_SESSION_SECRET` are not set.
-- Gold rate fetching from live APIs (metalpriceapi.com) is NOT yet implemented in the Express backend — it reads from the static JSON file only.
+- Gold rate fetching is LIVE: fetches from gold-api.com + frankfurter.app (free, no key needed) on startup, caches for 30 min, and refreshes hourly. If `METALPRICE_API_KEY` is set, metalpriceapi.com is used as the primary source. New rates are appended to rate-history.json automatically.
 
 ## Pointers
 
