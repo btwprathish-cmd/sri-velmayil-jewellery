@@ -4,25 +4,30 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
 
-// During `vite build` (e.g. on Vercel), PORT and BASE_PATH are not needed — only used by dev server
-const isBuildCommand = process.argv.some((a) => a === "build");
-
 const rawPort = process.env.PORT;
-if (!rawPort && !isBuildCommand) {
-  throw new Error("PORT environment variable is required but was not provided.");
+
+if (!rawPort) {
+  throw new Error(
+    "PORT environment variable is required but was not provided.",
+  );
 }
-const port = Number(rawPort ?? "3000");
-if (!isBuildCommand && (Number.isNaN(port) || port <= 0)) {
+
+const port = Number(rawPort);
+
+if (Number.isNaN(port) || port <= 0) {
   throw new Error(`Invalid PORT value: "${rawPort}"`);
 }
 
 const basePath = process.env.BASE_PATH;
-if (!basePath && !isBuildCommand) {
-  throw new Error("BASE_PATH environment variable is required but was not provided.");
+
+if (!basePath) {
+  throw new Error(
+    "BASE_PATH environment variable is required but was not provided.",
+  );
 }
 
 export default defineConfig({
-  base: basePath ?? "/",
+  base: basePath,
   plugins: [
     react(),
     tailwindcss(),

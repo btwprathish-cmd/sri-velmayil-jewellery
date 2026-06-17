@@ -195,51 +195,13 @@ export function getRateByDate(date: string): LiveRateRecord | null {
   return readHistory().find((r) => r.date === date) ?? null;
 }
 
-/** Override today's rate manually (admin use). Writes directly to history and busts cache. */
-export function overrideRate(gold22k_1g: number, silver_1g: number): LiveRateRecord {
-  const record: LiveRateRecord = {
-    date: getTodayDateString(),
-    gold22k_1g: Math.round(gold22k_1g),
-    gold22k_8g: Math.round(gold22k_1g) * 8,
-    silver_1g: Math.round(silver_1g),
-    gold24k_1g: Math.round(gold22k_1g / GOLD_22K_PURITY),
-    source: "admin-override",
-    fetchedAt: new Date().toISOString(),
-  };
-
-  const history = readHistory();
-  const existingIdx = history.findIndex((r) => r.date === record.date);
-  if (existingIdx >= 0) {
-    const prevRecord = history[existingIdx + 1];
-    record.trend_gold = prevRecord ? record.gold22k_1g - prevRecord.gold22k_1g : null;
-    record.trend_silver = prevRecord ? record.silver_1g - prevRecord.silver_1g : null;
-    history[existingIdx] = record;
-  } else {
-    if (history.length > 0) {
-      record.trend_gold = record.gold22k_1g - history[0].gold22k_1g;
-      record.trend_silver = record.silver_1g - history[0].silver_1g;
-    }
-    history.unshift(record);
-  }
-  writeHistory(history.slice(0, 90));
-
-  // Bust in-memory cache so next getLiveRates() returns this override
-  cachedRate = record;
-  cacheExpiry = Date.now() + CACHE_TTL_MS;
-
-  return record;
-}
-
 /** Called once at server startup — fetch today's rate and schedule daily refresh */
 export function scheduleDailyRateFetch(logger: { info: (...a: unknown[]) => void; error: (...a: unknown[]) => void }): void {
-  // Fetch immediately on startup
   getLiveRates()
     .then((r) => logger.info({ source: r.source, gold22k: r.gold22k_1g, date: r.date }, "Live rates fetched on startup"))
     .catch((err) => logger.error({ err }, "Failed to fetch live rates on startup"));
 
-  // Schedule a refresh every hour so the cache stays warm and history is updated
   setInterval(() => {
-    // Force cache expiry so next getLiveRates() triggers a real fetch
     cacheExpiry = 0;
     getLiveRates()
       .then((r) => logger.info({ source: r.source, gold22k: r.gold22k_1g, date: r.date }, "Hourly live rate refresh"))
