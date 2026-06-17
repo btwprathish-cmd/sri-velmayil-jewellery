@@ -1,31 +1,23 @@
-import express, { type Express } from "express";
+import express, { type Express, type Request, type Response, type NextFunction } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
-import pinoHttp from "pino-http";
 import router from "./routes";
 import { logger } from "./lib/logger";
 
 const app: Express = express();
 
-app.use(
-  pinoHttp({
-    logger,
-    serializers: {
-      req(req) {
-        return {
-          id: req.id,
-          method: req.method,
-          url: req.url?.split("?")[0],
-        };
-      },
-      res(res) {
-        return {
-          statusCode: res.statusCode,
-        };
-      },
-    },
-  }),
-);
+// Inline HTTP request logger — avoids pino-http ESM/CJS typing issues on Vercel
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const start = Date.now();
+  res.on("finish", () => {
+    logger.info(
+      { method: req.method, url: req.url.split("?")[0], status: res.statusCode, ms: Date.now() - start },
+      "request"
+    );
+  });
+  next();
+});
+
 app.use(cors({ credentials: true, origin: true }));
 app.use(cookieParser());
 app.use(express.json());
