@@ -8,9 +8,9 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "About Us", href: "/about-us" },
     { name: "Collections", href: "/jewellery-collections" },
     { name: "Today's Rate", href: "/gold-rate-today-tirupur" },
+    { name: "About Us", href: "/about-us" },
     { name: "Contact Us", href: "/contact-us" },
   ];
 
