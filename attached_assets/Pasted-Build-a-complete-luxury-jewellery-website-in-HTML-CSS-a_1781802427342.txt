@@ -1,0 +1,138 @@
+Build a complete luxury jewellery website in HTML, CSS, and JavaScript (single file or multi-page) with the following specifications:
+
+---
+
+## BRAND & AESTHETIC
+- Style: Ultra-premium, luxury jewellery boutique
+- Color palette: Deep black (#0A0A0A), rich gold (#C9A84C), warm champagne (#F5E6C8), pure white (#FFFFFF)
+- Typography: Google Fonts — "Cormorant Garant" (display/headings) + "Montserrat" (body). Both loaded via @import.
+- Mood: Like Tanishq meets Cartier — elegant, minimal, aspirational
+- Background: Every page uses dark luxury backgrounds with subtle gold shimmer/gradient overlays. NO plain white backgrounds anywhere.
+
+---
+
+## NAVBAR (fixed, transparent → gold-tint on scroll)
+Logo left: [Your Brand Name] in gold serif font
+Nav links right:
+- **Collection** (dropdown on hover):
+  - **Gold** (submenu):
+    - Gold Coin
+    - Necklace
+    - Haram
+    - Bangles
+    - Chain
+    - Studs
+    - Nosepin
+  - **Silver** (submenu):
+    - Silver Coin
+    - Chains
+    - Bangle
+    - Studs
+    - Rings
+- **Contact Us**
+
+Dropdown: dark background (#111) with gold hover underline. Smooth CSS transitions.
+
+---
+
+## PAGE 1 — HOME (index.html)
+
+Hero Section:
+- Full-viewport dark background with a gold gradient overlay
+- Use high-quality jewellery images from Unsplash (free):
+  - Hero: https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=1600 (gold necklace)
+  - Fallback hero bg: https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=1600
+- Headline: "Timeless Elegance. Crafted in Gold." — large serif font, gold color
+- Subheading: "Discover our exclusive collection of handcrafted jewellery"
+- CTA button: "Explore Collection" — outlined in gold, fills gold on hover
+
+Featured Section:
+- 3-column grid of jewellery category cards (Gold, Silver, Custom)
+- Each card: dark card bg, gold border, jewellery image from Unsplash, category name in gold serif
+- Gold images: https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=600
+- Silver images: https://images.unsplash.com/photo-1602751584552-8ba73aad10e1?w=600
+- Hover: card lifts with gold glow box-shadow
+
+---
+
+## PAGE 2 — COLLECTION (collection.html)
+
+Split into two sections:
+
+### GOLD COLLECTION
+- Section header with real gold texture background image:
+  https://images.unsplash.com/photo-1610375461246-83df859d849d?w=1200
+- Product grid (2–3 columns) with cards for:
+  Gold Coin, Necklace, Haram, Bangles, Chain, Studs, Nosepin
+- Each card: product name, a relevant Unsplash jewellery photo, "Enquire Now" button linking to WhatsApp
+
+### SILVER COLLECTION
+- Section header with silver/metallic background:
+  https://images.unsplash.com/photo-1573408301185-9519f94e7081?w=1200
+- Product grid for: Silver Coin, Chains, Bangle, Studs, Rings
+- Same card style as Gold
+
+Use these Unsplash jewellery images for product cards (pick relevant ones):
+- Necklace: https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400
+- Bangles: https://images.unsplash.com/photo-1611591437281-460bfbe1220a?w=400
+- Rings: https://images.unsplash.com/photo-1605100804763-247f67b3557e?w=400
+- Earrings/Studs: https://images.unsplash.com/photo-1596944924591-0d714f76c7ab?w=400
+- Chain: https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=400
+- Coin: https://images.unsplash.com/photo-1610375461246-83df859d849d?w=400
+
+---
+
+## PAGE 3 — ABOUT US (about.html)
+
+- Full dark background with a gold-lit jewellery atelier image:
+  https://images.unsplash.com/photo-1573408301185-9519f94e7081?w=1600
+- Overlay: semi-transparent black (rgba 0,0,0,0.7)
+- Large serif heading: "Our Story" in gold
+- 2-column layout: rich brand story text (left) + an elegant jewellery image (right)
+- Brand values section: 3 icons (gold color) — Purity, Craftsmanship, Legacy
+- Background feel: luxury hotel lobby / high-end boutique
+
+---
+
+## PAGE 4 — CONTACT US (contact.html)
+
+- Dark luxury background
+- Heading: "Connect With Us" in gold serif
+- WhatsApp section (PROMINENT):
+  - Large WhatsApp icon (green) 
+  - Text: "Join our WhatsApp group for daily updates on new arrivals & offers"
+  - Button: "Join WhatsApp Group" → links to: [WHATSAPP_GROUP_LINK] ← I will replace this placeholder
+  - Button style: green background, white text, rounded, with WhatsApp logo
+- Below: a simple contact info section (phone, email, address — use placeholder text)
+- Gold dividers between sections
+
+---
+
+## GLOBAL DESIGN RULES
+1. Every page: dark background (#0A0A0A or #0D0D0D), never white
+2. All headings: Cormorant Garant, gold (#C9A84C)
+3. Body text: Montserrat, light gray (#D4D4D4)
+4. Gold shimmer dividers between sections (CSS linear-gradient in gold)
+5. Smooth scroll behavior on all pages
+6. Navbar active state shows gold underline on current page
+7. Footer: dark, centered, gold brand name, "© 2025 All Rights Reserved"
+8. Mobile responsive — hamburger menu on mobile (pure CSS or minimal JS)
+9. No plain white cards or backgrounds anywhere
+10. All "Enquire Now" / product buttons link to WhatsApp: https://wa.me/[YOUR_NUMBER]
+
+---
+
+## WHATSAPP INTEGRATION
+- Every product card has an "Enquire on WhatsApp" button
+- Contact page has a "Join Group" button
+- Use placeholder [WHATSAPP_GROUP_LINK] that I will fill in later
+
+---
+
+Generate clean, well-commented HTML/CSS/JS. Organize as separate files:
+- index.html
+- collection.html  
+- about.html
+- contact.html
+- style.css (shared luxury styles)
+- script.js (navbar scroll, dropdown, mobile menu)
