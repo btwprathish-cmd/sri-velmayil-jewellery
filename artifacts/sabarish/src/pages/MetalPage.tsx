@@ -69,24 +69,43 @@ export default function MetalPage() {
         ]}
       />
 
-      <div className="text-center mb-16">
-        <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/10 px-3 py-1 rounded-full border border-[#D4AF37]/20 mb-4">
-          {isGold ? (
-            <span className="w-2 h-2 rounded-full bg-[#D4AF37]" />
-          ) : (
-            <span className="w-2 h-2 rounded-full bg-white/80" />
-          )}
-          <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">
-            {isGold ? "BIS 916 Hallmarked" : "Purity 99.9%"}
-          </span>
+      {/* Hero image — Gold only */}
+      {isGold && (
+        <div className="relative w-full rounded-2xl overflow-hidden mb-14 shadow-2xl border border-[#D4AF37]/25">
+          <img
+            src="/images/gold-collection-hero.jpeg"
+            alt="Gold Jewellery Collection — Sri Velmayil Jewellery Tirupur"
+            className="w-full object-cover object-center"
+            style={{ maxHeight: "520px" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/80 via-transparent to-transparent" />
+          <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
+            <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-1">BIS 916 Hallmarked</p>
+            <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
+              Gold Collections
+            </h1>
+            <p className="text-sm sm:text-base text-[#F3E5AB]/80 font-sans mt-1">
+              Timeless elegance — crafted in pure 22K gold.
+            </p>
+          </div>
         </div>
-        <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
-          {metalLabel} Collections
-        </h1>
-        <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/70 max-w-2xl mx-auto font-sans">
-          Choose a category to browse our {metalLabel.toLowerCase()} jewellery designs.
-        </p>
-      </div>
+      )}
+
+      {/* Heading for Silver (no hero image) */}
+      {!isGold && (
+        <div className="text-center mb-16">
+          <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/10 px-3 py-1 rounded-full border border-[#D4AF37]/20 mb-4">
+            <span className="w-2 h-2 rounded-full bg-white/80" />
+            <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">Purity 99.9%</span>
+          </div>
+          <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
+            Silver Collections
+          </h1>
+          <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/70 max-w-2xl mx-auto font-sans">
+            Choose a category to browse our silver jewellery designs.
+          </p>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {CATEGORIES.map(({ id, name, description, icon: Icon }) => (
