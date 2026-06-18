@@ -92,7 +92,7 @@ export default function HomePage() {
 
             {/* Silver Collections */}
             <Link
-              href="/silver-rate-today-tirupur"
+              href="/jewellery-collections/silver"
               className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 shadow-xl"
               style={{ minHeight: "320px" }}
             >

@@ -1,12 +1,39 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Package, TrendingUp, Image, LayoutDashboard, LogOut } from "lucide-react";
+import { Package, TrendingUp, Image, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import collectionsData from "@/data/collections.json";
+
+const METALS = ["Gold", "Silver"] as const;
+const CATEGORIES = ["Coin", "Ring", "Chain", "Earring", "Bracelet", "Anklet"] as const;
+
+type Metal = typeof METALS[number];
+type Category = typeof CATEGORIES[number];
+
+interface ProductFormState {
+  name: string;
+  metal: Metal;
+  category: Category;
+  weight_g: string;
+  making_charge_pct: string;
+  description: string;
+}
+
+const defaultForm: ProductFormState = {
+  name: "",
+  metal: "Gold",
+  category: "Ring",
+  weight_g: "",
+  making_charge_pct: "",
+  description: "",
+};
 
 export default function AdminDashboardPage() {
   const [, setLocation] = useLocation();
   const [session, setSession] = useState<{ authenticated: boolean; username: string | null } | null>(null);
+  const [showUploadForm, setShowUploadForm] = useState(false);
+  const [form, setForm] = useState<ProductFormState>(defaultForm);
+  const [formSuccess, setFormSuccess] = useState(false);
 
   useEffect(() => {
     getSession().then((s) => {
@@ -19,6 +46,26 @@ export default function AdminDashboardPage() {
     await logout();
     setLocation("/admin/login");
   };
+
+  function handleFormChange(field: keyof ProductFormState, value: string) {
+    setForm((prev) => ({ ...prev, [field]: value }));
+    setFormSuccess(false);
+  }
+
+  function handleFormSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    // TODO: Persist to backend when API is available
+    console.log("[Admin] New product submitted:", {
+      name: form.name,
+      metal: form.metal,
+      category: form.category,
+      weight_g: parseFloat(form.weight_g),
+      making_charge_pct: parseFloat(form.making_charge_pct),
+      description: form.description,
+    });
+    setFormSuccess(true);
+    setForm(defaultForm);
+  }
 
   if (!session) return <div className="min-h-screen bg-[#0c0418] flex items-center justify-center text-[#D4AF37]">Loading...</div>;
 
@@ -56,6 +103,144 @@ export default function AdminDashboardPage() {
               <p className="text-3xl font-bold text-white mt-1">{card.value}</p>
             </Link>
           ))}
+        </div>
+
+        {/* Product Upload Form */}
+        <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+          <button
+            onClick={() => setShowUploadForm(!showUploadForm)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <PlusCircle className="h-5 w-5 text-[#D4AF37]" />
+              <h2 className="font-serif text-lg font-bold text-[#D4AF37]">Add New Product</h2>
+            </div>
+            {showUploadForm ? (
+              <ChevronUp className="h-5 w-5 text-[#F3E5AB]/50" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-[#F3E5AB]/50" />
+            )}
+          </button>
+
+          {showUploadForm && (
+            <form onSubmit={handleFormSubmit} className="mt-6 space-y-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                    Metal Type <span className="text-[#D4AF37]">*</span>
+                  </label>
+                  <select
+                    value={form.metal}
+                    onChange={(e) => handleFormChange("metal", e.target.value)}
+                    required
+                    className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                  >
+                    {METALS.map((m) => (
+                      <option key={m} value={m}>{m}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                    Category <span className="text-[#D4AF37]">*</span>
+                  </label>
+                  <select
+                    value={form.category}
+                    onChange={(e) => handleFormChange("category", e.target.value)}
+                    required
+                    className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                  >
+                    {CATEGORIES.map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Product Name <span className="text-[#D4AF37]">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => handleFormChange("name", e.target.value)}
+                  required
+                  placeholder="e.g. Classic Gold Coin 1g"
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <div>
+                  <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                    Weight (Grams) <span className="text-[#D4AF37]">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.01"
+                    min="0.01"
+                    value={form.weight_g}
+                    onChange={(e) => handleFormChange("weight_g", e.target.value)}
+                    required
+                    placeholder="e.g. 4.5"
+                    className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                    Making Charge (%) <span className="text-[#D4AF37]">*</span>
+                  </label>
+                  <input
+                    type="number"
+                    step="0.1"
+                    min="0"
+                    max="50"
+                    value={form.making_charge_pct}
+                    onChange={(e) => handleFormChange("making_charge_pct", e.target.value)}
+                    required
+                    placeholder="e.g. 10"
+                    className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Description
+                </label>
+                <textarea
+                  rows={3}
+                  value={form.description}
+                  onChange={(e) => handleFormChange("description", e.target.value)}
+                  placeholder="Brief description of the product..."
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                />
+              </div>
+
+              {formSuccess && (
+                <p className="text-emerald-400 text-xs text-center font-semibold">
+                  Product details saved successfully.
+                </p>
+              )}
+
+              <div className="flex gap-3">
+                <button
+                  type="submit"
+                  className="flex-1 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
+                >
+                  Save Product
+                </button>
+                <button
+                  type="button"
+                  onClick={() => { setForm(defaultForm); setFormSuccess(false); setShowUploadForm(false); }}
+                  className="px-6 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          )}
         </div>
 
         <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6">

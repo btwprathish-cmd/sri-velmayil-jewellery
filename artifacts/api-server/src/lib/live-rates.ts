@@ -3,6 +3,8 @@ import path from "path";
 
 const TROY_OZ_GRAMS = 31.1034768;
 const GOLD_22K_PURITY = 0.916;
+// Tamil Nadu local market premium — adjust as needed without code changes
+const LOCAL_PREMIUM_PERCENT = 1.5;
 
 export interface LiveRateRecord {
   date: string;
@@ -83,9 +85,10 @@ function appendToHistory(record: LiveRateRecord): void {
 }
 
 function buildRecord(gold22k_1g: number, silver_1g: number, source: string): LiveRateRecord {
-  const gold22k = Math.round(gold22k_1g);
-  const silver = Math.round(silver_1g);
-  return {
+  const premium = 1 + LOCAL_PREMIUM_PERCENT / 100;
+  const gold22k = Math.round(gold22k_1g * premium);
+  const silver = Math.round(silver_1g * premium);
+  const record: LiveRateRecord = {
     date: getTodayDateString(),
     gold22k_1g: gold22k,
     gold22k_8g: gold22k * 8,
@@ -94,6 +97,17 @@ function buildRecord(gold22k_1g: number, silver_1g: number, source: string): Liv
     source,
     fetchedAt: new Date().toISOString(),
   };
+  if (process.env["NODE_ENV"] === "development") {
+    console.log("[Rates]", {
+      source,
+      gold22k: record.gold22k_1g,
+      gold24k: record.gold24k_1g,
+      silver: record.silver_1g,
+      fetchedAt: record.fetchedAt,
+      localPremium: LOCAL_PREMIUM_PERCENT,
+    });
+  }
+  return record;
 }
 
 async function fetchFromMetalpriceApi(): Promise<LiveRateRecord | null> {

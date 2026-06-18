@@ -12,7 +12,8 @@ import GoldRateHistoryPage from "@/pages/GoldRateHistoryPage";
 import GoldRateDatePage from "@/pages/GoldRateDatePage";
 import SilverRatePage from "@/pages/SilverRatePage";
 import CollectionsPage from "@/pages/CollectionsPage";
-import CategoryPage from "@/pages/CategoryPage";
+import MetalPage from "@/pages/MetalPage";
+import MetalCategoryPage from "@/pages/MetalCategoryPage";
 import BlogPage from "@/pages/BlogPage";
 import BlogPostPage from "@/pages/BlogPostPage";
 import AboutPage from "@/pages/AboutPage";
@@ -66,12 +67,18 @@ function Router() {
       <Route path="/silver-rate-today-tirupur">
         <Layout><SilverRatePage /></Layout>
       </Route>
+
+      {/* Collections hierarchy — most specific routes first */}
+      <Route path="/jewellery-collections/:metal/:category">
+        <Layout><MetalCategoryPage /></Layout>
+      </Route>
+      <Route path="/jewellery-collections/:metal">
+        <Layout><MetalPage /></Layout>
+      </Route>
       <Route path="/jewellery-collections">
         <Layout><CollectionsPage /></Layout>
       </Route>
-      <Route path="/jewellery-collections/:category">
-        <Layout><CategoryPage /></Layout>
-      </Route>
+
       <Route path="/blog">
         <Layout><BlogPage /></Layout>
       </Route>

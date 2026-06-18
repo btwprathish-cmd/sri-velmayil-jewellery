@@ -3,6 +3,8 @@
     "id": "gold-necklaces",
     "name": "Gold Necklaces",
     "slug": "gold-necklaces",
+    "metal": "Gold",
+    "category": "Chain",
     "description": "Exquisite gold necklaces crafted with precision. Perfect for weddings and special occasions in Tirupur.",
     "items": [
       {
@@ -35,6 +37,8 @@
     "id": "gold-bangles",
     "name": "Gold Bangles",
     "slug": "gold-bangles",
+    "metal": "Gold",
+    "category": "Bracelet",
     "description": "Handcrafted gold bangles ranging from daily wear to heavy bridal sets.",
     "items": [
       {
@@ -59,6 +63,8 @@
     "id": "gold-rings",
     "name": "Gold Rings",
     "slug": "gold-rings",
+    "metal": "Gold",
+    "category": "Ring",
     "description": "Stunning engagement, wedding, and daily wear gold rings.",
     "items": [
       {

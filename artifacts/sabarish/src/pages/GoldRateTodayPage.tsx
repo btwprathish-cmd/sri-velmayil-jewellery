@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link } from "wouter";
 import { ArrowUpRight, ArrowDownRight, ShieldCheck, History } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import RateCalculator from "@/components/RateCalculator";
 import { fetchLatestRate, fetchRateHistory, getDerivedRates, type LiveRateRecord } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
 
@@ -39,7 +38,7 @@ export default function GoldRateTodayPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch mb-16">
         <div className="lg:col-span-7 space-y-6">
           <div className="bg-[#1a0b2e]/60 border border-[#D4AF37]/25 rounded-2xl p-6 sm:p-8 shadow-2xl">
             <div className="flex justify-between items-center mb-6 border-b border-[#D4AF37]/10 pb-4">
@@ -130,13 +129,6 @@ export default function GoldRateTodayPage() {
         </div>
       </div>
 
-      <div className="bg-[#090313] border border-[#D4AF37]/10 rounded-2xl p-4 sm:p-8 max-w-4xl mx-auto shadow-inner">
-        <div className="text-center mb-8">
-          <h2 className="font-serif text-2xl sm:text-3xl font-bold text-[#F3E5AB]">Estimate Gold Ornament Price</h2>
-          <p className="text-xs text-[#F3E5AB]/60 font-sans mt-1">Select weight and making charges to see costs.</p>
-        </div>
-        <RateCalculator today22kRate={latestRate.gold22k_1g} />
-      </div>
     </div>
   );
 }
