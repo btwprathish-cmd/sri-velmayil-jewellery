@@ -7,36 +7,39 @@ interface Slide {
   alt: string;
   tagline: string;
   sub: string;
+  cta: string;
 }
 
 const slides: Slide[] = [
   {
     image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=1600",
     alt: "Gold necklace jewellery Sri Velmayil Tirupur",
-    tagline: "Crafting Purity & Timeless Elegance",
-    sub: "For generations, Sri Velmayil Jewellery has been the hallmark of trust in Tirupur.",
+    tagline: "Where Heritage Meets Hallmark",
+    sub: "For 25 years, Sri Velmayil Jewellery has adorned Tirupur's finest families with gold that speaks of purity, pride, and an unwavering promise.",
+    cta: "Explore Our Collections",
   },
   {
     image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=1600",
     alt: "Gold bangles bridal jewellery Tirupur",
-    tagline: "Handcrafted Bridal Collections",
-    sub: "Exquisite traditional Tamil Nadu designs for your most precious moments.",
+    tagline: "Bridal Dreams, Masterfully Crafted",
+    sub: "Every bride deserves jewellery that tells her story. Our artisans weave Tamil Nadu's royal legacy into each bridal creation — timeless, breathtaking, and entirely yours.",
+    cta: "Discover Bridal Collections",
   },
   {
     image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=1600",
     alt: "Gold rings wedding jewellery Tirupur",
-    tagline: "Investment-Grade Gold Jewellery",
-    sub: "100% BIS 916 Hallmarked — purity you can trust, prices that are transparent.",
+    tagline: "Pure Gold. Transparent Pricing.",
+    sub: "100% BIS 916 Hallmarked with HUID registration — because trust is the most precious metal we deal in. No hidden charges, ever.",
+    cta: "Check Today's Rates",
   },
   {
     image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&q=80&w=1600",
     alt: "Traditional gold jewellery collection Tirupur",
-    tagline: "A Legacy of Craftsmanship",
-    sub: "From daily-wear ornaments to heavy bridal sets — crafted by master artisans.",
+    tagline: "A Quarter Century of Luminous Legacy",
+    sub: "From your first ornament to a lifetime of treasured pieces — every creation carries the soul of a master craftsman and the seal of unwavering integrity.",
+    cta: "View All Collections",
   },
 ];
-
-// TODO: Replace with actual banner images from the store
 
 interface HeroSlideshowProps {
   formattedDate: string;
@@ -92,7 +95,7 @@ export default function HeroSlideshow({ formattedDate, gold22k, gold22k8g, silve
             <div className="lg:col-span-7 space-y-6">
               <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/10 px-3 py-1.5 rounded-full border border-[#D4AF37]/20">
                 <Award className="h-4 w-4 text-[#D4AF37]" />
-                <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">100% BIS 916 Hallmarked Jewellery</span>
+                <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">Trusted Since 1999 · BIS 916 Hallmarked</span>
               </div>
 
               <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white">
@@ -111,7 +114,7 @@ export default function HeroSlideshow({ formattedDate, gold22k, gold22k8g, silve
                   href="/jewellery-collections"
                   className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-bold rounded-lg text-[#1a0b2e] bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] hover:brightness-110 shadow-lg shadow-[#D4AF37]/10 transition-all duration-200"
                 >
-                  View Collections
+                  {slides[current].cta}
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
                 <Link

@@ -2,6 +2,8 @@ import React from "react";
 import { Link } from "wouter";
 import { Phone, MapPin, Clock, ArrowRight, ShieldCheck } from "lucide-react";
 
+const tagline = "Where every ornament carries a legacy and every gram holds a promise.";
+
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -13,8 +15,11 @@ export default function Footer() {
             <h3 className="font-serif text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
               Sri Velmayil Jewellery
             </h3>
-            <p className="text-sm text-[#F3E5AB]/60 font-sans">
-              Your trusted partner for 100% BIS Hallmarked 916 gold jewellery in Tirupur, Tamil Nadu. Building relationships through purity since generations.
+            <p className="text-sm text-[#F3E5AB]/60 font-sans italic leading-relaxed">
+              "{tagline}"
+            </p>
+            <p className="text-xs text-[#F3E5AB]/45 font-sans">
+              Tirupur's most trusted gold jeweller since 1999. 25 years of BIS 916 Hallmarked purity, master craftsmanship, and transparent pricing — serving generations of proud families.
             </p>
             <div className="pt-2 space-y-3 text-sm">
               <div className="flex items-start">
@@ -33,7 +38,7 @@ export default function Footer() {
               </div>
               <div className="flex items-center">
                 <Clock className="h-5 w-5 text-[#D4AF37] mr-3 flex-shrink-0" />
-                <span className="font-sans">Open Daily: 9:30 AM - 9:00 PM</span>
+                <span className="font-sans">Open Daily: 9:30 AM – 9:00 PM</span>
               </div>
             </div>
           </div>
@@ -64,7 +69,7 @@ export default function Footer() {
                 <ShieldCheck className="h-8 w-8 text-[#D4AF37] flex-shrink-0" />
                 <div className="text-xs">
                   <p className="font-semibold text-white uppercase">BIS 916 Hallmarked</p>
-                  <p className="text-[#F3E5AB]/60">Every ornament carries the Government approved HUID laser stamp.</p>
+                  <p className="text-[#F3E5AB]/60">Every ornament carries the Government-approved HUID laser stamp — legally verified, eternally trustworthy.</p>
                 </div>
               </div>
             </div>
@@ -95,9 +100,12 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-[#D4AF37]/15 pt-8 text-center text-xs text-[#F3E5AB]/40">
-          <p>© {currentYear} Sri Velmayil Jewellery. All rights reserved.</p>
-          <p className="mt-2">
+        <div className="border-t border-[#D4AF37]/15 pt-8 text-center">
+          <p className="font-serif text-base italic text-[#D4AF37]/70 mb-3">
+            "Crafted with devotion. Certified with honour. Worn with pride."
+          </p>
+          <p className="text-xs text-[#F3E5AB]/40">© {currentYear} Sri Velmayil Jewellery. All rights reserved.</p>
+          <p className="mt-2 text-xs text-[#F3E5AB]/40">
             89 New Market Street, Tirupur, Tamil Nadu. Phone:{" "}
             <a href="tel:+919443476183" className="hover:text-[#D4AF37]">+91 9443476183</a>
           </p>

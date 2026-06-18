@@ -51,14 +51,14 @@ export default function HomePage() {
           onViewHistory="/gold-rate-history"
         />
 
-        {/* COLLECTIONS — Gold & Silver */}
+        {/* FEATURED COLLECTIONS */}
         <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-3xl mx-auto mb-14 space-y-3">
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
-              Our Collections
+              Our Featured Collections
             </h2>
             <p className="text-sm sm:text-base text-[#F3E5AB]/70 font-sans">
-              Hand-crafted masterpieces reflecting Tamil Nadu's legacy.
+              Each piece is a testament to 25 years of master craftsmanship — inspired by Tamil Nadu's royal legacy, shaped by hands that have spent decades perfecting their art.
             </p>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
@@ -73,18 +73,18 @@ export default function HomePage() {
                 alt="Gold Collections at Sri Velmayil Jewellery Tirupur"
                 className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/90 via-[#0c0418]/40 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/92 via-[#0c0418]/45 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-8">
                 <div className="inline-flex items-center gap-2 mb-3">
                   <span className="w-3 h-3 rounded-full bg-[#D4AF37]" />
                   <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">BIS 916 Hallmarked</span>
                 </div>
-                <h3 className="font-serif text-3xl font-bold text-white mb-2">Gold Collections</h3>
-                <p className="text-sm text-[#F3E5AB]/75 font-sans mb-4 max-w-xs">
-                  Necklaces, bangles, rings & bridal sets — crafted for every occasion.
+                <h3 className="font-serif text-3xl font-bold text-white mb-2">Gold Jewellery</h3>
+                <p className="text-sm text-[#F3E5AB]/78 font-sans mb-4 max-w-xs leading-relaxed">
+                  From intricately crafted necklaces and statement bangles to elegant rings and resplendent bridal sets — each piece born from pure gold and the hands of a master.
                 </p>
                 <span className="inline-flex items-center text-sm font-bold text-[#D4AF37] group-hover:text-[#F3E5AB] transition-colors">
-                  Explore Gold
+                  Discover Gold Collections
                   <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </span>
               </div>
@@ -109,8 +109,8 @@ export default function HomePage() {
                   <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Purity 99.9%</span>
                 </div>
                 <h3 className="font-serif text-3xl font-bold text-white mb-2">Silver Collections</h3>
-                <p className="text-sm text-white/65 font-sans mb-4 max-w-xs">
-                  Fine silver ornaments, coins & articles at today's live silver rate.
+                <p className="text-sm text-white/68 font-sans mb-4 max-w-xs leading-relaxed">
+                  Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.
                 </p>
                 <div className="flex items-end gap-4">
                   <div>
@@ -120,7 +120,7 @@ export default function HomePage() {
                     </p>
                   </div>
                   <span className="inline-flex items-center text-sm font-bold text-white/80 group-hover:text-white transition-colors ml-auto">
-                    View Silver
+                    Explore Silver
                     <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                   </span>
                 </div>
@@ -132,11 +132,31 @@ export default function HomePage() {
         {/* TRUST SIGNALS */}
         <section className="py-20 bg-gradient-to-b from-[#0c0418] to-[#110522] border-t border-[#D4AF37]/10 text-[#F3E5AB]/90">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-14 space-y-3">
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
+                The Sri Velmayil Promise
+              </h2>
+              <p className="text-sm sm:text-base text-[#F3E5AB]/65 font-sans max-w-2xl mx-auto">
+                A quarter century of kept promises — the quiet confidence that only comes from never having cut a corner or compromised a customer's trust.
+              </p>
+            </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
               {[
-                { icon: ShieldCheck, title: "BIS 916 Hallmark", desc: "We guarantee 100% purity. Every gold item features the standard BIS triangle, purity rating, and HUID registry numbers." },
-                { icon: Gem, title: "Exquisite Craftsmanship", desc: "From traditional Tamil heritage bridal designs to light-weight modern jewellery, our master artisans craft each piece to perfection." },
-                { icon: Award, title: "Generations of Trust", desc: "Serving families in Tirupur with honesty and transparency. Our pricing lists separate gold value, making charges, and GST clearly." },
+                {
+                  icon: ShieldCheck,
+                  title: "BIS 916 Hallmark Guaranteed",
+                  desc: "Every ornament carries the government-mandated BIS triangle, 916 purity mark, and HUID laser stamp. Your gold's authenticity is not our claim — it is a legally registered, independently verifiable fact.",
+                },
+                {
+                  icon: Gem,
+                  title: "Generations of Artisan Mastery",
+                  desc: "From the commanding elegance of a temple-inspired necklace to the delicate intricacy of a custom ring, our master craftsmen pour 25 years of refined skill into every ornament that leaves our workshop.",
+                },
+                {
+                  icon: Award,
+                  title: "Transparent Pricing You Can Verify",
+                  desc: "We separate gold value, stone charges, making charges, and GST on every bill. Our live rate display ensures you always pay the fair market price — verifiable, honest, and never negotiable in the dark.",
+                },
               ].map(({ icon: Icon, title, desc }) => (
                 <div key={title} className="flex flex-col items-center space-y-4">
                   <div className="w-16 h-16 rounded-full bg-[#D4AF37]/10 border border-[#D4AF37]/30 flex items-center justify-center shadow-lg">
@@ -159,7 +179,7 @@ export default function HomePage() {
                   Visit Our Tirupur Showroom
                 </h2>
                 <p className="text-sm sm:text-base text-[#F3E5AB]/75 font-sans leading-relaxed">
-                  Experience the purity of our jewellery in person. Our friendly showroom consultants will guide you to find the perfect ornaments.
+                  Some jewellery must be seen, felt, and held to be truly understood. Our Tirupur showroom is an unhurried space where our consultants give you their complete, unrushed attention — because the right ornament deserves the right conversation.
                 </p>
                 <div className="space-y-4 font-sans text-sm sm:text-base">
                   {[
