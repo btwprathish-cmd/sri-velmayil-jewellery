@@ -91,19 +91,25 @@ export default function MetalPage() {
         </div>
       )}
 
-      {/* Heading for Silver (no hero image) */}
+      {/* Hero image — Silver */}
       {!isGold && (
-        <div className="text-center mb-16">
-          <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/10 px-3 py-1 rounded-full border border-[#D4AF37]/20 mb-4">
-            <span className="w-2 h-2 rounded-full bg-white/80" />
-            <span className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">Purity 99.9%</span>
+        <div className="relative w-full rounded-2xl overflow-hidden mb-14 shadow-2xl border border-white/15">
+          <img
+            src="/images/silver-collection-hero.jpeg"
+            alt="Silver Jewellery Collection — Sri Velmayil Jewellery Tirupur"
+            className="w-full object-cover object-center"
+            style={{ maxHeight: "520px" }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/80 via-transparent to-transparent" />
+          <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
+            <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Purity 99.9%</p>
+            <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
+              Silver Collections
+            </h1>
+            <p className="text-sm sm:text-base text-white/75 font-sans mt-1">
+              Pure. Stylish. Forever.
+            </p>
           </div>
-          <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
-            Silver Collections
-          </h1>
-          <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/70 max-w-2xl mx-auto font-sans">
-            Choose a category to browse our silver jewellery designs.
-          </p>
         </div>
       )}
 

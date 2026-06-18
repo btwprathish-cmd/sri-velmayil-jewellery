@@ -69,7 +69,7 @@ export default function HomePage() {
               style={{ minHeight: "320px" }}
             >
               <img
-                src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=800"
+                src="/images/GOLD.jpg"
                 alt="Gold Collections at Sri Velmayil Jewellery Tirupur"
                 className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
               />
@@ -96,13 +96,12 @@ export default function HomePage() {
               className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 shadow-xl"
               style={{ minHeight: "320px" }}
             >
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1a1a2e] via-[#2a2a4e] to-[#0f0f1e]" />
-              <div
-                className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-500"
-                style={{
-                  backgroundImage: "radial-gradient(circle at 30% 40%, rgba(192,192,215,0.5) 0%, transparent 60%), radial-gradient(circle at 70% 70%, rgba(160,160,200,0.3) 0%, transparent 50%)",
-                }}
+              <img
+                src="/images/SILVER.jpg"
+                alt="Silver Collections at Sri Velmayil Jewellery Tirupur"
+                className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
               />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/92 via-[#0c0418]/45 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-8">
                 <div className="inline-flex items-center gap-2 mb-3">
                   <span className="w-3 h-3 rounded-full bg-white/80" />
