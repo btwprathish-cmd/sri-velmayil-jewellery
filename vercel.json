@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "installCommand": "corepack enable pnpm && pnpm install --no-frozen-lockfile",
+  "installCommand": "npm install -g pnpm@10.26.1 && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/sabarish run build",
   "outputDirectory": "artifacts/sabarish/dist/public",
   "rewrites": [
