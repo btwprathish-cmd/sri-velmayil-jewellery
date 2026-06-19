@@ -1,11 +1,8 @@
 {
   "framework": null,
-  "installCommand": "pnpm install --no-frozen-lockfile",
+  "installCommand": "corepack enable pnpm && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/sabarish run build",
   "outputDirectory": "artifacts/sabarish/dist/public",
-  "env": {
-    "ENABLE_EXPERIMENTAL_COREPACK": "1"
-  },
   "rewrites": [
     { "source": "/api/rates/history", "destination": "/api/rates/history" },
     { "source": "/api/rates/latest",  "destination": "/api/rates/latest" },
