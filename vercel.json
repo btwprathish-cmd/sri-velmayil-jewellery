@@ -4,7 +4,6 @@
   "buildCommand": "pnpm --filter @workspace/sabarish run build",
   "outputDirectory": "artifacts/sabarish/dist/public",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
