@@ -60,15 +60,11 @@ export default function AboutPage() {
             <h2 className="font-serif text-3xl font-bold text-white">Our Heritage & Story</h2>
 
             <p className="text-[#F3E5AB]/78 text-sm sm:text-base leading-relaxed font-sans">
-              Sri Velmayil Jewellery was founded in 1999 with a single, unshakeable conviction: that every customer deserves pure gold, fairly priced, and beautifully crafted. Over the past 25 years, we have grown from a neighbourhood jeweller in Tirupur into one of Tamil Nadu's most respected gold destinations — not through grand promises, but through thousands of quiet moments of trust honoured across every transaction, every consultation, and every masterfully crafted ornament.
+              Founded in 1999 with one promise — pure gold, fairly priced, beautifully crafted. Twenty-five years on, Sri Velmayil Jewellery is one of Tamil Nadu's most trusted names, built not on advertising but on thousands of kept promises, one family at a time.
             </p>
 
             <p className="text-[#F3E5AB]/78 text-sm sm:text-base leading-relaxed font-sans">
-              Our master artisans are custodians of a craft refined over centuries. They breathe life into gold through traditional Tamil techniques — the delicate filigree of a Kodi Maalai, the commanding presence of a temple-inspired necklace, the quiet elegance of a modern kada. Whether you seek a heavy bridal ensemble that anchors a family moment, or a lightweight daily-wear piece that moves with your life, our craftsmen bring the same unyielding attention to detail to every creation.
-            </p>
-
-            <p className="text-[#F3E5AB]/78 text-sm sm:text-base leading-relaxed font-sans">
-              Trust, for us, is not a marketing slogan — it is the foundation of every relationship we build. Thousands of Tirupur families have entrusted us with their daughters' wedding jewellery, their first gold purchase, their anniversary gifts, and their investment decisions. We are proud to carry that responsibility with the gravity it deserves. When you walk into Sri Velmayil, you walk into 25 years of kept promises.
+              Our master artisans carry centuries of Tamil goldsmithing tradition into every piece — from the delicate filigree of a Kodi Maalai to the commanding weight of a bridal haram. The same care goes into every creation, whether it is your daughter's once-in-a-lifetime wedding set or a simple chain you wear every day.
             </p>
 
             <div className="space-y-3 pt-2">
@@ -140,7 +136,7 @@ export default function AboutPage() {
             The Quiet Confidence of a Promise Kept — 25 Years Running
           </h2>
           <p className="text-[#F3E5AB]/75 text-sm sm:text-base font-sans leading-relaxed max-w-3xl mx-auto">
-            At Sri Velmayil Jewellery, quality is not a department — it is a culture that permeates every decision we make. Every ornament leaves our showroom only after passing rigorous purity testing, hallmarking, and quality inspection. Our pricing is published openly, calculated transparently, and never negotiated in shadows. Generations of happy families — from first-time buyers purchasing a simple chain to matriarchs commissioning elaborate wedding sets — have found in us a jeweller who values their trust above all profit. When you invest in gold here, you invest in a relationship built on integrity, a craft refined over decades, and a guarantee that the ornament you hold today will be worth every rupee you paid — and more.
+            Every ornament leaves our showroom only after rigorous purity testing and hallmarking. Pricing is always itemised, never hidden. From first-time buyers to families commissioning bridal sets, generations of Tirupur customers have found in us a jeweller who puts trust before profit. When you buy gold here, you buy with confidence — and that confidence lasts a lifetime.
           </p>
         </div>
 
