@@ -1,6 +1,0 @@
-auto-install-peers=false
-strict-peer-dependencies=false
-registry=https://registry.npmjs.org/
-@jsr:registry=https://registry.npmjs.org/
-@jsr:always-auth=false
-//npm.jsr.io/:_authToken=
