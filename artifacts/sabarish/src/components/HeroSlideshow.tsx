@@ -69,8 +69,6 @@ export default function HeroSlideshow({
     return () => clearInterval(timer);
   }, [paused, next]);
 
-  const slide = slides[current];
-
   return (
     <section
       className="relative overflow-hidden"
@@ -97,23 +95,6 @@ export default function HeroSlideshow({
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/60 via-transparent to-transparent" />
         </div>
       ))}
-
-      {/* CTA button — positioned bottom-right or bottom-left matching each image */}
-      <div
-        className={`absolute z-20 bottom-16 sm:bottom-20 ${
-          slide.ctaAlign === "left"
-            ? "left-6 sm:left-12 lg:left-20"
-            : "right-6 sm:right-12 lg:right-20 xl:right-32"
-        } transition-all duration-500`}
-      >
-        <Link
-          href={slide.ctaHref}
-          className="inline-flex items-center gap-2 px-5 py-3 sm:px-7 sm:py-3.5 border-2 border-[#D4AF37] text-[#D4AF37] bg-[#0c0418]/40 hover:bg-[#D4AF37] hover:text-[#1a0b2e] font-bold text-xs sm:text-sm uppercase tracking-widest rounded-none transition-all duration-300 backdrop-blur-sm shadow-lg"
-        >
-          {slide.ctaLabel}
-          <ArrowRight className="h-4 w-4" />
-        </Link>
-      </div>
 
       {/* Rate card — bottom-left floating panel */}
       <div className="absolute z-20 bottom-4 left-4 sm:bottom-6 sm:left-6 hidden lg:block">
