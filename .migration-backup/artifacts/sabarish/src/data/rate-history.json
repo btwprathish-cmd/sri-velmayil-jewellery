@@ -1,0 +1,134 @@
+[
+  {
+    "date": "2026-06-19",
+    "gold22k_1g": 11657,
+    "gold22k_8g": 93256,
+    "silver_1g": 196,
+    "gold24k_1g": 12726,
+    "source": "gold-api.com + frankfurter.app",
+    "fetchedAt": "2026-06-19T05:38:00.273Z",
+    "trend_gold": -265,
+    "trend_silver": -7
+  },
+  {
+    "date": "2026-06-18",
+    "gold22k_1g": 11922,
+    "gold22k_8g": 95376,
+    "silver_1g": 203,
+    "gold24k_1g": 13015,
+    "source": "gold-api.com + frankfurter.app",
+    "fetchedAt": "2026-06-18T17:43:35.254Z",
+    "trend_gold": -156,
+    "trend_silver": -11
+  },
+  {
+    "date": "2026-06-17",
+    "gold22k_1g": 12078,
+    "gold22k_8g": 96624,
+    "silver_1g": 214,
+    "gold24k_1g": 13186,
+    "source": "gold-api.com + frankfurter.app",
+    "fetchedAt": "2026-06-17T13:36:32.252Z",
+    "trend_gold": -7,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-16",
+    "gold22k_1g": 12085,
+    "gold22k_8g": 96680,
+    "silver_1g": 214,
+    "gold24k_1g": 13193,
+    "source": "gold-api.com + frankfurter.app",
+    "fetchedAt": "2026-06-16T19:47:21.160Z",
+    "trend_gold": 27,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-15",
+    "gold22k_1g": 12058,
+    "gold22k_8g": 96464,
+    "silver_1g": 214,
+    "gold24k_1g": 13164,
+    "source": "gold-api.com + frankfurter.app",
+    "fetchedAt": "2026-06-15T18:12:29.108Z",
+    "trend_gold": -1802,
+    "trend_silver": -56
+  },
+  {
+    "date": "2026-06-14",
+    "gold22k_1g": 13860,
+    "gold22k_8g": 110880,
+    "silver_1g": 270,
+    "gold24k_1g": 15131,
+    "source": "migration",
+    "fetchedAt": "2026-06-14T00:00:00.000Z",
+    "trend_gold": 0,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-13",
+    "gold22k_1g": 13860,
+    "gold22k_8g": 110880,
+    "silver_1g": 270,
+    "gold24k_1g": 15131,
+    "source": "migration",
+    "fetchedAt": "2026-06-13T00:00:00.000Z",
+    "trend_gold": 60,
+    "trend_silver": 5
+  },
+  {
+    "date": "2026-06-12",
+    "gold22k_1g": 13800,
+    "gold22k_8g": 110400,
+    "silver_1g": 265,
+    "gold24k_1g": 15066,
+    "source": "migration",
+    "fetchedAt": "2026-06-12T00:00:00.000Z",
+    "trend_gold": 300,
+    "trend_silver": -5
+  },
+  {
+    "date": "2026-06-11",
+    "gold22k_1g": 13500,
+    "gold22k_8g": 108000,
+    "silver_1g": 270,
+    "gold24k_1g": 14738,
+    "source": "migration",
+    "fetchedAt": "2026-06-11T00:00:00.000Z",
+    "trend_gold": -70,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-10",
+    "gold22k_1g": 13570,
+    "gold22k_8g": 108560,
+    "silver_1g": 270,
+    "gold24k_1g": 14814,
+    "source": "migration",
+    "fetchedAt": "2026-06-10T00:00:00.000Z",
+    "trend_gold": -230,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-09",
+    "gold22k_1g": 13800,
+    "gold22k_8g": 110400,
+    "silver_1g": 270,
+    "gold24k_1g": 15066,
+    "source": "migration",
+    "fetchedAt": "2026-06-09T00:00:00.000Z",
+    "trend_gold": -270,
+    "trend_silver": 0
+  },
+  {
+    "date": "2026-06-08",
+    "gold22k_1g": 14070,
+    "gold22k_8g": 112560,
+    "silver_1g": 270,
+    "gold24k_1g": 15360,
+    "source": "migration",
+    "fetchedAt": "2026-06-08T00:00:00.000Z",
+    "trend_gold": -130,
+    "trend_silver": 0
+  }
+]
