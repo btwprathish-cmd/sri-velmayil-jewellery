@@ -1,1 +1,0 @@
-- [Sri Velmayil project setup](sri-velmayil-setup.md) — React + Vite + wouter (not Next.js); two artifacts: sabarish (frontend) and api-server (Express backend).
