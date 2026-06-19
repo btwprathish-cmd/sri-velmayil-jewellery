@@ -1,13 +1,13 @@
 [
   {
     "date": "2026-06-19",
-    "gold22k_1g": 11724,
-    "gold22k_8g": 93792,
+    "gold22k_1g": 11747,
+    "gold22k_8g": 93976,
     "silver_1g": 200,
-    "gold24k_1g": 12799,
+    "gold24k_1g": 12824,
     "source": "gold-api.com + frankfurter.app",
-    "fetchedAt": "2026-06-19T07:21:59.946Z",
-    "trend_gold": -198,
+    "fetchedAt": "2026-06-19T13:32:43.129Z",
+    "trend_gold": -175,
     "trend_silver": -3
   },
   {
