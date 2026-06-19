@@ -1,8 +1,11 @@
 {
   "framework": null,
-  "installCommand": "npm install -g pnpm && pnpm install",
+  "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/sabarish run build",
   "outputDirectory": "artifacts/sabarish/dist/public",
+  "env": {
+    "ENABLE_EXPERIMENTAL_COREPACK": "1"
+  },
   "rewrites": [
     { "source": "/api/rates/history", "destination": "/api/rates/history" },
     { "source": "/api/rates/latest",  "destination": "/api/rates/latest" },
@@ -13,7 +16,7 @@
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Origin",  "value": "*" },
         { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS" }
       ]
     },
