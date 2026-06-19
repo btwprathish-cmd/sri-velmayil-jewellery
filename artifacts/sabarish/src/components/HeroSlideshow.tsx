@@ -1,43 +1,43 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "wouter";
-import { ArrowRight, Award, ChevronLeft, ChevronRight } from "lucide-react";
+import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 
 interface Slide {
   image: string;
   alt: string;
-  tagline: string;
-  sub: string;
-  cta: string;
+  ctaLabel: string;
+  ctaHref: string;
+  ctaAlign: "left" | "right";
 }
 
 const slides: Slide[] = [
   {
-    image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=1600",
-    alt: "Gold necklace jewellery Sri Velmayil Tirupur",
-    tagline: "Where Heritage Meets Hallmark",
-    sub: "For 25 years, Sri Velmayil Jewellery has adorned Tirupur's finest families with gold that speaks of purity, pride, and an unwavering promise.",
-    cta: "Explore Our Collections",
+    image: "/images/slide-gold.png",
+    alt: "Gold Jewellery Collection — Sri Velmayil Tirupur",
+    ctaLabel: "Explore Gold Collection",
+    ctaHref: "/jewellery-collections/gold",
+    ctaAlign: "right",
   },
   {
-    image: "https://images.unsplash.com/photo-1611591437281-460bfbe1220a?auto=format&fit=crop&q=80&w=1600",
-    alt: "Gold bangles bridal jewellery Tirupur",
-    tagline: "Bridal Dreams, Masterfully Crafted",
-    sub: "Every bride deserves jewellery that tells her story. Our artisans weave Tamil Nadu's royal legacy into each bridal creation — timeless, breathtaking, and entirely yours.",
-    cta: "Discover Bridal Collections",
+    image: "/images/slide-silver.png",
+    alt: "Silver Jewellery Collection — Sri Velmayil Tirupur",
+    ctaLabel: "Explore Silver Collection",
+    ctaHref: "/jewellery-collections/silver",
+    ctaAlign: "right",
   },
   {
-    image: "https://images.unsplash.com/photo-1605100804763-247f67b3557e?auto=format&fit=crop&q=80&w=1600",
-    alt: "Gold rings wedding jewellery Tirupur",
-    tagline: "Pure Gold. Transparent Pricing.",
-    sub: "100% BIS 916 Hallmarked with HUID registration — because trust is the most precious metal we deal in. No hidden charges, ever.",
-    cta: "Check Today's Rates",
+    image: "/images/slide-generations.png",
+    alt: "Crafted For Generations — Sri Velmayil Tirupur",
+    ctaLabel: "Discover Our Collection",
+    ctaHref: "/jewellery-collections",
+    ctaAlign: "right",
   },
   {
-    image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&q=80&w=1600",
-    alt: "Traditional gold jewellery collection Tirupur",
-    tagline: "A Quarter Century of Luminous Legacy",
-    sub: "From your first ornament to a lifetime of treasured pieces — every creation carries the soul of a master craftsman and the seal of unwavering integrity.",
-    cta: "View All Collections",
+    image: "/images/slide-trust.png",
+    alt: "Heritage of Trust — Sri Velmayil Tirupur",
+    ctaLabel: "Explore Our Collection",
+    ctaHref: "/jewellery-collections",
+    ctaAlign: "left",
   },
 ];
 
@@ -50,7 +50,13 @@ interface HeroSlideshowProps {
   onViewHistory: string;
 }
 
-export default function HeroSlideshow({ formattedDate, gold22k, gold22k8g, silver, gold24k, onViewHistory }: HeroSlideshowProps) {
+export default function HeroSlideshow({
+  formattedDate,
+  gold22k,
+  gold22k8g,
+  silver,
+  onViewHistory,
+}: HeroSlideshowProps) {
   const [current, setCurrent] = useState(0);
   const [paused, setPaused] = useState(false);
 
@@ -59,150 +65,118 @@ export default function HeroSlideshow({ formattedDate, gold22k, gold22k8g, silve
 
   useEffect(() => {
     if (paused) return;
-    const timer = setInterval(next, 4500);
+    const timer = setInterval(next, 5000);
     return () => clearInterval(timer);
   }, [paused, next]);
+
+  const slide = slides[current];
 
   return (
     <section
       className="relative overflow-hidden"
+      style={{ minHeight: "580px" }}
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
     >
-      {/* Slides */}
-      <div className="relative w-full" style={{ minHeight: "600px" }}>
-        {slides.map((slide, i) => (
-          <div
+      {/* Full-bleed slides */}
+      {slides.map((s, i) => (
+        <div
+          key={i}
+          className="absolute inset-0 transition-opacity duration-1000"
+          style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
+          aria-hidden={i !== current}
+        >
+          <img
+            src={s.image}
+            alt={s.alt}
+            className="w-full h-full object-cover object-center"
+            style={{ minHeight: "580px" }}
+            loading={i === 0 ? "eager" : "lazy"}
+          />
+          {/* Subtle bottom gradient so rate card stays readable */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/60 via-transparent to-transparent" />
+        </div>
+      ))}
+
+      {/* CTA button — positioned bottom-right or bottom-left matching each image */}
+      <div
+        className={`absolute z-20 bottom-16 sm:bottom-20 ${
+          slide.ctaAlign === "left"
+            ? "left-6 sm:left-12 lg:left-20"
+            : "right-6 sm:right-12 lg:right-20 xl:right-32"
+        } transition-all duration-500`}
+      >
+        <Link
+          href={slide.ctaHref}
+          className="inline-flex items-center gap-2 px-5 py-3 sm:px-7 sm:py-3.5 border-2 border-[#D4AF37] text-[#D4AF37] bg-[#0c0418]/40 hover:bg-[#D4AF37] hover:text-[#1a0b2e] font-bold text-xs sm:text-sm uppercase tracking-widest rounded-none transition-all duration-300 backdrop-blur-sm shadow-lg"
+        >
+          {slide.ctaLabel}
+          <ArrowRight className="h-4 w-4" />
+        </Link>
+      </div>
+
+      {/* Rate card — bottom-left floating panel */}
+      <div className="absolute z-20 bottom-4 left-4 sm:bottom-6 sm:left-6 hidden lg:block">
+        <div className="bg-[#0c0418]/85 border border-[#D4AF37]/30 rounded-xl px-5 py-4 shadow-2xl backdrop-blur-sm max-w-xs">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest">
+              Tirupur Live Rates
+            </p>
+            <span className="text-[9px] bg-[#D4AF37] text-[#1a0b2e] font-bold px-2 py-0.5 rounded uppercase tracking-wide">
+              {formattedDate}
+            </span>
+          </div>
+          <div className="space-y-2">
+            {[
+              { label: "22K Gold (916)", value: `₹${gold22k.toLocaleString("en-IN")}/g` },
+              { label: "22K Sovereign (8g)", value: `₹${gold22k8g.toLocaleString("en-IN")}` },
+              { label: "Fine Silver 99.9%", value: `₹${silver.toLocaleString("en-IN")}/g` },
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between items-center gap-6">
+                <span className="text-[11px] text-[#F3E5AB]/70 font-sans">{label}</span>
+                <span className="text-[13px] font-bold text-[#D4AF37] font-mono whitespace-nowrap">{value}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 pt-3 border-t border-[#D4AF37]/15">
+            <Link
+              href={onViewHistory}
+              className="text-[10px] font-bold text-[#D4AF37]/80 hover:text-[#D4AF37] uppercase tracking-wider inline-flex items-center gap-1"
+            >
+              View Historical Chart <ArrowRight className="h-3 w-3" />
+            </Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Prev / Next arrows */}
+      <button
+        onClick={prev}
+        aria-label="Previous slide"
+        className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-[#0c0418]/60 border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all"
+      >
+        <ChevronLeft className="h-5 w-5" />
+      </button>
+      <button
+        onClick={next}
+        aria-label="Next slide"
+        className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-9 h-9 flex items-center justify-center rounded-full bg-[#0c0418]/60 border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all"
+      >
+        <ChevronRight className="h-5 w-5" />
+      </button>
+
+      {/* Dots */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+        {slides.map((_, i) => (
+          <button
             key={i}
-            className="absolute inset-0 transition-opacity duration-1000"
-            style={{ opacity: i === current ? 1 : 0, zIndex: i === current ? 1 : 0 }}
-            aria-hidden={i !== current}
-          >
-            <img
-              src={slide.image}
-              alt={slide.alt}
-              className="w-full h-full object-cover"
-              style={{ minHeight: "600px" }}
-              loading={i === 0 ? "eager" : "lazy"}
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0c0418]/90 via-[#0c0418]/60 to-[#0c0418]/20" />
-          </div>
+            onClick={() => setCurrent(i)}
+            aria-label={`Go to slide ${i + 1}`}
+            className={`rounded-full transition-all duration-300 ${
+              i === current ? "w-6 h-2 bg-[#D4AF37]" : "w-2 h-2 bg-[#D4AF37]/40 hover:bg-[#D4AF37]/70"
+            }`}
+          />
         ))}
-
-        {/* Content overlay */}
-        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 sm:py-28 lg:py-32">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-            <div className="lg:col-span-7 space-y-6">
-              <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/10 px-3 py-1.5 rounded-full border border-[#D4AF37]/20">
-                <Award className="h-4 w-4 text-[#D4AF37]" />
-                <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">Trusted Since 1999 · BIS 916 Hallmarked</span>
-              </div>
-
-              <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight leading-tight text-white">
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] via-[#F3E5AB] to-[#D4AF37]">
-                  {slides[current].tagline.split(" ").slice(0, 2).join(" ")}
-                </span>
-                {" "}{slides[current].tagline.split(" ").slice(2).join(" ")}
-              </h1>
-
-              <p className="text-[#F3E5AB]/80 text-base sm:text-lg max-w-xl leading-relaxed font-sans">
-                {slides[current].sub}
-              </p>
-
-              <div className="flex flex-col sm:flex-row gap-4 pt-2">
-                <Link
-                  href="/jewellery-collections"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-transparent text-base font-bold rounded-lg text-[#1a0b2e] bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] hover:brightness-110 shadow-lg shadow-[#D4AF37]/10 transition-all duration-200"
-                >
-                  {slides[current].cta}
-                  <ArrowRight className="ml-2 h-5 w-5" />
-                </Link>
-                <Link
-                  href="/gold-rate-today-tirupur"
-                  className="inline-flex items-center justify-center px-6 py-3 border border-[#D4AF37]/45 text-base font-bold rounded-lg text-[#D4AF37] bg-[#D4AF37]/5 hover:bg-[#D4AF37]/10 transition-all duration-200"
-                >
-                  Check Today's Rate
-                </Link>
-              </div>
-            </div>
-
-            {/* Rate card */}
-            <div className="lg:col-span-5">
-              <div className="bg-[#1a0b2e]/85 border border-[#D4AF37]/25 rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden backdrop-blur-sm">
-                <div className="absolute top-0 right-0 bg-[#D4AF37] text-[#1a0b2e] font-sans font-bold text-[10px] px-3 py-1 uppercase tracking-wider rounded-bl-lg">
-                  Live Rates
-                </div>
-                <h2 className="font-serif text-xl sm:text-2xl text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] font-bold mb-2">
-                  Tirupur Gold Rate Today
-                </h2>
-                <p className="text-xs text-[#F3E5AB]/65 mb-5 uppercase tracking-wider">
-                  Rates updated for {formattedDate}
-                </p>
-                <div className="space-y-3">
-                  {[
-                    { label: "22K Gold (916)", sub: "Ideal for ornaments", value: gold22k, unit: "Per 1 Gram" },
-                    { label: "22K Gold (Sovereign)", sub: "8 Gram Board Rate", value: gold22k8g, unit: "Per 8 Grams" },
-                    { label: "Fine Silver", sub: "Purity 99.9%", value: silver, unit: "Per 1 Gram" },
-                  ].map(({ label, sub, value, unit }) => (
-                    <div key={label} className="flex justify-between items-center bg-[#0c0418]/60 p-4 rounded-xl border border-[#D4AF37]/10">
-                      <div>
-                        <span className="font-sans font-bold text-base text-white">{label}</span>
-                        <p className="text-xs text-[#F3E5AB]/60">{sub}</p>
-                      </div>
-                      <div className="text-right">
-                        <span className="font-serif text-xl font-bold text-[#D4AF37] font-mono">
-                          ₹{value.toLocaleString("en-IN")}
-                        </span>
-                        <p className="text-[10px] text-[#F3E5AB]/50">{unit}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="mt-5 text-center">
-                  <Link
-                    href={onViewHistory}
-                    className="text-xs font-bold text-[#D4AF37] hover:text-[#F3E5AB] inline-flex items-center space-x-1 hover:underline uppercase tracking-wider"
-                  >
-                    <span>View Historical Rate Chart</span>
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </Link>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Prev / Next arrows */}
-        <button
-          onClick={prev}
-          aria-label="Previous slide"
-          className="absolute left-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-[#1a0b2e]/70 border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all duration-200"
-        >
-          <ChevronLeft className="h-5 w-5" />
-        </button>
-        <button
-          onClick={next}
-          aria-label="Next slide"
-          className="absolute right-3 top-1/2 -translate-y-1/2 z-20 w-10 h-10 flex items-center justify-center rounded-full bg-[#1a0b2e]/70 border border-[#D4AF37]/30 text-[#D4AF37] hover:bg-[#D4AF37]/20 transition-all duration-200"
-        >
-          <ChevronRight className="h-5 w-5" />
-        </button>
-
-        {/* Navigation dots */}
-        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
-          {slides.map((_, i) => (
-            <button
-              key={i}
-              onClick={() => setCurrent(i)}
-              aria-label={`Go to slide ${i + 1}`}
-              className={`rounded-full transition-all duration-300 ${
-                i === current
-                  ? "w-6 h-2.5 bg-[#D4AF37]"
-                  : "w-2.5 h-2.5 bg-[#D4AF37]/35 hover:bg-[#D4AF37]/60"
-              }`}
-            />
-          ))}
-        </div>
       </div>
     </section>
   );
