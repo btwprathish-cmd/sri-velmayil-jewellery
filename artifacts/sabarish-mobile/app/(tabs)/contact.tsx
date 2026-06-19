@@ -13,6 +13,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as Haptics from "expo-haptics";
 import { useColors } from "@/hooks/useColors";
 import { BRAND, getWhatsAppUrl } from "@/utils/brand";
+import { router } from "expo-router";
 
 function InfoRow({ icon, label, value, onPress }: {
   icon: React.ReactNode;
@@ -215,8 +216,39 @@ export default function ContactScreen() {
         </View>
       </View>
 
-      {/* FAQ */}
-      <Text style={[styles.sectionTitle, { color: colors.accent, fontFamily: "Inter_700Bold" }]}>FAQ</Text>
+      {/* More section */}
+      <Text style={[styles.sectionTitle, { color: colors.accent, fontFamily: "Inter_700Bold" }]}>MORE</Text>
+      <View style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}>
+        {[
+          { icon: "information-circle-outline" as const, label: "About Sri Velmayil", sub: "Our story, heritage & values", route: "/about" },
+          { icon: "help-circle-outline" as const, label: "FAQ", sub: "Common questions answered", route: "/faq" },
+          { icon: "newspaper-outline" as const, label: "Jewellery Insights", sub: "Expert gold & buying guides", route: "/blog" },
+        ].map(({ icon, label, sub, route }, idx) => (
+          <Pressable
+            key={route}
+            style={({ pressed }) => [
+              styles.moreRow,
+              { borderBottomColor: colors.border, borderBottomWidth: idx < 2 ? 1 : 0, opacity: pressed ? 0.7 : 1 }
+            ]}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              router.push(route as any);
+            }}
+          >
+            <View style={[styles.infoIcon, { backgroundColor: colors.gold + "18" }]}>
+              <Ionicons name={icon} size={18} color={colors.gold} />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.infoValue, { color: colors.foreground, fontFamily: "Inter_500Medium" }]}>{label}</Text>
+              <Text style={[styles.infoLabel, { color: colors.mutedForeground, fontFamily: "Inter_400Regular" }]}>{sub}</Text>
+            </View>
+            <Ionicons name="chevron-forward" size={16} color={colors.mutedForeground} />
+          </Pressable>
+        ))}
+      </View>
+
+      {/* Quick FAQ */}
+      <Text style={[styles.sectionTitle, { color: colors.accent, fontFamily: "Inter_700Bold" }]}>QUICK ANSWERS</Text>
       <View style={[styles.faqCard, { backgroundColor: colors.card, borderColor: colors.border }]}>
         {FAQS.map((faq) => (
           <FaqItem key={faq.q} q={faq.q} a={faq.a} />
@@ -282,4 +314,11 @@ const styles = StyleSheet.create({
   faqHeader: { flexDirection: "row", alignItems: "center", gap: 10 },
   faqQ: { fontSize: 14, lineHeight: 20 },
   faqA: { fontSize: 13, lineHeight: 20, marginTop: 8 },
+  moreRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    padding: 12,
+    paddingHorizontal: 14,
+    gap: 12,
+  },
 });

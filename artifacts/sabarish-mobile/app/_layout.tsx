@@ -23,6 +23,10 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerBackTitle: "Back" }}>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack.Screen name="about" options={{ title: "About Us", headerStyle: { backgroundColor: "#0c0418" }, headerTintColor: "#D4AF37", headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#fbf6e8" } }} />
+      <Stack.Screen name="faq" options={{ title: "FAQ", headerStyle: { backgroundColor: "#0c0418" }, headerTintColor: "#D4AF37", headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#fbf6e8" } }} />
+      <Stack.Screen name="blog" options={{ title: "Insights", headerStyle: { backgroundColor: "#0c0418" }, headerTintColor: "#D4AF37", headerTitleStyle: { fontFamily: "Inter_600SemiBold", color: "#fbf6e8" } }} />
+      <Stack.Screen name="blog/[slug]" options={{ title: "", headerStyle: { backgroundColor: "#0c0418" }, headerTintColor: "#D4AF37" }} />
       <Stack.Screen name="+not-found" />
     </Stack>
   );
