@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": false,
-      "bundleIdentifier": "com.replit.sabarishmobile"
+      "bundleIdentifier": "com.srivelmayil.mobile"
     },
     "android": {},
     "web": {
@@ -25,7 +25,7 @@
       [
         "expo-router",
         {
-          "origin": "https://replit.com/"
+          "origin": false
         }
       ],
       "expo-font",
