@@ -1,9 +1,9 @@
 import fs from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
 
 const TROY_OZ_GRAMS = 31.1034768;
 const GOLD_22K_PURITY = 0.916;
-// Tamil Nadu local market premium — adjust as needed without code changes
 const LOCAL_PREMIUM_PERCENT = 1.5;
 
 export interface LiveRateRecord {
@@ -19,16 +19,35 @@ export interface LiveRateRecord {
 }
 
 function getHistoryFilePath(): string {
-  const workspace = process.env["REPL_HOME"] || "/home/runner/workspace";
-  const candidates = [
-    path.join(workspace, "artifacts/sabarish/src/data/rate-history.json"),
-    path.join(workspace, ".migration-backup/data/rate-history.json"),
-    path.join(workspace, "data/rate-history.json"),
-  ];
-  for (const p of candidates) {
-    if (fs.existsSync(p)) return p;
+  const candidates: string[] = [];
+
+  // 1. Replit: use REPL_HOME env var
+  const replHome = process.env["REPL_HOME"];
+  if (replHome) {
+    candidates.push(path.join(replHome, "artifacts/sabarish/src/data/rate-history.json"));
   }
-  return candidates[0];
+
+  // 2. Relative to this module file (works in most bundled environments)
+  try {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
+    candidates.push(path.resolve(__dirname, "../../../sabarish/src/data/rate-history.json"));
+  } catch {
+    // import.meta.url may not be available in all environments
+  }
+
+  // 3. Relative to process.cwd() — works on Vercel (/var/task) and local
+  candidates.push(path.resolve(process.cwd(), "artifacts/sabarish/src/data/rate-history.json"));
+
+  for (const p of candidates) {
+    try {
+      if (fs.existsSync(p)) return p;
+    } catch {
+      // skip
+    }
+  }
+
+  return candidates[candidates.length - 1] ?? "rate-history.json";
 }
 
 function getTodayDateString(): string {
@@ -53,7 +72,7 @@ function writeHistory(records: LiveRateRecord[]): void {
     fs.mkdirSync(path.dirname(p), { recursive: true });
     fs.writeFileSync(p, JSON.stringify(records, null, 2));
   } catch {
-    // Filesystem may be read-only in some environments — skip
+    // Filesystem may be read-only in serverless environments — skip silently
   }
 }
 
@@ -183,7 +202,6 @@ async function fetchLiveRatesUncached(): Promise<LiveRateRecord> {
   return buildRecord(13860, 270, "fallback-default");
 }
 
-// ── In-memory cache (30 min TTL) ─────────────────────────────────────────────
 let cachedRate: LiveRateRecord | null = null;
 let cacheExpiry = 0;
 const CACHE_TTL_MS = 30 * 60 * 1000;
@@ -209,7 +227,6 @@ export function getRateByDate(date: string): LiveRateRecord | null {
   return readHistory().find((r) => r.date === date) ?? null;
 }
 
-/** Called once at server startup — fetch today's rate and schedule daily refresh */
 export function scheduleDailyRateFetch(logger: { info: (...a: unknown[]) => void; error: (...a: unknown[]) => void }): void {
   getLiveRates()
     .then((r) => logger.info({ source: r.source, gold22k: r.gold22k_1g, date: r.date }, "Live rates fetched on startup"))
