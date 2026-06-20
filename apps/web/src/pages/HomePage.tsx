@@ -111,7 +111,7 @@ export default function HomePage() {
                 <p className="text-sm text-white/68 font-sans mb-4 max-w-xs leading-relaxed">
                   Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.
                 </p>
-                 <span className="inline-flex items-center text-sm font-bold text-[#D4AF37] group-hover:text-[#F3E5AB] transition-colors">
+                 <span className="inline-flex items-center text-sm font-bold text-white/70 group-hover:text-white/70 transition-colors">
                   Discover Silver Collections
                   <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </span>
