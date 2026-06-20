@@ -4,6 +4,12 @@ settings:
   autoInstallPeers: false
   excludeLinksFromLockfile: false
 
+catalogs:
+  default:
+    '@types/node':
+      specifier: ^25.6.2
+      version: 25.6.2
+
 overrides:
   esbuild>@esbuild/darwin-arm64: '-'
   esbuild>@esbuild/darwin-x64: '-'
@@ -91,6 +97,9 @@ importers:
 
   .:
     devDependencies:
+      '@types/node':
+        specifier: 'catalog:'
+        version: 25.6.2
       '@vercel/node':
         specifier: ^5.8.17
         version: 5.8.17(rollup@4.60.3)
