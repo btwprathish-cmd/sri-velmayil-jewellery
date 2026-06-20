@@ -1,12 +1,13 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "module": "CommonJS",
-    "moduleResolution": "node",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
     "esModuleInterop": true,
-    "outDir": ".vercel/output/functions/api",
-    "rootDir": ".",
-    "strict": true
+    "outDir": "../.vercel/output/functions/api",
+    "rootDir": "..",
+    "strict": true,
+    "types": ["node"]
   },
   "include": ["./**/*.ts"]
 }
