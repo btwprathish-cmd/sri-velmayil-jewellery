@@ -75,11 +75,18 @@ export default function HeroSlideshow(_props: HeroSlideshowProps) {
 
   return (
     <section
-      className="relative overflow-hidden"
-      style={{ minHeight: "580px" }}
+      className="relative overflow-hidden w-full bg-black"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => { setPaused(false); setHoveredBtn(false); }}
     >
+      {/* Invisible sizer to give the absolute container a fluid height matching the images */}
+      <img
+        src={slides[0].image}
+        className="w-full h-auto invisible pointer-events-none"
+        alt=""
+        aria-hidden="true"
+      />
+
       {/* Slides */}
       {slides.map((s, i) => (
         <div
@@ -92,7 +99,6 @@ export default function HeroSlideshow(_props: HeroSlideshowProps) {
             src={s.image}
             alt={s.alt}
             className="w-full h-full object-cover object-center"
-            style={{ minHeight: "580px" }}
             loading={i === 0 ? "eager" : "lazy"}
           />
         </div>
