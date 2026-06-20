@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Package, TrendingUp, Image, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, TrendingUp, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import collectionsData from "@/data/collections.json";
-import blogPostsData from "@/data/blog-posts.json";
 import { fetchLatestRate } from "@/utils/rates";
 
 const METALS = ["Gold", "Silver"] as const;
@@ -78,10 +77,9 @@ export default function AdminDashboardPage() {
   const totalProducts = (collectionsData as Array<{ items: unknown[] }>).reduce((sum, cat) => sum + cat.items.length, 0);
 
   const cards = [
-    { title: "Collections", value: collectionsData.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
+    { title: "Collections", value: 2, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
     { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
     { title: "Live 22K Rate", value: latestRateStr, icon: TrendingUp, href: "/gold-rate-today-tirupur", color: "text-[#D4AF37]" },
-    { title: "Blog Posts", value: blogPostsData.length, icon: Image, href: "/blog", color: "text-purple-400" },
   ];
 
   return (
@@ -249,20 +247,7 @@ export default function AdminDashboardPage() {
           )}
         </div>
 
-        <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6">
-          <h2 className="font-serif text-lg font-bold text-[#D4AF37] mb-4">Quick Actions</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <Link href="/gold-rate-today-tirupur" className="py-3 px-4 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg text-sm font-bold text-[#F3E5AB] hover:border-[#D4AF37]/50 transition-colors text-center">
-              View Live Rates
-            </Link>
-            <Link href="/jewellery-collections" className="py-3 px-4 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg text-sm font-bold text-[#F3E5AB] hover:border-[#D4AF37]/50 transition-colors text-center">
-              View Products
-            </Link>
-            <Link href="/blog" className="py-3 px-4 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg text-sm font-bold text-[#F3E5AB] hover:border-[#D4AF37]/50 transition-colors text-center">
-              View Blog
-            </Link>
-          </div>
-        </div>
+
       </div>
     </div>
   );

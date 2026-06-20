@@ -50,7 +50,6 @@ export default function Footer() {
                 { href: "/gold-rate-today-tirupur", label: "Today's Gold Rate" },
                 { href: "/gold-rate-history", label: "Gold Rate History" },
                 { href: "/jewellery-collections", label: "Jewellery Collections" },
-                { href: "/blog", label: "Jewellery Blog" },
                 { href: "/faq", label: "Frequently Asked Questions" },
               ].map(({ href, label }) => (
                 <li key={href}>

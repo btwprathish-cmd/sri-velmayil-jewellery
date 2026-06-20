@@ -14,8 +14,7 @@ import SilverRatePage from "@/pages/SilverRatePage";
 import CollectionsPage from "@/pages/CollectionsPage";
 import MetalPage from "@/pages/MetalPage";
 import MetalCategoryPage from "@/pages/MetalCategoryPage";
-import BlogPage from "@/pages/BlogPage";
-import BlogPostPage from "@/pages/BlogPostPage";
+
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
 import FaqPage from "@/pages/FaqPage";
@@ -79,12 +78,7 @@ function Router() {
         <Layout><CollectionsPage /></Layout>
       </Route>
 
-      <Route path="/blog">
-        <Layout><BlogPage /></Layout>
-      </Route>
-      <Route path="/blog/:slug">
-        <Layout><BlogPostPage /></Layout>
-      </Route>
+
       <Route path="/about-us">
         <Layout><AboutPage /></Layout>
       </Route>
