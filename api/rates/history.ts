@@ -1,10 +1,6 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 interface LiveRateRecord {
   date: string;
@@ -24,10 +20,6 @@ function readHistory(): LiveRateRecord[] {
       process.cwd(),
       "artifacts/sabarish/src/data/rate-history.json"
     ),
-    path.resolve(
-      __dirname,
-      "../../artifacts/sabarish/src/data/rate-history.json"
-    ),
   ];
 
   for (const p of candidates) {
@@ -45,7 +37,7 @@ function readHistory(): LiveRateRecord[] {
         }
       }
     } catch {
-      // skip invalid file
+      // Skip invalid file
     }
   }
 
@@ -68,9 +60,9 @@ export default function handler(
       b.date.localeCompare(a.date)
     );
 
-    res.status(200).json(sorted);
+    return res.status(200).json(sorted);
   } catch {
-    res.status(500).json({
+    return res.status(500).json({
       error: "Failed to fetch rate history",
     });
   }
