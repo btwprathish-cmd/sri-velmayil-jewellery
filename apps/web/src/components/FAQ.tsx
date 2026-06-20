@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "wouter";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 const faqs = [
   {
@@ -45,12 +46,27 @@ export default function FAQ({ showCTA = true }: FAQProps) {
       </div>
 
       <div className="space-y-4">
-        {faqs.map((faq, index) => (
-          <div key={index} className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-xl p-5 sm:p-6 hover:border-[#D4AF37]/30 transition-all duration-200">
-            <h3 className="font-serif text-base sm:text-lg font-bold text-[#F3E5AB] mb-2">{faq.question}</h3>
-            <p className="text-sm text-[#F3E5AB]/75 leading-relaxed font-sans">{faq.answer}</p>
-          </div>
-        ))}
+        <Accordion
+          type="single"
+          collapsible
+          className="w-full space-y-4">
+          {faqs.map((faq, index) => (
+            <div
+              className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-xl hover:border-[#D4AF37]/30 transition-all duration-200"
+              key={index}>
+              <AccordionItem
+                value={`item-${index}`}
+                className="border-none px-5 py-1 md:px-6">
+                <AccordionTrigger className="cursor-pointer font-serif text-base sm:text-lg font-bold text-[#F3E5AB] hover:no-underline text-left">
+                  {faq.question}
+                </AccordionTrigger>
+                <AccordionContent>
+                  <p className="text-sm text-[#F3E5AB]/75 leading-relaxed font-sans pb-4 pt-0">{faq.answer}</p>
+                </AccordionContent>
+              </AccordionItem>
+            </div>
+          ))}
+        </Accordion>
       </div>
 
       {showCTA && (
@@ -68,3 +84,4 @@ export default function FAQ({ showCTA = true }: FAQProps) {
     </div>
   );
 }
+
