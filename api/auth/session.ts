@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import { verifySessionToken, SESSION_COOKIE } from "../../apps/api/src/lib/auth";
+import { verifySessionToken, SESSION_COOKIE } from "./_auth.js";
 
 export default function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === "OPTIONS") {

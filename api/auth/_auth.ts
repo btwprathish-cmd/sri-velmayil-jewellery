@@ -4,7 +4,7 @@ const SESSION_SECRET = (process.env["ADMIN_SESSION_SECRET"] || "").trim();
 const ADMIN_USERNAME = (process.env["ADMIN_USERNAME"] || "").trim();
 const ADMIN_PASSWORD = (process.env["ADMIN_PASSWORD"] || "").trim();
 
-const SESSION_COOKIE = "admin_session";
+export const SESSION_COOKIE = "admin_session";
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 
 export function isAdminConfigured(): boolean {
@@ -55,5 +55,3 @@ export function validateCredentials(username: string, password: string): boolean
   const passOk = crypto.timingSafeEqual(passBuf, adminPassBuf);
   return userOk && passOk;
 }
-
-export { SESSION_COOKIE };
