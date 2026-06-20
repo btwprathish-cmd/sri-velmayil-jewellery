@@ -7,7 +7,15 @@
     "outDir": "../.vercel/output/functions/api",
     "rootDir": "..",
     "strict": true,
-    "types": ["node"]
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ]
   },
-  "include": ["./**/*.ts"]
+  "include": [
+    "./**/*.ts"
+  ]
 }
