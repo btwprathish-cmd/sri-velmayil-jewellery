@@ -3,6 +3,8 @@ import { Link, useLocation } from "wouter";
 import { Package, TrendingUp, Image, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import collectionsData from "@/data/collections.json";
+import blogPostsData from "@/data/blog-posts.json";
+import { fetchLatestRate } from "@/utils/rates";
 
 const METALS = ["Gold", "Silver"] as const;
 const CATEGORIES = ["Coin", "Ring", "Chain", "Earring", "Bracelet", "Anklet"] as const;
@@ -34,13 +36,17 @@ export default function AdminDashboardPage() {
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [form, setForm] = useState<ProductFormState>(defaultForm);
   const [formSuccess, setFormSuccess] = useState(false);
+  const [latestRateStr, setLatestRateStr] = useState<string>("Loading...");
 
   useEffect(() => {
     getSession().then((s) => {
       setSession(s);
       if (!s.authenticated) setLocation("/admin/login");
     });
-  }, []);
+    fetchLatestRate()
+      .then((rate) => setLatestRateStr(`₹${rate.gold22k_1g.toLocaleString("en-IN")}/g`))
+      .catch(() => setLatestRateStr("Unavailable"));
+  }, [setLocation]);
 
   const handleLogout = async () => {
     await logout();
@@ -74,8 +80,8 @@ export default function AdminDashboardPage() {
   const cards = [
     { title: "Collections", value: collectionsData.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
     { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
-    { title: "Live Rates", value: "Live", icon: TrendingUp, href: "/gold-rate-today-tirupur", color: "text-[#D4AF37]" },
-    { title: "Blog Posts", value: "5", icon: Image, href: "/blog", color: "text-purple-400" },
+    { title: "Live 22K Rate", value: latestRateStr, icon: TrendingUp, href: "/gold-rate-today-tirupur", color: "text-[#D4AF37]" },
+    { title: "Blog Posts", value: blogPostsData.length, icon: Image, href: "/blog", color: "text-purple-400" },
   ];
 
   return (
