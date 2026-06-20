@@ -111,18 +111,10 @@ export default function HomePage() {
                 <p className="text-sm text-white/68 font-sans mb-4 max-w-xs leading-relaxed">
                   Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.
                 </p>
-                <div className="flex items-end gap-4">
-                  <div>
-                    <p className="text-xs text-white/50 font-sans">Today's Silver Rate</p>
-                    <p className="font-serif text-2xl font-bold text-white">
-                      ₹{displayRate.silver_1g.toLocaleString("en-IN")}<span className="text-sm font-sans font-normal text-white/60">/g</span>
-                    </p>
-                  </div>
-                  <span className="inline-flex items-center text-sm font-bold text-white/80 group-hover:text-white transition-colors ml-auto">
-                    Explore Silver
-                    <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                  </span>
-                </div>
+                 <span className="inline-flex items-center text-sm font-bold text-[#D4AF37] group-hover:text-[#F3E5AB] transition-colors">
+                  Discover Silver Collections
+                  <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </span>
               </div>
             </Link>
           </div>
