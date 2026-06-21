@@ -730,8 +730,19 @@ export default function AdminDashboardPage() {
               {categoriesList.map((cat) => (
                 <div key={cat.name} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-[#0c0418] border border-[#D4AF37]/10 rounded-xl gap-4">
                   <div>
-                    <h3 className="font-bold text-white text-lg">{cat.name}</h3>
-                    <p className="text-xs text-[#F3E5AB]/60 mt-1 line-clamp-1">{cat.description || "No description"}</p>
+                    <div className="flex items-center gap-3">
+                      <h3 className="font-bold text-white text-lg">{cat.name}</h3>
+                      {cat.metals && cat.metals.length > 0 && (
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          {cat.metals.map((m: string) => (
+                            <span key={m} className="px-2 py-0.5 rounded text-[10px] font-bold bg-[#D4AF37]/10 text-[#D4AF37] border border-[#D4AF37]/20 uppercase tracking-wider">
+                              {m}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                    <p className="text-xs text-[#F3E5AB]/60 mt-1.5 line-clamp-1">{cat.description || "No description"}</p>
                   </div>
                   <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
                     <button 
