@@ -117,8 +117,7 @@ export default async function handler(
 );
 
   try {
-    const live = await fetchFromGoldApi();
-
+    const live = await fetchFromDrHint();
     if (live) {
       res.json(live);
       return;
