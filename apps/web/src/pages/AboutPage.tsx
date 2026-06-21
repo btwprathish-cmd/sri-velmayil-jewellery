@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "wouter";
 import { Award, ShieldCheck, Heart, Users, CheckCircle, ArrowRight, Gem, Clock, Star, Sparkles, Scale, Headphones } from "lucide-react";
 
@@ -37,6 +38,36 @@ const whyChooseUs = [
 
 export default function AboutPage() {
   return (
+  <>
+    <Helmet>
+      <title>About Sri Velmayil Jewellery | 25 Years of Trusted Jewellery</title>
+
+      <meta
+        name="description"
+        content="Sri Velmayil Jewellery has been serving customers for over 25 years with trusted gold, silver and diamond jewellery collections in Tirupur."
+      />
+
+      <meta
+        name="keywords"
+        content="Sri Velmayil Jewellery, About Sri Velmayil Jewellery, Gold Jewellery Tirupur, Jewellery Shop Tirupur, 916 Hallmark Gold"
+      />
+
+      <meta
+        property="og:title"
+        content="About Sri Velmayil Jewellery | 25 Years of Trusted Jewellery"
+      />
+
+      <meta
+        property="og:description"
+        content="Trusted gold, silver and diamond jewellery collections with 25 years of excellence."
+      />
+
+      <meta
+        property="og:url"
+        content="https://srivelmayiljewellery.store/about-us"
+      />
+    </Helmet>
+    
     <div className="py-16 sm:py-24 relative overflow-hidden">
 
       {/* Hero */}
@@ -163,5 +194,6 @@ export default function AboutPage() {
         </div>
       </div>
     </div>
+  </>
   );
 }
