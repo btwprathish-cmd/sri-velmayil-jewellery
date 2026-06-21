@@ -19,9 +19,29 @@ export function getDerivedRates(rate: LiveRateRecord) {
 }
 
 export async function fetchLatestRate(): Promise<LiveRateRecord> {
-  const res = await fetch("/api/rates/latest");
-  if (!res.ok) throw new Error("Failed to fetch rates");
-  return res.json();
+  const response = await fetch(
+    "https://drhint.com/api/public/hooks/gold-rates"
+  );
+
+  if (!response.ok) {
+    throw new Error("Failed to fetch rates");
+  }
+
+  const data = await response.json();
+
+  const gold22k = Math.round((data.perGram24kInr * 22) / 24);
+
+  return {
+    date: new Date().toISOString().split("T")[0],
+    gold22k_1g: gold22k,
+    gold22k_8g: gold22k * 8,
+    silver_1g: 270, // adjust if you want live silver later
+    gold24k_1g: data.perGram24kInr,
+    source: "drhint",
+    fetchedAt: new Date().toISOString(),
+    trend_gold: null,
+    trend_silver: null,
+  };
 }
 
 export async function fetchRateHistory(): Promise<LiveRateRecord[]> {
