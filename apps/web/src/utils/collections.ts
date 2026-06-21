@@ -10,6 +10,7 @@ export type MetalData = {
 export type CategoryData = {
   name: string;
   description?: string;
+  metals?: string[];
 };
 
 export type CollectionItem = {
@@ -40,12 +41,12 @@ const DEFAULT_METALS: MetalData[] = [
   { name: "Silver", purityLabel: "Purity 99.9%", description: "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.", imageUrl: "/images/SILVER.jpg" }
 ];
 const DEFAULT_CATEGORIES: CategoryData[] = [
-  { name: "Coin", description: "Pure gold and silver coins in various weights — ideal for gifting and investment." },
-  { name: "Ring", description: "Engagement, wedding, and daily-wear rings in traditional and modern styles." },
-  { name: "Chain", description: "Necklaces and chains — from delicate daily wear to heavy bridal harems." },
-  { name: "Earring", description: "Studs, drops, jhumkas, and chandbalis crafted in 22K hallmarked gold." },
-  { name: "Bracelet", description: "Bangles and bracelets ranging from lightweight daily pieces to grand bridal sets." },
-  { name: "Anklet", description: "Traditional and contemporary anklets in pure gold and silver." }
+  { name: "Coin", description: "Pure gold and silver coins in various weights — ideal for gifting and investment.", metals: ["Gold", "Silver"] },
+  { name: "Ring", description: "Engagement, wedding, and daily-wear rings in traditional and modern styles.", metals: ["Gold", "Silver"] },
+  { name: "Chain", description: "Necklaces and chains — from delicate daily wear to heavy bridal harems.", metals: ["Gold", "Silver"] },
+  { name: "Earring", description: "Studs, drops, jhumkas, and chandbalis crafted in 22K hallmarked gold.", metals: ["Gold", "Silver"] },
+  { name: "Bracelet", description: "Bangles and bracelets ranging from lightweight daily pieces to grand bridal sets.", metals: ["Gold", "Silver"] },
+  { name: "Anklet", description: "Traditional and contemporary anklets in pure gold and silver.", metals: ["Gold", "Silver"] }
 ];
 
 export function getMetals(): MetalData[] {

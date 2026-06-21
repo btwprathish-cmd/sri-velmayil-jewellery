@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2, Edit2, Trash2 } from "lucide-react";
+import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2, Edit2, Trash2, Layers } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import { uploadImage } from "@/utils/upload-image";
 import { getCollections, saveCollectionItem, getMetals, getCategories, addMetal, addCategory, deleteMetal, updateMetal, deleteCategory, updateCategory, deleteProduct, updateProduct, type CollectionBlock, type MetalData, type CategoryData, type CollectionItem } from "@/utils/collections";
-import { MenubarGroup } from "@/components/ui/menubar";
 
 interface ProductFormState {
   name: string;
@@ -45,7 +44,7 @@ export default function AdminDashboardPage() {
   const [newMetalImagePreview, setNewMetalImagePreview] = useState<string | null>(null);
   const [isSubmittingMetal, setIsSubmittingMetal] = useState(false);
 
-  const [newCategory, setNewCategory] = useState<CategoryData>({ name: "", description: "" });
+  const [newCategory, setNewCategory] = useState<CategoryData>({ name: "", description: "", metals: [] });
   const [collectionSuccess, setCollectionSuccess] = useState(false);
   const [categorySuccess, setCategorySuccess] = useState(false);
   
@@ -110,7 +109,7 @@ export default function AdminDashboardPage() {
     }
     setCategoriesList(getCategories());
     setCollections(getCollections());
-    setNewCategory({ name: "", description: "" });
+    setNewCategory({ name: "", description: "", metals: [] });
     setCategorySuccess(true);
   };
 
@@ -216,7 +215,7 @@ export default function AdminDashboardPage() {
   const cards = [
     { title: "Add New", value: "", icon: PlusCircle, view: "dashboard", color: "text-[#D4AF37]" },
     { title: "Collections", value: uniqueCollections, icon: LayoutDashboard, view: "collections", color: "text-sky-400" },
-    { title: "Categories", value: uniqueCategories, icon: MenubarGroup, view: "categories", color: "text-purple-400" },
+    { title: "Categories", value: uniqueCategories, icon: Layers, view: "categories", color: "text-purple-400" },
     { title: "Products", value: totalProducts, icon: Package, view: "products", color: "text-emerald-400" },
   ];
 
@@ -429,6 +428,31 @@ export default function AdminDashboardPage() {
                   className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm resize-y"
                 />
               </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Assign to Collections
+                </label>
+                <div className="flex flex-wrap gap-3">
+                  {metalsList.map((metal) => (
+                    <label key={metal.name} className="flex items-center gap-2 cursor-pointer bg-[#0c0418] border border-[#D4AF37]/20 px-3 py-2 rounded-lg hover:border-purple-400 transition-colors">
+                      <input 
+                        type="checkbox" 
+                        checked={newCategory.metals?.includes(metal.name) || false}
+                        onChange={(e) => {
+                          const currentMetals = newCategory.metals || [];
+                          const newMetals = e.target.checked 
+                            ? [...currentMetals, metal.name]
+                            : currentMetals.filter(m => m !== metal.name);
+                          setNewCategory({ ...newCategory, metals: newMetals });
+                          setCategorySuccess(false);
+                        }}
+                        className="rounded border-[#D4AF37]/30 text-purple-500 focus:ring-purple-500 bg-[#0c0418]"
+                      />
+                      <span className="text-sm text-white">{metal.name}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
               {categorySuccess && (
                 <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg text-sm">
                   Category saved successfully!
@@ -437,7 +461,7 @@ export default function AdminDashboardPage() {
               <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-[#D4AF37]/10">
                 <button
                   type="button"
-                  onClick={() => { setNewCategory({ name: "", description: "" }); setCategorySuccess(false); setShowAddCategory(false); setEditingCategory(null); }}
+                  onClick={() => { setNewCategory({ name: "", description: "", metals: [] }); setCategorySuccess(false); setShowAddCategory(false); setEditingCategory(null); }}
                   className="px-8 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors order-2 sm:order-1"
                 >
                   Cancel
@@ -713,7 +737,7 @@ export default function AdminDashboardPage() {
                     <button 
                       onClick={() => {
                         setEditingCategory(cat.name);
-                        setNewCategory({ name: cat.name, description: cat.description || "" });
+                        setNewCategory({ name: cat.name, description: cat.description || "", metals: cat.metals || [] });
                         setShowAddCategory(true);
                         setActiveView("dashboard");
                       }}
