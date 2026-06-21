@@ -94,12 +94,14 @@ async function fetchFromCurrencyApi(): Promise<LiveRateRecord | null> {
 
     // Apply standard Indian import duties (approx 15% overall difference to retail)
     // before the local premium is applied in buildRecord
-    const INDIAN_IMPORT_DUTY_MULTIPLIER = 1.15; 
+    const GOLD_INDIAN_MULTIPLIER = 1.15; 
+    // Silver in Tamil Nadu carries a significantly higher local retail premium + import duty + GST
+    const SILVER_INDIAN_MULTIPLIER = 1.28; 
 
-    const gold24kBase = goldSpotPerGram * INDIAN_IMPORT_DUTY_MULTIPLIER;
+    const gold24kBase = goldSpotPerGram * GOLD_INDIAN_MULTIPLIER;
     const gold22kBase = gold24kBase * GOLD_22K_PURITY;
     
-    const silverBase = silverSpotPerGram * INDIAN_IMPORT_DUTY_MULTIPLIER;
+    const silverBase = silverSpotPerGram * SILVER_INDIAN_MULTIPLIER;
 
     const record = buildRecord(
       gold22kBase,
