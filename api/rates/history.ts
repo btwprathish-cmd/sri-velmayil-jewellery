@@ -50,9 +50,9 @@ export default function handler(
 ) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
-    "Cache-Control",
-    "s-maxage=3600, stale-while-revalidate=7200"
-  );
+  "Cache-Control",
+  "no-store, no-cache, must-revalidate"
+);
 
   try {
     const history = readHistory();
