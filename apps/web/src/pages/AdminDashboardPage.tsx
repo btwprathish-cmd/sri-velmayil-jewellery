@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import { uploadImage } from "@/utils/upload-image";
-import collectionsData from "@/data/collections.json";
+import { getCollections, saveCollectionItem, type CollectionBlock } from "@/utils/collections";
 
 const METALS = ["Gold", "Silver"] as const;
 const CATEGORIES = ["Coin", "Ring", "Chain", "Earring", "Bracelet", "Anklet"] as const;
@@ -37,6 +37,7 @@ export default function AdminDashboardPage() {
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [collections, setCollections] = useState<CollectionBlock[]>([]);
   
   // Image Upload State
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -48,6 +49,7 @@ export default function AdminDashboardPage() {
       setSession(s);
       if (!s.authenticated) setLocation("/admin/login");
     });
+    setCollections(getCollections());
   }, [setLocation]);
 
   const handleLogout = async () => {
@@ -105,7 +107,11 @@ export default function AdminDashboardPage() {
     try {
       let imageUrl = "";
       if (imageFile) {
-        imageUrl = await uploadImage(imageFile);
+        try {
+          imageUrl = await uploadImage(imageFile);
+        } catch (uploadErr: any) {
+          throw new Error("Image upload failed: Please check your Cloudinary configuration (.env).");
+        }
       }
 
       const payload = {
@@ -118,16 +124,11 @@ export default function AdminDashboardPage() {
         imageUrl,
       };
 
-      const response = await fetch("/api/admin/products", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to save product");
-      }
+      // Use frontend persistence to bypass Vercel's read-only file system
+      saveCollectionItem(payload);
+      
+      // Refresh dashboard counts
+      setCollections(getCollections());
 
       setFormSuccess(true);
       setForm(defaultForm);
@@ -142,10 +143,10 @@ export default function AdminDashboardPage() {
 
   if (!session) return <div className="min-h-screen bg-[#0c0418] flex items-center justify-center text-[#D4AF37]">Loading...</div>;
 
-  const totalProducts = (collectionsData as Array<{ items: unknown[] }>).reduce((sum, cat) => sum + cat.items.length, 0);
+  const totalProducts = collections.reduce((sum, cat) => sum + cat.items.length, 0);
 
   const cards = [
-    { title: "Collections", value: collectionsData.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
+    { title: "Collections", value: collections.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
     { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
   ];
 

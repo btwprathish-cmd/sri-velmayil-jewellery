@@ -3,7 +3,7 @@ import { Link, useRoute } from "wouter";
 import { Award, HelpCircle } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import EnquiryButtons from "@/components/EnquiryButtons";
-import collectionsData from "@/data/collections.json";
+import { getCollections, type CollectionItem } from "@/utils/collections";
 import { fetchLatestRate, type LiveRateRecord } from "@/utils/rates";
 
 const FALLBACK_RATE: LiveRateRecord = {
@@ -26,36 +26,25 @@ const productImages: Record<string, string> = {
   "gents-signet-ring": "https://images.unsplash.com/photo-1603561591411-07134e71a2a9?auto=format&fit=crop&q=80&w=500",
 };
 
-type CollectionItem = {
-  id: string;
-  name: string;
-  weight_g: number;
-  making_charge_pct: number;
-  description: string;
-  image: string;
-};
-
 export default function MetalCategoryPage() {
   const [, params] = useRoute("/jewellery-collections/:metal/:category");
   const metal = params?.metal ?? "";
   const category = params?.category ?? "";
   const [latestRate, setLatestRate] = useState<LiveRateRecord>(FALLBACK_RATE);
+  const [collections, setCollections] = useState(() => getCollections());
 
   useEffect(() => {
     fetchLatestRate()
       .then(setLatestRate)
       .catch(() => {});
+    // Force hydration of local storage collections on mount
+    setCollections(getCollections());
   }, []);
 
   const metalLabel = metal.charAt(0).toUpperCase() + metal.slice(1).toLowerCase();
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 
-  const matchingCollections = (collectionsData as Array<{
-    id: string;
-    metal: string;
-    category: string;
-    items: CollectionItem[];
-  }>).filter(
+  const matchingCollections = collections.filter(
     (c) =>
       c.metal.toLowerCase() === metal.toLowerCase() &&
       c.category.toLowerCase() === category.toLowerCase()

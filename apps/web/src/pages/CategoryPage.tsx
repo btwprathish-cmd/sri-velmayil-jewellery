@@ -3,7 +3,7 @@ import { Link, useRoute } from "wouter";
 import { Award, HelpCircle } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import EnquiryButtons from "@/components/EnquiryButtons";
-import collectionsData from "@/data/collections.json";
+import { getCollections } from "@/utils/collections";
 import { fetchLatestRate, type LiveRateRecord } from "@/utils/rates";
 
 const FALLBACK_RATE: LiveRateRecord = {
@@ -25,10 +25,15 @@ const productImages: Record<string, string> = {
 export default function CategoryPage() {
   const [, params] = useRoute("/jewellery-collections/:category");
   const slug = params?.category ?? "";
-  const category = collectionsData.find((c) => c.slug === slug);
+  
+  const [collections, setCollections] = useState(() => getCollections());
+  const category = collections.find((c) => c.slug === slug);
   const [latestRate, setLatestRate] = useState<LiveRateRecord>(FALLBACK_RATE);
 
-  useEffect(() => { fetchLatestRate().then(setLatestRate).catch(() => {}); }, []);
+  useEffect(() => { 
+    fetchLatestRate().then(setLatestRate).catch(() => {}); 
+    setCollections(getCollections());
+  }, []);
 
   if (!category) {
     return (
