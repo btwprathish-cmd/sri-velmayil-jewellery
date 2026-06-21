@@ -64,9 +64,11 @@ export default function CategoryPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         {category.items.map((item) => {
-          const goldValue = item.weight_g * goldRate22k;
-          const makingCharges = goldValue * (item.making_charge_pct / 100);
-          const taxable = goldValue + makingCharges;
+          const isSilver = category.metal.toLowerCase() === "silver";
+          const baseRate = isSilver ? latestRate.silver_1g : latestRate.gold22k_1g;
+          const metalValue = item.weight_g * baseRate;
+          const makingCharges = metalValue * (item.making_charge_pct / 100);
+          const taxable = metalValue + makingCharges;
           const gst = taxable * 0.03;
           const totalPrice = Math.round(taxable + gst);
 
@@ -91,19 +93,19 @@ export default function CategoryPage() {
                   <p className="text-xs text-[#F3E5AB]/65 font-sans leading-relaxed">{item.description}</p>
                 </div>
 
-                <div className="pt-4 border-t border-[#D4AF37]/10 space-y-2">
+                <div className="pt-3 border-t border-[#D4AF37]/10 space-y-3">
                   <div className="flex justify-between items-baseline">
                     <span className="text-[10px] text-[#F3E5AB]/50 font-bold uppercase tracking-wider">Live Price Est.</span>
-                    <span className="text-2xl font-bold text-[#D4AF37] font-mono">₹{totalPrice.toLocaleString("en-IN")}</span>
+                    <span className="text-xl font-bold text-[#D4AF37] font-mono">₹{totalPrice.toLocaleString("en-IN")}</span>
                   </div>
-                  <div className="bg-[#0c0418]/60 p-2.5 rounded-lg border border-[#D4AF37]/10 text-[10px] text-[#F3E5AB]/60 font-sans space-y-1">
-                    <div className="flex justify-between"><span>Gold Value:</span><span>₹{Math.round(goldValue).toLocaleString("en-IN")}</span></div>
-                    <div className="flex justify-between"><span>Making Charges ({item.making_charge_pct}%):</span><span>₹{Math.round(makingCharges).toLocaleString("en-IN")}</span></div>
+                  <div className="bg-[#0c0418]/60 p-3 rounded-lg border border-[#D4AF37]/10 text-[11px] text-[#F3E5AB]/60 font-sans space-y-1.5">
+                    <div className="flex justify-between"><span>{isSilver ? "Silver" : "Gold"} Value:</span><span>₹{Math.round(metalValue).toLocaleString("en-IN")}</span></div>
+                    <div className="flex justify-between"><span>Making ({item.making_charge_pct}%):</span><span>₹{Math.round(makingCharges).toLocaleString("en-IN")}</span></div>
                     <div className="flex justify-between"><span>GST (3%):</span><span>₹{Math.round(gst).toLocaleString("en-IN")}</span></div>
                   </div>
-                  <p className="text-[9px] text-[#F3E5AB]/40 italic flex items-center leading-relaxed">
-                    <HelpCircle className="h-3 w-3 text-[#D4AF37]/65 mr-1 flex-shrink-0" />
-                    Calculated on today's board rate of ₹{goldRate22k.toLocaleString("en-IN")}/g.
+                  <p className="text-[10px] text-[#F3E5AB]/40 italic flex items-center leading-relaxed">
+                    <HelpCircle className="h-3.5 w-3.5 text-[#D4AF37]/65 mr-1.5 flex-shrink-0" />
+                    Based on ₹{baseRate.toLocaleString("en-IN")}/g board rate.
                   </p>
                 </div>
                 <EnquiryButtons productName={item.name} />

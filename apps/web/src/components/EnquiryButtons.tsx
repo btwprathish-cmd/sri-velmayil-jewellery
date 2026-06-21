@@ -9,7 +9,7 @@ interface EnquiryButtonsProps {
 
 export default function EnquiryButtons({ productName, className = "" }: EnquiryButtonsProps) {
   return (
-    <div className={`grid grid-cols-1 sm:grid-cols-2 gap-2 ${className}`}>
+    <div className={`flex flex-col gap-3 pt-2 ${className}`}>
       <a
         href={getWhatsAppUrl(getEnquiryMessage(productName, "enquire"))}
         target="_blank"
