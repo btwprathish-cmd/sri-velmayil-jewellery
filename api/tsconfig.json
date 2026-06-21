@@ -5,7 +5,7 @@
     "moduleResolution": "NodeNext",
     "esModuleInterop": true,
     "outDir": "../.vercel/output/functions/api",
-    "rootDir": "..",
+    "rootDir": ".",
     "strict": true,
     "types": [
       "node"
