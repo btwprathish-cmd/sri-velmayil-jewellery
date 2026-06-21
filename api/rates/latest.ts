@@ -2,7 +2,7 @@ import type { VercelRequest, VercelResponse } from "@vercel/node";
 import fs from "node:fs";
 import path from "node:path";
 
-const TROY_OZ_GRAMS = 31.1034768;
+
 const GOLD_22K_PURITY = 0.916;
 const LOCAL_PREMIUM_PERCENT = 1.5;
 
@@ -112,12 +112,13 @@ export default async function handler(
 ): Promise<void> {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
-  "Cache-Control",
-  "no-store, no-cache, must-revalidate"
-);
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate"
+  );
 
   try {
     const live = await fetchFromDrHint();
+
     if (live) {
       res.json(live);
       return;
@@ -140,11 +141,9 @@ export default async function handler(
         "fallback-default"
       )
     );
-    return;
   } catch {
     res.status(500).json({
       error: "Failed to fetch latest rate",
     });
-    return;
   }
 }
