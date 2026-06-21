@@ -17,11 +17,28 @@ export default function GoldRateTodayPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    Promise.all([fetchLatestRate(), fetchRateHistory()])
-      .then(([rate, history]) => { setLatestRate(rate); setRateHistory(history); })
-      .catch(() => {})
-      .finally(() => setLoading(false));
-  }, []);
+  async function loadRates() {
+    try {
+      const [rate, history] = await Promise.all([
+        fetchLatestRate(),
+        fetchRateHistory()
+      ]);
+
+      setLatestRate(rate);
+      setRateHistory(history);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  loadRates();
+
+  const interval = setInterval(loadRates, 60000);
+
+  return () => clearInterval(interval);
+}, []);
 
   const formattedDate = formatIndianDate(latestRate.date);
   const derived = getDerivedRates(latestRate);
