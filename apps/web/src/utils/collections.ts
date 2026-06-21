@@ -81,7 +81,15 @@ export function getCategories(): CategoryData[] {
     const stored = localStorage.getItem(CATEGORIES_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      return parsed.map((item: any) => typeof item === 'string' ? { name: item } : item);
+      return parsed.map((item: any) => {
+        const catData = typeof item === 'string' ? { name: item } : item;
+        const defaultMatch = DEFAULT_CATEGORIES.find(c => c.name.toLowerCase() === catData.name.toLowerCase());
+        const merged = defaultMatch ? { ...defaultMatch, ...catData } : catData;
+        if (!merged.metals) {
+          merged.metals = ["Gold", "Silver"];
+        }
+        return merged;
+      });
     }
   } catch (e) {}
   return [...DEFAULT_CATEGORIES];
