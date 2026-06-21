@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2 } from "lucide-react";
+import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2, Edit2, Trash2 } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import { uploadImage } from "@/utils/upload-image";
-import { getCollections, saveCollectionItem, getMetals, getCategories, addMetal, addCategory, type CollectionBlock, type MetalData, type CategoryData } from "@/utils/collections";
+import { getCollections, saveCollectionItem, getMetals, getCategories, addMetal, addCategory, deleteMetal, updateMetal, deleteCategory, updateCategory, deleteProduct, updateProduct, type CollectionBlock, type MetalData, type CategoryData, type CollectionItem } from "@/utils/collections";
 
 interface ProductFormState {
   name: string;
@@ -46,6 +46,13 @@ export default function AdminDashboardPage() {
 
   const [newCategory, setNewCategory] = useState<CategoryData>({ name: "", description: "" });
   
+  type ViewState = "dashboard" | "collections" | "categories" | "products";
+  const [activeView, setActiveView] = useState<ViewState>("dashboard");
+
+  const [editingMetal, setEditingMetal] = useState<string | null>(null);
+  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  const [editingProduct, setEditingProduct] = useState<string | null>(null);
+  
   // Image Upload State
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -66,12 +73,18 @@ export default function AdminDashboardPage() {
     if (!newMetal.name.trim()) return;
     setIsSubmittingMetal(true);
     try {
-      let imageUrl = "";
+      let imageUrl = newMetalImagePreview && !newMetalImage ? newMetalImagePreview : "";
       if (newMetalImage) {
         imageUrl = await uploadImage(newMetalImage);
       }
-      addMetal({ ...newMetal, imageUrl });
+      if (editingMetal) {
+        updateMetal(editingMetal, { ...newMetal, imageUrl });
+        setEditingMetal(null);
+      } else {
+        addMetal({ ...newMetal, imageUrl });
+      }
       setMetalsList(getMetals());
+      setCollections(getCollections());
       setNewMetal({ name: "", purityLabel: "", description: "" });
       setNewMetalImage(null);
       setNewMetalImagePreview(null);
@@ -86,8 +99,14 @@ export default function AdminDashboardPage() {
   const handleAddCategorySubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.name.trim()) return;
-    addCategory(newCategory);
+    if (editingCategory) {
+      updateCategory(editingCategory, newCategory);
+      setEditingCategory(null);
+    } else {
+      addCategory(newCategory);
+    }
     setCategoriesList(getCategories());
+    setCollections(getCollections());
     setNewCategory({ name: "", description: "" });
     setShowAddCategory(false);
   };
@@ -145,7 +164,7 @@ export default function AdminDashboardPage() {
     setIsSubmitting(true);
 
     try {
-      let imageUrl = "";
+      let imageUrl = imagePreview && !imageFile ? imagePreview : "";
       if (imageFile) {
         try {
           imageUrl = await uploadImage(imageFile);
@@ -164,8 +183,12 @@ export default function AdminDashboardPage() {
         imageUrl,
       };
 
-      // Use frontend persistence to bypass Vercel's read-only file system
-      saveCollectionItem(payload);
+      if (editingProduct) {
+        updateProduct(editingProduct, payload);
+        setEditingProduct(null);
+      } else {
+        saveCollectionItem(payload);
+      }
       
       // Refresh dashboard counts
       setCollections(getCollections());
@@ -188,9 +211,9 @@ export default function AdminDashboardPage() {
   const uniqueCategories = new Set(collections.map((c) => c.category.toLowerCase())).size;
 
   const cards = [
-    { title: "Collections", value: uniqueCollections, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
-    { title: "Categories", value: uniqueCategories, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-purple-400" },
-    { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
+    { title: "Collections", value: uniqueCollections, icon: LayoutDashboard, view: "collections", color: "text-sky-400" },
+    { title: "Categories", value: uniqueCategories, icon: LayoutDashboard, view: "categories", color: "text-purple-400" },
+    { title: "Products", value: totalProducts, icon: Package, view: "products", color: "text-emerald-400" },
   ];
 
   const isFormValid = !imageError;
@@ -212,27 +235,29 @@ export default function AdminDashboardPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 max-w-3xl mx-auto gap-6 mb-12 items-stretch">
           {cards.map((card) => (
-            <Link key={card.title} href={card.href}
-              className="bg-[#1a0b2e]/60 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between h-full shadow-lg"
+            <button key={card.title} onClick={() => setActiveView(card.view as ViewState)}
+              className={`bg-[#1a0b2e]/60 border ${activeView === card.view ? 'border-[#D4AF37]' : 'border-[#D4AF37]/15'} rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between h-full shadow-lg text-left`}
             >
               <card.icon className={`h-8 w-8 ${card.color} mb-3`} />
               <div>
                 <p className="text-xs text-[#F3E5AB]/60 uppercase tracking-wider">{card.title}</p>
                 <p className="text-3xl font-bold text-white mt-1">{card.value}</p>
               </div>
-            </Link>
+            </button>
           ))}
         </div>
 
-        {/* Add Collection Form */}
-        <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+        {activeView === "dashboard" && (
+          <>
+            {/* Add Collection Form */}
+            <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
           <button
             onClick={() => setShowAddCollection(!showAddCollection)}
             className="w-full flex items-center justify-between"
           >
             <div className="flex items-center gap-3">
               <PlusCircle className="h-5 w-5 text-sky-400" />
-              <h2 className="font-serif text-lg font-bold text-sky-400">Add New Collection (Metal)</h2>
+              <h2 className="font-serif text-lg font-bold text-sky-400">{editingMetal ? `Edit Collection: ${editingMetal}` : "Add New Collection (Metal)"}</h2>
             </div>
             {showAddCollection ? (
               <ChevronUp className="h-5 w-5 text-[#F3E5AB]/50" />
@@ -336,7 +361,7 @@ export default function AdminDashboardPage() {
                   className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 flex items-center gap-2"
                 >
                   {isSubmittingMetal ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-                  Save Collection
+                  {editingMetal ? "Update Collection" : "Save Collection"}
                 </button>
               </div>
             </form>
@@ -351,7 +376,7 @@ export default function AdminDashboardPage() {
           >
             <div className="flex items-center gap-3">
               <PlusCircle className="h-5 w-5 text-purple-400" />
-              <h2 className="font-serif text-lg font-bold text-purple-400">Add New Category (Type)</h2>
+              <h2 className="font-serif text-lg font-bold text-purple-400">{editingCategory ? `Edit Category: ${editingCategory}` : "Add New Category (Type)"}</h2>
             </div>
             {showAddCategory ? (
               <ChevronUp className="h-5 w-5 text-[#F3E5AB]/50" />
@@ -392,7 +417,7 @@ export default function AdminDashboardPage() {
                   type="submit"
                   className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
                 >
-                  Save Category
+                  {editingCategory ? "Update Category" : "Save Category"}
                 </button>
               </div>
             </form>
@@ -407,7 +432,7 @@ export default function AdminDashboardPage() {
           >
             <div className="flex items-center gap-3">
               <PlusCircle className="h-5 w-5 text-[#D4AF37]" />
-              <h2 className="font-serif text-lg font-bold text-[#D4AF37]">Add New Product</h2>
+              <h2 className="font-serif text-lg font-bold text-[#D4AF37]">{editingProduct ? "Edit Product" : "Add New Product"}</h2>
             </div>
             {showUploadForm ? (
               <ChevronUp className="h-5 w-5 text-[#F3E5AB]/50" />
@@ -581,13 +606,176 @@ export default function AdminDashboardPage() {
                       Saving...
                     </>
                   ) : (
-                    "Save Product"
+                    editingProduct ? "Update Product" : "Save Product"
                   )}
                 </button>
               </div>
             </form>
           )}
         </div>
+          </>
+        )}
+
+        {activeView === "collections" && (
+          <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+            <h2 className="font-serif text-xl font-bold text-sky-400 mb-6">Manage Collections</h2>
+            <div className="space-y-4">
+              {metalsList.map((metal) => (
+                <div key={metal.name} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-[#0c0418] border border-[#D4AF37]/10 rounded-xl gap-4">
+                  <div className="flex items-center gap-4">
+                    {metal.imageUrl ? (
+                      <img src={metal.imageUrl} alt={metal.name} className="w-12 h-12 rounded-lg object-cover border border-[#D4AF37]/20" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/20">
+                        <ImageIcon className="h-5 w-5 text-[#D4AF37]/50" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-bold text-white text-lg">{metal.name}</h3>
+                      <p className="text-xs text-[#F3E5AB]/60">{metal.purityLabel || "No purity label"}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button 
+                      onClick={() => {
+                        setEditingMetal(metal.name);
+                        setNewMetal({ name: metal.name, purityLabel: metal.purityLabel || "", description: metal.description || "" });
+                        setNewMetalImagePreview(metal.imageUrl || null);
+                        setNewMetalImage(null);
+                        setShowAddCollection(true);
+                        setActiveView("dashboard");
+                      }}
+                      className="p-2 hover:bg-[#D4AF37]/10 text-[#D4AF37] rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Edit2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Edit</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const confirmDelete = window.confirm(`Are you sure you want to delete the ${metal.name} collection?`);
+                        if (confirmDelete) {
+                          deleteMetal(metal.name);
+                          setMetalsList(getMetals());
+                          setCollections(getCollections());
+                        }
+                      }}
+                      className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {metalsList.length === 0 && <p className="text-[#F3E5AB]/50 text-sm">No collections found.</p>}
+            </div>
+          </div>
+        )}
+
+        {activeView === "categories" && (
+          <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+            <h2 className="font-serif text-xl font-bold text-purple-400 mb-6">Manage Categories</h2>
+            <div className="space-y-4">
+              {categoriesList.map((cat) => (
+                <div key={cat.name} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-[#0c0418] border border-[#D4AF37]/10 rounded-xl gap-4">
+                  <div>
+                    <h3 className="font-bold text-white text-lg">{cat.name}</h3>
+                    <p className="text-xs text-[#F3E5AB]/60 mt-1 line-clamp-1">{cat.description || "No description"}</p>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button 
+                      onClick={() => {
+                        setEditingCategory(cat.name);
+                        setNewCategory({ name: cat.name, description: cat.description || "" });
+                        setShowAddCategory(true);
+                        setActiveView("dashboard");
+                      }}
+                      className="p-2 hover:bg-[#D4AF37]/10 text-[#D4AF37] rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Edit2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Edit</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const confirmDelete = window.confirm(`Are you sure you want to delete the ${cat.name} category?`);
+                        if (confirmDelete) {
+                          deleteCategory(cat.name);
+                          setCategoriesList(getCategories());
+                          setCollections(getCollections());
+                        }
+                      }}
+                      className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {categoriesList.length === 0 && <p className="text-[#F3E5AB]/50 text-sm">No categories found.</p>}
+            </div>
+          </div>
+        )}
+
+        {activeView === "products" && (
+          <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+            <h2 className="font-serif text-xl font-bold text-emerald-400 mb-6">Manage Products</h2>
+            <div className="space-y-4">
+              {collections.flatMap(c => c.items.map(item => ({ ...item, metal: c.metal, category: c.category }))).map((product) => (
+                <div key={product.id} className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-[#0c0418] border border-[#D4AF37]/10 rounded-xl gap-4">
+                  <div className="flex items-center gap-4">
+                    {product.image ? (
+                      <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover border border-[#D4AF37]/20" />
+                    ) : (
+                      <div className="w-12 h-12 rounded-lg bg-[#D4AF37]/10 flex items-center justify-center border border-[#D4AF37]/20">
+                        <ImageIcon className="h-5 w-5 text-[#D4AF37]/50" />
+                      </div>
+                    )}
+                    <div>
+                      <h3 className="font-bold text-white text-md">{product.name}</h3>
+                      <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] uppercase tracking-wider bg-[#D4AF37]/20 text-[#D4AF37] px-2 py-0.5 rounded-full">{product.metal}</span>
+                        <span className="text-[10px] uppercase tracking-wider bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded-full">{product.category}</span>
+                        <span className="text-xs text-[#F3E5AB]/60">{product.weight_g}g</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                    <button 
+                      onClick={() => {
+                        setEditingProduct(product.id);
+                        setForm({
+                          metal: product.metal,
+                          category: product.category,
+                          name: product.name,
+                          weight_g: String(product.weight_g),
+                          making_charge_pct: String(product.making_charge_pct),
+                          description: product.description || "",
+                        });
+                        setImagePreview(product.image || null);
+                        setImageFile(null);
+                        setShowUploadForm(true);
+                        setActiveView("dashboard");
+                      }}
+                      className="p-2 hover:bg-[#D4AF37]/10 text-[#D4AF37] rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Edit2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Edit</span>
+                    </button>
+                    <button 
+                      onClick={() => {
+                        const confirmDelete = window.confirm(`Are you sure you want to delete ${product.name}?`);
+                        if (confirmDelete) {
+                          deleteProduct(product.id);
+                          setCollections(getCollections());
+                        }
+                      }}
+                      className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex items-center gap-2"
+                    >
+                      <Trash2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+              {totalProducts === 0 && <p className="text-[#F3E5AB]/50 text-sm">No products found.</p>}
+            </div>
+          </div>
+        )}
 
       </div>
     </div>

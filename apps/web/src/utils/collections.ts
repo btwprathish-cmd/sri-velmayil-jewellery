@@ -156,3 +156,134 @@ export function saveCollectionItem(payload: {
     throw new Error("Local storage quota exceeded or unavailable. Could not save product.");
   }
 }
+
+export function deleteMetal(name: string): void {
+  const metals = getMetals();
+  const updated = metals.filter(m => m.name.toLowerCase() !== name.toLowerCase());
+  localStorage.setItem(METALS_KEY, JSON.stringify(updated));
+
+  const collections = getCollections();
+  const updatedCollections = collections.filter(c => c.metal.toLowerCase() !== name.toLowerCase());
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCollections));
+}
+
+export function updateMetal(oldName: string, metal: MetalData): void {
+  const metals = getMetals();
+  const index = metals.findIndex(m => m.name.toLowerCase() === oldName.toLowerCase());
+  if (index !== -1) {
+    metals[index] = metal;
+    localStorage.setItem(METALS_KEY, JSON.stringify(metals));
+  }
+
+  if (oldName.toLowerCase() !== metal.name.toLowerCase()) {
+    const collections = getCollections();
+    let changed = false;
+    collections.forEach(c => {
+      if (c.metal.toLowerCase() === oldName.toLowerCase()) {
+        c.metal = metal.name;
+        c.slug = `${metal.name.toLowerCase()}-${c.category.toLowerCase()}s`;
+        c.id = c.slug;
+        c.name = `${metal.name} ${c.category}s`;
+        changed = true;
+      }
+    });
+    if (changed) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
+    }
+  }
+}
+
+export function deleteCategory(name: string): void {
+  const categories = getCategories();
+  const updated = categories.filter(c => c.name.toLowerCase() !== name.toLowerCase());
+  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updated));
+
+  const collections = getCollections();
+  const updatedCollections = collections.filter(c => c.category.toLowerCase() !== name.toLowerCase());
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCollections));
+}
+
+export function updateCategory(oldName: string, category: CategoryData): void {
+  const categories = getCategories();
+  const index = categories.findIndex(c => c.name.toLowerCase() === oldName.toLowerCase());
+  if (index !== -1) {
+    categories[index] = category;
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+  }
+
+  if (oldName.toLowerCase() !== category.name.toLowerCase()) {
+    const collections = getCollections();
+    let changed = false;
+    collections.forEach(c => {
+      if (c.category.toLowerCase() === oldName.toLowerCase()) {
+        c.category = category.name;
+        c.slug = `${c.metal.toLowerCase()}-${category.name.toLowerCase()}s`;
+        c.id = c.slug;
+        c.name = `${c.metal} ${category.name}s`;
+        changed = true;
+      }
+    });
+    if (changed) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
+    }
+  }
+}
+
+export function deleteProduct(productId: string): void {
+  const collections = getCollections();
+  let changed = false;
+  collections.forEach(c => {
+    const initialLen = c.items.length;
+    c.items = c.items.filter(item => item.id !== productId);
+    if (c.items.length !== initialLen) changed = true;
+  });
+  if (changed) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
+  }
+}
+
+export function updateProduct(productId: string, payload: any): void {
+  const collections = getCollections();
+  let oldItem: CollectionItem | null = null;
+  
+  collections.forEach(c => {
+    const index = c.items.findIndex(item => item.id === productId);
+    if (index !== -1) {
+      oldItem = c.items.splice(index, 1)[0];
+    }
+  });
+
+  if (oldItem) {
+    const updatedItem: CollectionItem = {
+      id: productId,
+      name: payload.name,
+      weight_g: payload.weight_g,
+      making_charge_pct: payload.making_charge_pct,
+      description: payload.description || "",
+      image: payload.imageUrl !== undefined ? payload.imageUrl : (oldItem as any).image,
+    };
+
+    const targetMetal = payload.metal.toLowerCase();
+    const targetCategory = payload.category.toLowerCase();
+    let targetCollection = collections.find(
+      (c) => c.metal.toLowerCase() === targetMetal && c.category.toLowerCase() === targetCategory
+    );
+
+    if (!targetCollection) {
+      const slug = `${targetMetal}-${targetCategory}s`;
+      targetCollection = {
+        id: slug,
+        name: `${payload.metal} ${payload.category}s`,
+        slug: slug,
+        metal: payload.metal,
+        category: payload.category,
+        description: `Explore our beautiful collection of ${payload.metal} ${payload.category}s.`,
+        items: [],
+      };
+      collections.push(targetCollection);
+    }
+
+    targetCollection.items.push(updatedItem);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
+  }
+}
