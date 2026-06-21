@@ -211,6 +211,7 @@ export default function AdminDashboardPage() {
   const uniqueCategories = new Set(collections.map((c) => c.category.toLowerCase())).size;
 
   const cards = [
+    { title: "Add New", value: "Forms", icon: PlusCircle, view: "dashboard", color: "text-[#D4AF37]" },
     { title: "Collections", value: uniqueCollections, icon: LayoutDashboard, view: "collections", color: "text-sky-400" },
     { title: "Categories", value: uniqueCategories, icon: LayoutDashboard, view: "categories", color: "text-purple-400" },
     { title: "Products", value: totalProducts, icon: Package, view: "products", color: "text-emerald-400" },
@@ -233,7 +234,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-3 max-w-3xl mx-auto gap-6 mb-12 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 max-w-5xl mx-auto gap-6 mb-12 items-stretch">
           {cards.map((card) => (
             <button key={card.title} onClick={() => setActiveView(card.view as ViewState)}
               className={`bg-[#1a0b2e]/60 border ${activeView === card.view ? 'border-[#D4AF37]' : 'border-[#D4AF37]/15'} rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between h-full shadow-lg text-left`}
