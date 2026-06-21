@@ -155,13 +155,13 @@ export default function AdminDashboardPage() {
   return (
     <div className="min-h-screen bg-[#0c0418] py-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center mb-10">
-          <div>
+        <div className="relative flex justify-center items-center mb-10">
+          <div className="text-center">
             <h1 className="font-serif text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">Admin Dashboard</h1>
             <p className="text-sm text-[#F3E5AB]/60 mt-1">Welcome, {session.username}</p>
           </div>
           <button onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 border border-red-500/30 text-red-400 rounded-lg text-xs font-bold hover:bg-red-500/10 transition-colors"
+            className="absolute right-0 flex items-center gap-2 px-4 py-2 border border-red-500/30 text-red-400 rounded-lg text-xs font-bold hover:bg-red-500/10 transition-colors"
           >
             <LogOut className="h-4 w-4" /> Logout
           </button>
