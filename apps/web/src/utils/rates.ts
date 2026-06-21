@@ -43,15 +43,29 @@ export async function fetchLatestRate(): Promise<LiveRateRecord> {
     trend_silver: null,
   };
 }
+
 export async function fetchRateHistory(): Promise<LiveRateRecord[]> {
   const res = await fetch("/api/rates/history");
-  if (!res.ok) throw new Error("Failed to fetch rate history");
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch rate history");
+  }
+
   return res.json();
 }
 
-export async function fetchRateByDate(date: string): Promise<LiveRateRecord | null> {
+export async function fetchRateByDate(
+  date: string
+): Promise<LiveRateRecord | null> {
   const res = await fetch(`/api/rates/date/${date}`);
-  if (res.status === 404) return null;
-  if (!res.ok) throw new Error("Failed to fetch rate");
+
+  if (res.status === 404) {
+    return null;
+  }
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch rate");
+  }
+
   return res.json();
 }
