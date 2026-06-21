@@ -3,26 +3,20 @@ import { Link, useLocation } from "wouter";
 import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import { uploadImage } from "@/utils/upload-image";
-import { getCollections, saveCollectionItem, type CollectionBlock } from "@/utils/collections";
-
-const METALS = ["Gold", "Silver"] as const;
-const CATEGORIES = ["Coin", "Ring", "Chain", "Earring", "Bracelet", "Anklet"] as const;
-
-type Metal = typeof METALS[number];
-type Category = typeof CATEGORIES[number];
+import { getCollections, saveCollectionItem, getMetals, getCategories, addMetal, addCategory, type CollectionBlock } from "@/utils/collections";
 
 interface ProductFormState {
   name: string;
-  metal: Metal;
-  category: Category;
+  metal: string;
+  category: string;
   weight_g: string;
   making_charge_pct: string;
   description: string;
 }
 
 const defaultForm: ProductFormState = {
-  metal: "Gold",
-  category: "Coin",
+  metal: "",
+  category: "",
   name: "",
   weight_g: "",
   making_charge_pct: "",
@@ -33,11 +27,19 @@ export default function AdminDashboardPage() {
   const [, setLocation] = useLocation();
   const [session, setSession] = useState<{ authenticated: boolean; username: string | null } | null>(null);
   const [showUploadForm, setShowUploadForm] = useState(false);
+  const [showAddCollection, setShowAddCollection] = useState(false);
+  const [showAddCategory, setShowAddCategory] = useState(false);
+  
   const [form, setForm] = useState<ProductFormState>(defaultForm);
   const [formSuccess, setFormSuccess] = useState(false);
   const [formError, setFormError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [collections, setCollections] = useState<CollectionBlock[]>([]);
+  const [metalsList, setMetalsList] = useState<string[]>([]);
+  const [categoriesList, setCategoriesList] = useState<string[]>([]);
+  const [newCollectionName, setNewCollectionName] = useState("");
+  const [newCategoryName, setNewCategoryName] = useState("");
   
   // Image Upload State
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -50,7 +52,27 @@ export default function AdminDashboardPage() {
       if (!s.authenticated) setLocation("/admin/login");
     });
     setCollections(getCollections());
+    setMetalsList(getMetals());
+    setCategoriesList(getCategories());
   }, [setLocation]);
+
+  const handleAddCollectionSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCollectionName.trim()) return;
+    addMetal(newCollectionName.trim());
+    setMetalsList(getMetals());
+    setNewCollectionName("");
+    setShowAddCollection(false);
+  };
+
+  const handleAddCategorySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newCategoryName.trim()) return;
+    addCategory(newCategoryName.trim());
+    setCategoriesList(getCategories());
+    setNewCategoryName("");
+    setShowAddCategory(false);
+  };
 
   const handleLogout = async () => {
     await logout();
@@ -184,6 +206,80 @@ export default function AdminDashboardPage() {
           ))}
         </div>
 
+        {/* Add Collection Form */}
+        <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+          <button
+            onClick={() => setShowAddCollection(!showAddCollection)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <PlusCircle className="h-5 w-5 text-sky-400" />
+              <h2 className="font-serif text-lg font-bold text-sky-400">Add New Collection (Metal)</h2>
+            </div>
+            {showAddCollection ? (
+              <ChevronUp className="h-5 w-5 text-[#F3E5AB]/50" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-[#F3E5AB]/50" />
+            )}
+          </button>
+
+          {showAddCollection && (
+            <form onSubmit={handleAddCollectionSubmit} className="mt-6 flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                value={newCollectionName}
+                onChange={(e) => setNewCollectionName(e.target.value)}
+                required
+                placeholder="e.g. Platinum, Rose Gold"
+                className="flex-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
+              >
+                Save
+              </button>
+            </form>
+          )}
+        </div>
+
+        {/* Add Category Form */}
+        <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
+          <button
+            onClick={() => setShowAddCategory(!showAddCategory)}
+            className="w-full flex items-center justify-between"
+          >
+            <div className="flex items-center gap-3">
+              <PlusCircle className="h-5 w-5 text-purple-400" />
+              <h2 className="font-serif text-lg font-bold text-purple-400">Add New Category (Type)</h2>
+            </div>
+            {showAddCategory ? (
+              <ChevronUp className="h-5 w-5 text-[#F3E5AB]/50" />
+            ) : (
+              <ChevronDown className="h-5 w-5 text-[#F3E5AB]/50" />
+            )}
+          </button>
+
+          {showAddCategory && (
+            <form onSubmit={handleAddCategorySubmit} className="mt-6 flex flex-col sm:flex-row gap-4">
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                required
+                placeholder="e.g. Pendant, Mangalsutra"
+                className="flex-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm"
+              />
+              <button
+                type="submit"
+                className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
+              >
+                Save
+              </button>
+            </form>
+          )}
+        </div>
+
         {/* Product Upload Form */}
         <div className="bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 mb-6">
           <button
@@ -215,7 +311,8 @@ export default function AdminDashboardPage() {
                     required
                     className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
                   >
-                    {METALS.map((m) => (
+                    <option value="" disabled>Select Collection</option>
+                    {metalsList.map((m) => (
                       <option key={m} value={m}>{m}</option>
                     ))}
                   </select>
@@ -230,7 +327,8 @@ export default function AdminDashboardPage() {
                     required
                     className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
                   >
-                    {CATEGORIES.map((c) => (
+                    <option value="" disabled>Select Category</option>
+                    {categoriesList.map((c) => (
                       <option key={c} value={c}>{c}</option>
                     ))}
                   </select>

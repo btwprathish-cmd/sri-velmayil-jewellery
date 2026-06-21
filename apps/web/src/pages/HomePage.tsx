@@ -7,6 +7,7 @@ import HeroSlideshow from "@/components/HeroSlideshow";
 import FAQ from "@/components/FAQ";
 import { fetchLatestRate, type LiveRateRecord } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
+import { getMetals } from "@/utils/collections";
 
 const FALLBACK_RATE: LiveRateRecord = {
   date: new Date().toISOString().split("T")[0],
@@ -22,11 +23,13 @@ export default function HomePage() {
   const [latestRate, setLatestRate] = useState<LiveRateRecord | null>(null);
   const [rateLoading, setRateLoading] = useState(true);
   const [rateError, setRateError] = useState(false);
+  const [metalsList, setMetalsList] = useState<string[]>([]);
 
   useEffect(() => {
     fetchLatestRate()
       .then((r) => { setLatestRate(r); setRateLoading(false); })
       .catch(() => { setLatestRate(FALLBACK_RATE); setRateLoading(false); setRateError(false); });
+    setMetalsList(getMetals());
   }, []);
 
   const displayRate = latestRate ?? FALLBACK_RATE;
@@ -61,62 +64,56 @@ export default function HomePage() {
               Each piece is a testament to 25 years of master craftsmanship — inspired by Tamil Nadu's royal legacy, shaped by hands that have spent decades perfecting their art.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-            {/* Gold Collections */}
-            <Link
-              href="/jewellery-collections"
-              className="group relative rounded-2xl overflow-hidden border border-[#D4AF37]/20 hover:border-[#D4AF37]/50 transition-all duration-300 shadow-xl"
-              style={{ minHeight: "320px" }}
-            >
-              <img
-                src="/images/GOLD.jpg"
-                alt="Gold Collections at Sri Velmayil Jewellery Tirupur"
-                className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/92 via-[#0c0418]/45 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="inline-flex items-center gap-2 mb-3">
-                  <span className="w-3 h-3 rounded-full bg-[#D4AF37]" />
-                  <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">BIS 916 Hallmarked</span>
-                </div>
-                <h3 className="font-serif text-3xl font-bold text-white mb-2">Gold Jewellery</h3>
-                <p className="text-sm text-[#F3E5AB]/78 font-sans mb-4 max-w-xs leading-relaxed">
-                  From intricately crafted necklaces and statement bangles to elegant rings and resplendent bridal sets — each piece born from pure gold and the hands of a master.
-                </p>
-                <span className="inline-flex items-center text-sm font-bold text-[#D4AF37] group-hover:text-[#F3E5AB] transition-colors">
-                  Discover Gold Collections
-                  <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
-            </Link>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+            {metalsList.map((metalName) => {
+              const isSilver = metalName.toLowerCase() === "silver";
+              const isGold = metalName.toLowerCase() === "gold";
+              const slug = metalName.toLowerCase();
+              
+              let imageSrc = "/images/GOLD.jpg";
+              if (isSilver) imageSrc = "/images/SILVER.jpg";
 
-            {/* Silver Collections */}
-            <Link
-              href="/jewellery-collections/silver"
-              className="group relative rounded-2xl overflow-hidden border border-white/10 hover:border-white/30 transition-all duration-300 shadow-xl"
-              style={{ minHeight: "320px" }}
-            >
-              <img
-                src="/images/SILVER.jpg"
-                alt="Silver Collections at Sri Velmayil Jewellery Tirupur"
-                className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/92 via-[#0c0418]/45 to-transparent" />
-              <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="inline-flex items-center gap-2 mb-3">
-                  <span className="w-3 h-3 rounded-full bg-white/80" />
-                  <span className="text-xs font-bold text-white/70 uppercase tracking-widest">Purity 99.9%</span>
-                </div>
-                <h3 className="font-serif text-3xl font-bold text-white mb-2">Silver Collections</h3>
-                <p className="text-sm text-white/68 font-sans mb-4 max-w-xs leading-relaxed">
-                  Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.
-                </p>
-                 <span className="inline-flex items-center text-sm font-bold text-white/70 group-hover:text-white/70 transition-colors">
-                  Discover Silver Collections
-                  <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
-            </Link>
+              let ThemeColor = isSilver ? "white" : "#D4AF37";
+              let ThemeClass = isSilver ? "white/10" : "[#D4AF37]/20";
+              let ThemeHoverClass = isSilver ? "white/30" : "[#D4AF37]/50";
+              let TextClass = isSilver ? "white/68" : "[#F3E5AB]/78";
+
+              return (
+                <Link
+                  key={slug}
+                  href={`/jewellery-collections${isGold ? '' : `/${slug}`}`}
+                  className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass} hover:border-${ThemeHoverClass} transition-all duration-300 shadow-xl`}
+                  style={{ minHeight: "320px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.2)` }}
+                >
+                  <img
+                    src={imageSrc}
+                    alt={`${metalName} Collections at Sri Velmayil Jewellery Tirupur`}
+                    className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/92 via-[#0c0418]/45 to-transparent" />
+                  <div className="absolute inset-0 flex flex-col justify-end p-8">
+                    <div className="inline-flex items-center gap-2 mb-3">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: ThemeColor }} />
+                      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ThemeColor }}>
+                        {isGold ? "BIS 916 Hallmarked" : isSilver ? "Purity 99.9%" : "Exclusive"}
+                      </span>
+                    </div>
+                    <h3 className="font-serif text-3xl font-bold text-white mb-2">{metalName} Jewellery</h3>
+                    <p className="text-sm font-sans mb-4 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.78)` }}>
+                      {isGold 
+                        ? "From intricately crafted necklaces and statement bangles to elegant rings and resplendent bridal sets — each piece born from pure gold and the hands of a master."
+                        : isSilver 
+                        ? "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold."
+                        : `Explore our stunning new ${metalName} collection, crafted with perfection and style.`}
+                    </p>
+                    <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-colors" style={{ color: ThemeColor }}>
+                      Discover {metalName} Collections
+                      <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                    </span>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </section>
 

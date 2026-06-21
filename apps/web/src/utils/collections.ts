@@ -20,6 +20,45 @@ export type CollectionBlock = {
 };
 
 const STORAGE_KEY = "svj_collections";
+const METALS_KEY = "svj_metals";
+const CATEGORIES_KEY = "svj_categories";
+
+const DEFAULT_METALS = ["Gold", "Silver"];
+const DEFAULT_CATEGORIES = ["Coin", "Ring", "Chain", "Earring", "Bracelet", "Anklet"];
+
+export function getMetals(): string[] {
+  try {
+    const stored = localStorage.getItem(METALS_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return [...DEFAULT_METALS];
+}
+
+export function addMetal(metal: string): void {
+  const metals = getMetals();
+  const trimmed = metal.trim();
+  if (trimmed && !metals.map(m => m.toLowerCase()).includes(trimmed.toLowerCase())) {
+    metals.push(trimmed);
+    localStorage.setItem(METALS_KEY, JSON.stringify(metals));
+  }
+}
+
+export function getCategories(): string[] {
+  try {
+    const stored = localStorage.getItem(CATEGORIES_KEY);
+    if (stored) return JSON.parse(stored);
+  } catch (e) {}
+  return [...DEFAULT_CATEGORIES];
+}
+
+export function addCategory(category: string): void {
+  const categories = getCategories();
+  const trimmed = category.trim();
+  if (trimmed && !categories.map(c => c.toLowerCase()).includes(trimmed.toLowerCase())) {
+    categories.push(trimmed);
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+  }
+}
 
 export function getCollections(): CollectionBlock[] {
   try {

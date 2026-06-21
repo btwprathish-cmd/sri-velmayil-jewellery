@@ -53,7 +53,7 @@ export default function MetalCategoryPage() {
   const allItems: CollectionItem[] = matchingCollections.flatMap((c) => c.items);
   const goldRate22k = latestRate.gold22k_1g;
 
-  if (metal.toLowerCase() !== "gold" && metal.toLowerCase() !== "silver") {
+  if (!metal) {
     return (
       <div className="py-32 text-center">
         <p className="text-[#F3E5AB]/60 mb-4">Collection not found.</p>

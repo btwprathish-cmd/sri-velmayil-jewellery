@@ -1,53 +1,47 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useRoute } from "wouter";
 import { Award, Gem, Link2, Star, Circle, Shield, ArrowLeft } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import { getCategories } from "@/utils/collections";
 
-const CATEGORIES = [
-  {
-    id: "coin",
-    name: "Coin",
+const DEFAULT_CATEGORY_INFO: Record<string, { description: string; icon: any }> = {
+  "coin": {
     description: "Pure gold and silver coins in various weights — ideal for gifting and investment.",
     icon: Award,
   },
-  {
-    id: "ring",
-    name: "Ring",
+  "ring": {
     description: "Engagement, wedding, and daily-wear rings in traditional and modern styles.",
     icon: Gem,
   },
-  {
-    id: "chain",
-    name: "Chain",
+  "chain": {
     description: "Necklaces and chains — from delicate daily wear to heavy bridal harems.",
     icon: Link2,
   },
-  {
-    id: "earring",
-    name: "Earring",
+  "earring": {
     description: "Studs, drops, jhumkas, and chandbalis crafted in 22K hallmarked gold.",
     icon: Star,
   },
-  {
-    id: "bracelet",
-    name: "Bracelet",
+  "bracelet": {
     description: "Bangles and bracelets ranging from lightweight daily pieces to grand bridal sets.",
     icon: Circle,
   },
-  {
-    id: "anklet",
-    name: "Anklet",
+  "anklet": {
     description: "Traditional and contemporary anklets in pure gold and silver.",
     icon: Shield,
   },
-];
+};
 
 export default function MetalPage() {
   const [, params] = useRoute("/jewellery-collections/:metal");
   const metal = params?.metal ?? "";
   const metalLabel = metal.charAt(0).toUpperCase() + metal.slice(1).toLowerCase();
 
-  if (metal.toLowerCase() !== "gold" && metal.toLowerCase() !== "silver") {
+  const [categoriesList, setCategoriesList] = useState<string[]>([]);
+  useEffect(() => {
+    setCategoriesList(getCategories());
+  }, []);
+
+  if (!metal) {
     return (
       <div className="py-32 text-center">
         <p className="text-[#F3E5AB]/60 mb-4">Collection not found.</p>
@@ -114,29 +108,38 @@ export default function MetalPage() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {CATEGORIES.map(({ id, name, description, icon: Icon }) => (
-          <Link
-            key={id}
-            href={`/jewellery-collections/${metal}/${id}`}
-            className="group bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/45 hover:bg-[#1a0b2e]/60 transition-all duration-300 flex flex-col justify-between shadow-xl"
-          >
-            <div className="flex flex-col space-y-4">
-              <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:bg-[#D4AF37]/15 transition-colors">
-                <Icon className="h-6 w-6 text-[#D4AF37]" />
+        {categoriesList.map((categoryName) => {
+          const id = categoryName.toLowerCase();
+          const info = DEFAULT_CATEGORY_INFO[id] || {
+            description: `Explore our beautiful collection of ${metalLabel} ${categoryName}s.`,
+            icon: Circle,
+          };
+          const Icon = info.icon;
+          
+          return (
+            <Link
+              key={id}
+              href={`/jewellery-collections/${metal}/${id}`}
+              className="group bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/45 hover:bg-[#1a0b2e]/60 transition-all duration-300 flex flex-col justify-between shadow-xl"
+            >
+              <div className="flex flex-col space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:bg-[#D4AF37]/15 transition-colors">
+                  <Icon className="h-6 w-6 text-[#D4AF37]" />
+                </div>
+                <div>
+                  <h2 className="font-serif text-2xl font-bold text-[#F3E5AB] group-hover:text-[#D4AF37] transition-colors">
+                    {categoryName}
+                  </h2>
+                  <p className="text-sm text-[#F3E5AB]/60 leading-relaxed font-sans mt-2">{info.description}</p>
+                </div>
               </div>
-              <div>
-                <h2 className="font-serif text-2xl font-bold text-[#F3E5AB] group-hover:text-[#D4AF37] transition-colors">
-                  {name}
-                </h2>
-                <p className="text-sm text-[#F3E5AB]/60 leading-relaxed font-sans mt-2">{description}</p>
+              <div className="pt-5 mt-5 border-t border-[#D4AF37]/10 flex items-center justify-between">
+                <span className="text-xs font-bold text-[#D4AF37]/70 uppercase tracking-wider">Browse Designs</span>
+                <ArrowLeft className="h-4 w-4 text-[#D4AF37]/60 group-hover:text-[#D4AF37] rotate-180 group-hover:translate-x-1 transition-all" />
               </div>
-            </div>
-            <div className="pt-5 mt-5 border-t border-[#D4AF37]/10 flex items-center justify-between">
-              <span className="text-xs font-bold text-[#D4AF37]/70 uppercase tracking-wider">Browse Designs</span>
-              <ArrowLeft className="h-4 w-4 text-[#D4AF37]/60 group-hover:text-[#D4AF37] rotate-180 group-hover:translate-x-1 transition-all" />
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </div>
     </div>
   );

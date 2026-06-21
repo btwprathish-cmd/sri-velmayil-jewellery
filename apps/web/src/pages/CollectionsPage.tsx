@@ -3,6 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Award, Plus, X, Lock, Loader2, ArrowRight } from "lucide-react";
 import { login } from "@/utils/auth";
 import { BRAND } from "@/utils/brand";
+import { getMetals } from "@/utils/collections";
 
 export default function CollectionsPage() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -12,12 +13,14 @@ export default function CollectionsPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  const [metalsList, setMetalsList] = useState<string[]>([]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") setShowAdminLogin(false);
     }
     document.addEventListener("keydown", onKeyDown);
+    setMetalsList(getMetals());
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 
@@ -71,60 +74,55 @@ export default function CollectionsPage() {
         </button>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
-        <Link
-          href="/jewellery-collections/gold"
-          className="group relative rounded-2xl overflow-hidden border border-[#D4AF37]/25 hover:border-[#D4AF37]/55 transition-all duration-300 shadow-xl flex flex-col"
-          style={{ minHeight: "340px" }}
-        >
-          <img
-            src="/images/GOLD.jpg"
-            alt="Gold Jewellery Collections"
-            className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/95 via-[#0c0418]/50 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-end p-8">
-            <div className="inline-flex items-center gap-2 mb-3">
-              <span className="w-3 h-3 rounded-full bg-[#D4AF37]" />
-              <span className="text-xs font-bold text-[#D4AF37] uppercase tracking-widest">22K · 24K · 18K</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">Gold Collections</h2>
-            <p className="text-sm text-[#F3E5AB]/75 font-sans mb-5 max-w-xs leading-relaxed">
-              Rings, chains, earrings, bangles, coins and anklets — all hallmarked 916 BIS certified pure gold.
-            </p>
-            <span className="inline-flex items-center text-sm font-bold text-[#D4AF37] group-hover:text-[#F3E5AB] transition-colors">
-              Explore Gold
-              <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </div>
-        </Link>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        {metalsList.map((metalName) => {
+          const isSilver = metalName.toLowerCase() === "silver";
+          const isGold = metalName.toLowerCase() === "gold";
+          const slug = metalName.toLowerCase();
+          
+          let imageSrc = "/images/GOLD.jpg";
+          if (isSilver) imageSrc = "/images/SILVER.jpg";
 
-        <Link
-          href="/jewellery-collections/silver"
-          className="group relative rounded-2xl overflow-hidden border border-white/15 hover:border-white/35 transition-all duration-300 shadow-xl flex flex-col"
-          style={{ minHeight: "340px" }}
-        >
-          <img
-            src="/images/SILVER.jpg"
-            alt="Silver Jewellery Collections"
-            className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/95 via-[#0c0418]/50 to-transparent" />
-          <div className="absolute inset-0 flex flex-col justify-end p-8">
-            <div className="inline-flex items-center gap-2 mb-3">
-              <span className="w-3 h-3 rounded-full bg-white/80" />
-              <span className="text-xs font-bold text-white/65 uppercase tracking-widest">Purity 99.9%</span>
-            </div>
-            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">Silver Collections</h2>
-            <p className="text-sm text-white/68 font-sans mb-5 max-w-xs leading-relaxed">
-              Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate.
-            </p>
-            <span className="inline-flex items-center text-sm font-bold text-white/80 group-hover:text-white transition-colors">
-              Explore Silver
-              <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-            </span>
-          </div>
-        </Link>
+          let ThemeColor = isSilver ? "white" : "#D4AF37";
+          let ThemeClass = isSilver ? "white/80" : "[#D4AF37]";
+          let TextClass = isSilver ? "white/65" : "[#F3E5AB]/75";
+          
+          return (
+            <Link
+              key={slug}
+              href={`/jewellery-collections/${slug}`}
+              className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass}/25 hover:border-${ThemeClass}/55 transition-all duration-300 shadow-xl flex flex-col`}
+              style={{ minHeight: "340px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.25)` }}
+            >
+              <img
+                src={imageSrc}
+                alt={`${metalName} Jewellery Collections`}
+                className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/95 via-[#0c0418]/50 to-transparent" />
+              <div className="absolute inset-0 flex flex-col justify-end p-8">
+                <div className="inline-flex items-center gap-2 mb-3">
+                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: ThemeColor }} />
+                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ThemeColor }}>
+                    {isGold ? "22K · 24K · 18K" : isSilver ? "Purity 99.9%" : "Exclusive"}
+                  </span>
+                </div>
+                <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">{metalName} Collections</h2>
+                <p className="text-sm font-sans mb-5 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.75)` }}>
+                  {isGold 
+                    ? "Rings, chains, earrings, bangles, coins and anklets — all hallmarked 916 BIS certified pure gold."
+                    : isSilver 
+                    ? "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate."
+                    : `Explore our stunning new ${metalName} collection, crafted with perfection.`}
+                </p>
+                <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-all" style={{ color: ThemeColor }}>
+                  Explore {metalName}
+                  <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                </span>
+              </div>
+            </Link>
+          );
+        })}
       </div>
 
       {showAdminLogin && (
