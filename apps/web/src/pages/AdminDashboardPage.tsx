@@ -207,8 +207,8 @@ export default function AdminDashboardPage() {
   if (!session) return <div className="min-h-screen bg-[#0c0418] flex items-center justify-center text-[#D4AF37]">Loading...</div>;
 
   const totalProducts = collections.reduce((sum, cat) => sum + cat.items.length, 0);
-  const uniqueCollections = new Set(collections.map((c) => c.metal.toLowerCase())).size;
-  const uniqueCategories = new Set(collections.map((c) => c.category.toLowerCase())).size;
+  const uniqueCollections = metalsList.length;
+  const uniqueCategories = categoriesList.length;
 
   const cards = [
     { title: "Add New", value: "", icon: PlusCircle, view: "dashboard", color: "text-[#D4AF37]" },
@@ -242,7 +242,7 @@ export default function AdminDashboardPage() {
               <card.icon className={`h-8 w-8 ${card.color} mb-3`} />
               <div>
                 <p className="text-xs text-[#F3E5AB]/60 uppercase tracking-wider">{card.title}</p>
-                <p className="text-3xl font-bold text-white mt-1">{card.value}</p>
+                <p className="text-3xl font-bold text-white mt-1">{card.value === "" ? '\u00A0' : card.value}</p>
               </div>
             </button>
           ))}
