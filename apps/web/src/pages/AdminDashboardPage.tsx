@@ -293,20 +293,33 @@ export default function AdminDashboardPage() {
                       type="button"
                       onClick={() => { setNewMetalImage(null); setNewMetalImagePreview(null); }}
                       className="absolute top-1 right-1 bg-red-500/80 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
+                      title="Remove Image"
                     >
                       <X className="h-4 w-4" />
                     </button>
                   </div>
                 ) : (
-                  <label className="cursor-pointer inline-flex items-center gap-2 border border-dashed border-[#D4AF37]/30 rounded-lg px-4 py-2 hover:bg-[#D4AF37]/10 transition-colors">
-                    <ImageIcon className="h-4 w-4 text-[#F3E5AB]/50" />
-                    <span className="text-xs text-[#F3E5AB]/70">Upload Image</span>
+                  <label className="cursor-pointer border-2 border-dashed border-[#D4AF37]/20 rounded-xl p-8 flex flex-col items-center justify-center text-[#F3E5AB]/50 hover:border-[#D4AF37]/40 hover:bg-[#D4AF37]/5 transition-all">
+                    <ImageIcon className="h-8 w-8 mb-2 opacity-50" />
+                    <span className="text-sm">Click to upload image</span>
+                    <span className="text-xs opacity-60 mt-1">PNG, JPG, WEBP up to 5MB</span>
                     <input
                       type="file"
-                      accept="image/*"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) {
+                          // Validate type
+                          const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+                          if (!validTypes.includes(file.type)) {
+                            alert("Please upload a valid image file (.jpg, .jpeg, .png, .webp)");
+                            return;
+                          }
+                          // Validate size (5MB max)
+                          if (file.size > 5 * 1024 * 1024) {
+                            alert("Image must be under 5MB");
+                            return;
+                          }
                           setNewMetalImage(file);
                           setNewMetalImagePreview(URL.createObjectURL(file));
                         }

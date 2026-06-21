@@ -118,7 +118,7 @@ export default function CollectionsPage() {
                 <p className="text-sm font-sans mb-5 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.75)` }}>
                   {description}
                 </p>
-                <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-all mt-auto pt-2" style={{ color: ThemeColor }}>
+                <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-all" style={{ color: ThemeColor }}>
                   Explore {metalName}
                   <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </span>

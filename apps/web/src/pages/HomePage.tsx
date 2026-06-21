@@ -109,7 +109,7 @@ export default function HomePage() {
                     <p className="text-sm font-sans mb-4 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.78)` }}>
                       {description}
                     </p>
-                    <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-colors mt-auto pt-2" style={{ color: ThemeColor }}>
+                    <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-colors" style={{ color: ThemeColor }}>
                       Discover {metalName} Collections
                       <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                     </span>
