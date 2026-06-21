@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp } from "lucide-react";
+import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
+import { uploadImage } from "@/utils/upload-image";
 import collectionsData from "@/data/collections.json";
 
 const METALS = ["Gold", "Silver"] as const;
@@ -20,9 +21,9 @@ interface ProductFormState {
 }
 
 const defaultForm: ProductFormState = {
-  name: "",
   metal: "Gold",
-  category: "Ring",
+  category: "Coin",
+  name: "",
   weight_g: "",
   making_charge_pct: "",
   description: "",
@@ -34,6 +35,13 @@ export default function AdminDashboardPage() {
   const [showUploadForm, setShowUploadForm] = useState(false);
   const [form, setForm] = useState<ProductFormState>(defaultForm);
   const [formSuccess, setFormSuccess] = useState(false);
+  const [formError, setFormError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Image Upload State
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imageError, setImageError] = useState("");
 
   useEffect(() => {
     getSession().then((s) => {
@@ -50,21 +58,86 @@ export default function AdminDashboardPage() {
   function handleFormChange(field: keyof ProductFormState, value: string) {
     setForm((prev) => ({ ...prev, [field]: value }));
     setFormSuccess(false);
+    setFormError("");
   }
 
-  function handleFormSubmit(e: React.FormEvent) {
+  function handleImageChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setImageError("");
+    setFormSuccess(false);
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    // Validate type
+    const validTypes = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+    if (!validTypes.includes(file.type)) {
+      setImageError("Please upload a valid image file (.jpg, .jpeg, .png, .webp)");
+      return;
+    }
+
+    // Validate size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      setImageError("Image must be under 5MB");
+      return;
+    }
+
+    setImageFile(file);
+    setImagePreview(URL.createObjectURL(file));
+  }
+
+  function handleRemoveImage() {
+    setImageFile(null);
+    setImagePreview(null);
+    setImageError("");
+  }
+
+  async function handleFormSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // TODO: Persist to backend when API is available
-    console.log("[Admin] New product submitted:", {
-      name: form.name,
-      metal: form.metal,
-      category: form.category,
-      weight_g: parseFloat(form.weight_g),
-      making_charge_pct: parseFloat(form.making_charge_pct),
-      description: form.description,
-    });
-    setFormSuccess(true);
-    setForm(defaultForm);
+    setFormError("");
+    setFormSuccess(false);
+
+    if (!form.metal || !form.category || !form.name || !form.weight_g || !form.making_charge_pct) {
+      setFormError("Please fill in all required fields.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      let imageUrl = "";
+      if (imageFile) {
+        imageUrl = await uploadImage(imageFile);
+      }
+
+      const payload = {
+        name: form.name,
+        metal: form.metal,
+        category: form.category,
+        weight_g: parseFloat(form.weight_g),
+        making_charge_pct: parseFloat(form.making_charge_pct),
+        description: form.description,
+        imageUrl,
+      };
+
+      const response = await fetch("/api/admin/products", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to save product");
+      }
+
+      setFormSuccess(true);
+      setForm(defaultForm);
+      handleRemoveImage();
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "An unknown error occurred.";
+      setFormError(message);
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   if (!session) return <div className="min-h-screen bg-[#0c0418] flex items-center justify-center text-[#D4AF37]">Loading...</div>;
@@ -72,9 +145,11 @@ export default function AdminDashboardPage() {
   const totalProducts = (collectionsData as Array<{ items: unknown[] }>).reduce((sum, cat) => sum + cat.items.length, 0);
 
   const cards = [
-    { title: "Collections", value: 2, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
+    { title: "Collections", value: collectionsData.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
     { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
   ];
+
+  const isFormValid = !imageError;
 
   return (
     <div className="min-h-screen bg-[#0c0418] py-10">
@@ -91,10 +166,10 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 max-w-2xl gap-6 mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 max-w-2xl gap-6 mb-12 items-stretch">
           {cards.map((card) => (
             <Link key={card.title} href={card.href}
-              className="bg-[#1a0b2e]/60 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between"
+              className="bg-[#1a0b2e]/60 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between h-full shadow-lg"
             >
               <card.icon className={`h-8 w-8 ${card.color} mb-3`} />
               <div>
@@ -123,7 +198,8 @@ export default function AdminDashboardPage() {
           </button>
 
           {showUploadForm && (
-            <form onSubmit={handleFormSubmit} className="mt-6 space-y-5">
+            <form onSubmit={handleFormSubmit} className="mt-6 space-y-6">
+              
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
@@ -174,7 +250,7 @@ export default function AdminDashboardPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
                   <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
-                    Weight (Grams) <span className="text-[#D4AF37]">*</span>
+                    Weight <span className="text-[#D4AF37]">*</span> <span className="lowercase text-[#F3E5AB]/50 font-normal ml-1">(grams)</span>
                   </label>
                   <input
                     type="number"
@@ -189,7 +265,7 @@ export default function AdminDashboardPage() {
                 </div>
                 <div>
                   <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
-                    Making Charge (%) <span className="text-[#D4AF37]">*</span>
+                    Making Charge <span className="text-[#D4AF37]">*</span> <span className="text-[#F3E5AB]/50 font-normal ml-1">(%)</span>
                   </label>
                   <input
                     type="number"
@@ -214,27 +290,76 @@ export default function AdminDashboardPage() {
                   value={form.description}
                   onChange={(e) => handleFormChange("description", e.target.value)}
                   placeholder="Brief description of the product..."
-                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm"
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-[#D4AF37] text-sm resize-y"
                 />
               </div>
 
+              {/* Product Image Upload Section */}
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Product Image
+                </label>
+                
+                {imagePreview ? (
+                  <div className="relative inline-block border border-[#D4AF37]/30 rounded-lg overflow-hidden bg-[#0c0418]">
+                    <img src={imagePreview} alt="Preview" className="w-32 h-32 object-cover" />
+                    <button
+                      type="button"
+                      onClick={handleRemoveImage}
+                      className="absolute top-1 right-1 bg-red-500/80 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
+                      title="Remove Image"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer border-2 border-dashed border-[#D4AF37]/20 rounded-xl p-8 flex flex-col items-center justify-center text-[#F3E5AB]/50 hover:border-[#D4AF37]/40 hover:bg-[#D4AF37]/5 transition-all">
+                    <ImageIcon className="h-8 w-8 mb-2 opacity-50" />
+                    <span className="text-sm">Click to upload image</span>
+                    <span className="text-xs opacity-60 mt-1">PNG, JPG, WEBP up to 5MB</span>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/jpg"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+                {imageError && <p className="text-red-400 text-xs mt-2 font-medium">{imageError}</p>}
+              </div>
+
+              {formError && (
+                <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-3 rounded-lg text-sm">
+                  {formError}
+                </div>
+              )}
+              
               {formSuccess && (
-                <p className="text-emerald-400 text-xs text-center font-semibold">
-                  Product details saved successfully.
-                </p>
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg text-sm">
+                  Product saved successfully!
+                </div>
               )}
 
-              <div className="flex gap-3">
+              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#D4AF37]/10">
                 <button
                   type="submit"
-                  className="flex-1 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
+                  disabled={!isFormValid || isSubmitting}
+                  className="flex-1 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 order-1 sm:order-2"
                 >
-                  Save Product
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    "Save Product"
+                  )}
                 </button>
                 <button
                   type="button"
-                  onClick={() => { setForm(defaultForm); setFormSuccess(false); setShowUploadForm(false); }}
-                  className="px-6 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors"
+                  onClick={() => { setForm(defaultForm); setFormSuccess(false); setFormError(""); handleRemoveImage(); setShowUploadForm(false); }}
+                  disabled={isSubmitting}
+                  className="px-6 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors disabled:opacity-50 disabled:pointer-events-none order-2 sm:order-1"
                 >
                   Cancel
                 </button>
@@ -242,7 +367,6 @@ export default function AdminDashboardPage() {
             </form>
           )}
         </div>
-
 
       </div>
     </div>
