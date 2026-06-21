@@ -71,23 +71,40 @@ function readHistory(): LiveRateRecord[] {
   return [];
 }
 
-async function fetchFromDrHint(): Promise<LiveRateRecord | null> {
+async function fetchFromCurrencyApi(): Promise<LiveRateRecord | null> {
   try {
-    const response = await fetch(
-      "https://drhint.com/api/public/hooks/gold-rates"
-    );
+    const [goldRes, silverRes] = await Promise.all([
+      fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/xau.json", { cache: "no-store" }),
+      fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/xag.json", { cache: "no-store" })
+    ]);
 
-    if (!response.ok) return null;
+    if (!goldRes.ok || !silverRes.ok) return null;
 
-    const data = await response.json();
+    const goldData = await goldRes.json();
+    const silverData = await silverRes.json();
 
-    const gold24k = data.perGram24kInr;
-    const gold22k = gold24k * GOLD_22K_PURITY;
+    const xauInr = goldData.xau.inr;
+    const xagInr = silverData.xag.inr;
+
+    const TROY_OUNCE_IN_GRAMS = 31.1034768;
+    
+    // Spot prices in INR per gram
+    const goldSpotPerGram = xauInr / TROY_OUNCE_IN_GRAMS;
+    const silverSpotPerGram = xagInr / TROY_OUNCE_IN_GRAMS;
+
+    // Apply standard Indian import duties (approx 15% overall difference to retail)
+    // before the local premium is applied in buildRecord
+    const INDIAN_IMPORT_DUTY_MULTIPLIER = 1.15; 
+
+    const gold24kBase = goldSpotPerGram * INDIAN_IMPORT_DUTY_MULTIPLIER;
+    const gold22kBase = gold24kBase * GOLD_22K_PURITY;
+    
+    const silverBase = silverSpotPerGram * INDIAN_IMPORT_DUTY_MULTIPLIER;
 
     const record = buildRecord(
-      gold22k,
-      270,
-      "drhint"
+      gold22kBase,
+      silverBase,
+      "currency-api"
     );
 
     const history = readHistory();
@@ -101,7 +118,8 @@ async function fetchFromDrHint(): Promise<LiveRateRecord | null> {
     }
 
     return record;
-  } catch {
+  } catch (err) {
+    console.error("Error fetching rates:", err);
     return null;
   }
 }
@@ -117,7 +135,7 @@ export default async function handler(
   );
 
   try {
-    const live = await fetchFromDrHint();
+    const live = await fetchFromCurrencyApi();
 
     if (live) {
       res.json(live);
