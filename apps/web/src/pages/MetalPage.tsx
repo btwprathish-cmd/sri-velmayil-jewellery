@@ -107,7 +107,7 @@ export default function MetalPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="flex flex-wrap justify-center gap-6">
         {categoriesList.map((category) => {
           const categoryName = category.name;
           const id = categoryName.toLowerCase();
@@ -123,7 +123,7 @@ export default function MetalPage() {
             <Link
               key={id}
               href={`/jewellery-collections/${metal}/${id}`}
-              className="group bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/45 hover:bg-[#1a0b2e]/60 transition-all duration-300 flex flex-col justify-between shadow-xl"
+              className="group bg-[#1a0b2e]/40 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/45 hover:bg-[#1a0b2e]/60 transition-all duration-300 flex flex-col justify-between shadow-xl w-full max-w-[380px]"
             >
               <div className="flex flex-col space-y-4">
                 <div className="w-12 h-12 rounded-xl bg-[#D4AF37]/10 border border-[#D4AF37]/20 flex items-center justify-center group-hover:bg-[#D4AF37]/15 transition-colors">

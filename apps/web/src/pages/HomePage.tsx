@@ -64,7 +64,7 @@ export default function HomePage() {
               Each piece is a testament to 25 years of master craftsmanship — inspired by Tamil Nadu's royal legacy, shaped by hands that have spent decades perfecting their art.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="flex flex-wrap justify-center gap-8">
             {metalsList.map((metal) => {
               const metalName = metal.name;
               const isSilver = metalName.toLowerCase() === "silver";
@@ -89,7 +89,7 @@ export default function HomePage() {
                 <Link
                   key={slug}
                   href={`/jewellery-collections${isGold ? '' : `/${slug}`}`}
-                  className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass} hover:border-${ThemeHoverClass} transition-all duration-300 shadow-xl`}
+                  className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass} hover:border-${ThemeHoverClass} transition-all duration-300 shadow-xl flex flex-col w-full max-w-[380px]`}
                   style={{ minHeight: "320px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.2)` }}
                 >
                   <img

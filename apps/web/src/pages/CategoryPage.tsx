@@ -62,7 +62,7 @@ export default function CategoryPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      <div className="flex flex-wrap justify-center gap-8">
         {category.items.map((item) => {
           const isSilver = category.metal.toLowerCase() === "silver";
           const baseRate = isSilver ? latestRate.silver_1g : latestRate.gold22k_1g;
@@ -73,7 +73,7 @@ export default function CategoryPage() {
           const totalPrice = Math.round(taxable + gst);
 
           return (
-            <div key={item.id} className="bg-[#1a0b2e]/55 border border-[#D4AF37]/15 rounded-2xl overflow-hidden hover:border-[#D4AF37]/35 transition-all duration-300 flex flex-col justify-between shadow-lg">
+            <div key={item.id} className="bg-[#1a0b2e]/55 border border-[#D4AF37]/15 rounded-2xl overflow-hidden hover:border-[#D4AF37]/35 transition-all duration-300 flex flex-col justify-between shadow-lg w-full max-w-[380px]">
               <div className="aspect-square relative overflow-hidden bg-gray-900">
                 <img
                   src={productImages[item.id] || item.image}
