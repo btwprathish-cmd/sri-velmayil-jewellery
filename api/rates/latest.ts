@@ -134,9 +134,9 @@ export default async function handler(
 ): Promise<void> {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
-    "Cache-Control",
-    "s-maxage=1800, stale-while-revalidate=3600"
-  );
+  "Cache-Control",
+  "no-store, no-cache, must-revalidate"
+);
 
   try {
     const live = await fetchFromGoldApi();
