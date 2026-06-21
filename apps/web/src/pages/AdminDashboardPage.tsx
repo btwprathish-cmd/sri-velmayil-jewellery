@@ -166,7 +166,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 max-w-2xl gap-6 mb-12 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto gap-6 mb-12 items-stretch">
           {cards.map((card) => (
             <Link key={card.title} href={card.href}
               className="bg-[#1a0b2e]/60 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between h-full shadow-lg"
@@ -340,11 +340,19 @@ export default function AdminDashboardPage() {
                 </div>
               )}
 
-              <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t border-[#D4AF37]/10">
+              <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-[#D4AF37]/10">
+                <button
+                  type="button"
+                  onClick={() => { setForm(defaultForm); setFormSuccess(false); setFormError(""); handleRemoveImage(); setShowUploadForm(false); }}
+                  disabled={isSubmitting}
+                  className="px-8 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors disabled:opacity-50 disabled:pointer-events-none order-2 sm:order-1"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={!isFormValid || isSubmitting}
-                  className="flex-1 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 order-1 sm:order-2"
+                  className="px-10 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 disabled:pointer-events-none flex justify-center items-center gap-2 order-1 sm:order-2"
                 >
                   {isSubmitting ? (
                     <>
@@ -354,14 +362,6 @@ export default function AdminDashboardPage() {
                   ) : (
                     "Save Product"
                   )}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => { setForm(defaultForm); setFormSuccess(false); setFormError(""); handleRemoveImage(); setShowUploadForm(false); }}
-                  disabled={isSubmitting}
-                  className="px-6 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors disabled:opacity-50 disabled:pointer-events-none order-2 sm:order-1"
-                >
-                  Cancel
                 </button>
               </div>
             </form>
