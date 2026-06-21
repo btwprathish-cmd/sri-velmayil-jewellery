@@ -19,9 +19,14 @@ export function getDerivedRates(rate: LiveRateRecord) {
 }
 
 export async function fetchLatestRate(): Promise<LiveRateRecord> {
-  const response = await fetch(
-    "https://drhint.com/api/public/hooks/gold-rates"
-  );
+  const res = await fetch("/api/rates/latest");
+
+  if (!res.ok) {
+    throw new Error("Failed to fetch rates");
+  }
+
+  return res.json();
+}
 
   if (!response.ok) {
     throw new Error("Failed to fetch rates");
