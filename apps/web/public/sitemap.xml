@@ -1,23 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+
   <url>
     <loc>https://srivelmayiljewellery.store/</loc>
-    <lastmod>2026-06-21T00:00:00.000Z</lastmod>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>1.0</priority>
   </url>
+
   <url>
-    <loc>https://srivelmayiljewellery.store/collections</loc>
-    <lastmod>2026-06-21T00:00:00.000Z</lastmod>
+    <loc>https://srivelmayiljewellery.store/jewellery-collections</loc>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>0.9</priority>
   </url>
+
   <url>
     <loc>https://srivelmayiljewellery.store/gold-rate-today-tirupur</loc>
-    <lastmod>2026-06-21T00:00:00.000Z</lastmod>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>0.9</priority>
   </url>
+
   <url>
-    <loc>https://srivelmayiljewellery.store/about</loc>
-    <lastmod>2026-06-21T00:00:00.000Z</lastmod>
+    <loc>https://srivelmayiljewellery.store/about-us</loc>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>0.8</priority>
   </url>
+
   <url>
-    <loc>https://srivelmayiljewellery.store/contact</loc>
-    <lastmod>2026-06-21T00:00:00.000Z</lastmod>
+    <loc>https://srivelmayiljewellery.store/contact-us</loc>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>0.8</priority>
   </url>
+
+  <url>
+    <loc>https://srivelmayiljewellery.store/gold-rate-history</loc>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://srivelmayiljewellery.store/silver-rate-today-tirupur</loc>
+    <lastmod>2026-06-22T00:00:00.000Z</lastmod>
+    <priority>0.8</priority>
+  </url>
+
 </urlset>
