@@ -45,6 +45,8 @@ export default function AdminDashboardPage() {
   const [isSubmittingMetal, setIsSubmittingMetal] = useState(false);
 
   const [newCategory, setNewCategory] = useState<CategoryData>({ name: "", description: "" });
+  const [collectionSuccess, setCollectionSuccess] = useState(false);
+  const [categorySuccess, setCategorySuccess] = useState(false);
   
   type ViewState = "dashboard" | "collections" | "categories" | "products";
   const [activeView, setActiveView] = useState<ViewState>("dashboard");
@@ -88,7 +90,7 @@ export default function AdminDashboardPage() {
       setNewMetal({ name: "", purityLabel: "", description: "" });
       setNewMetalImage(null);
       setNewMetalImagePreview(null);
-      setShowAddCollection(false);
+      setCollectionSuccess(true);
     } catch (err) {
       alert("Failed to upload metal image. Check configuration.");
     } finally {
@@ -108,7 +110,7 @@ export default function AdminDashboardPage() {
     setCategoriesList(getCategories());
     setCollections(getCollections());
     setNewCategory({ name: "", description: "" });
-    setShowAddCategory(false);
+    setCategorySuccess(true);
   };
 
   const handleLogout = async () => {
@@ -277,7 +279,7 @@ export default function AdminDashboardPage() {
                   <input
                     type="text"
                     value={newMetal.name}
-                    onChange={(e) => setNewMetal({ ...newMetal, name: e.target.value })}
+                    onChange={(e) => { setNewMetal({ ...newMetal, name: e.target.value }); setCollectionSuccess(false); }}
                     required
                     placeholder="e.g. Platinum"
                     className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm"
@@ -290,7 +292,7 @@ export default function AdminDashboardPage() {
                   <input
                     type="text"
                     value={newMetal.purityLabel}
-                    onChange={(e) => setNewMetal({ ...newMetal, purityLabel: e.target.value })}
+                    onChange={(e) => { setNewMetal({ ...newMetal, purityLabel: e.target.value }); setCollectionSuccess(false); }}
                     placeholder="e.g. 95% Pure Platinum"
                     className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm"
                   />
@@ -303,7 +305,7 @@ export default function AdminDashboardPage() {
                 <textarea
                   rows={2}
                   value={newMetal.description}
-                  onChange={(e) => setNewMetal({ ...newMetal, description: e.target.value })}
+                  onChange={(e) => { setNewMetal({ ...newMetal, description: e.target.value }); setCollectionSuccess(false); }}
                   placeholder="Short description for the collections page..."
                   className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm resize-y"
                 />
@@ -355,11 +357,24 @@ export default function AdminDashboardPage() {
                   </label>
                 )}
               </div>
-              <div className="flex justify-end">
+              {collectionSuccess && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg text-sm">
+                  Collection saved successfully!
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-[#D4AF37]/10">
+                <button
+                  type="button"
+                  onClick={() => { setNewMetal({ name: "", purityLabel: "", description: "" }); setCollectionSuccess(false); setNewMetalImage(null); setNewMetalImagePreview(null); setShowAddCollection(false); setEditingMetal(null); }}
+                  disabled={isSubmittingMetal}
+                  className="px-8 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors disabled:opacity-50 disabled:pointer-events-none order-2 sm:order-1"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
                   disabled={isSubmittingMetal}
-                  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 flex items-center gap-2"
+                  className="px-10 py-3 bg-gradient-to-r from-sky-500 to-sky-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 disabled:pointer-events-none flex items-center justify-center gap-2 order-1 sm:order-2"
                 >
                   {isSubmittingMetal ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                   {editingMetal ? "Update Collection" : "Save Collection"}
@@ -395,7 +410,7 @@ export default function AdminDashboardPage() {
                 <input
                   type="text"
                   value={newCategory.name}
-                  onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                  onChange={(e) => { setNewCategory({ ...newCategory, name: e.target.value }); setCategorySuccess(false); }}
                   required
                   placeholder="e.g. Pendant"
                   className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm"
@@ -408,15 +423,27 @@ export default function AdminDashboardPage() {
                 <textarea
                   rows={2}
                   value={newCategory.description}
-                  onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                  onChange={(e) => { setNewCategory({ ...newCategory, description: e.target.value }); setCategorySuccess(false); }}
                   placeholder="Short description for the categories grid..."
                   className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm resize-y"
                 />
               </div>
-              <div className="flex justify-end">
+              {categorySuccess && (
+                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-3 rounded-lg text-sm">
+                  Category saved successfully!
+                </div>
+              )}
+              <div className="flex flex-col sm:flex-row justify-end gap-4 pt-6 border-t border-[#D4AF37]/10">
+                <button
+                  type="button"
+                  onClick={() => { setNewCategory({ name: "", description: "" }); setCategorySuccess(false); setShowAddCategory(false); setEditingCategory(null); }}
+                  className="px-8 py-3 border border-[#D4AF37]/20 text-[#F3E5AB]/70 font-bold rounded-lg text-sm hover:border-[#D4AF37]/40 transition-colors order-2 sm:order-1"
+                >
+                  Cancel
+                </button>
                 <button
                   type="submit"
-                  className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
+                  className="px-10 py-3 bg-gradient-to-r from-purple-500 to-purple-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all flex items-center justify-center order-1 sm:order-2"
                 >
                   {editingCategory ? "Update Category" : "Save Category"}
                 </button>
