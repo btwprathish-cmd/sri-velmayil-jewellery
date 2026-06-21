@@ -111,10 +111,13 @@ export default function MetalPage() {
         {categoriesList.map((category) => {
           const categoryName = category.name;
           const id = categoryName.toLowerCase();
-          const defaultInfo = DEFAULT_CATEGORY_INFO[id];
+          const info = DEFAULT_CATEGORY_INFO[id] || {
+            description: `Explore our beautiful collection of ${metalLabel} ${categoryName}s.`,
+            icon: Circle,
+          };
           
-          const description = category.description || defaultInfo?.description || "";
-          const Icon = defaultInfo?.icon || Circle;
+          const description = category.description || info.description;
+          const Icon = info.icon;
           
           return (
             <Link
@@ -130,9 +133,7 @@ export default function MetalPage() {
                   <h2 className="font-serif text-2xl font-bold text-[#F3E5AB] group-hover:text-[#D4AF37] transition-colors">
                     {categoryName}
                   </h2>
-                  {description && (
-                    <p className="text-sm text-[#F3E5AB]/60 leading-relaxed font-sans mt-2">{description}</p>
-                  )}
+                  <p className="text-sm text-[#F3E5AB]/60 leading-relaxed font-sans mt-2">{description}</p>
                 </div>
               </div>
               <div className="pt-5 mt-5 border-t border-[#D4AF37]/10 flex items-center justify-between">

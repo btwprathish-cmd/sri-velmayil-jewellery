@@ -71,42 +71,44 @@ export default function HomePage() {
               const isGold = metalName.toLowerCase() === "gold";
               const slug = metalName.toLowerCase();
               
-              const imageSrc = metal.imageUrl;
+              const imageSrc = metal.imageUrl || (isSilver ? "/images/SILVER.jpg" : "/images/GOLD.jpg");
 
               let ThemeColor = isSilver ? "white" : "#D4AF37";
               let ThemeClass = isSilver ? "white/10" : "[#D4AF37]/20";
               let ThemeHoverClass = isSilver ? "white/30" : "[#D4AF37]/50";
+              let TextClass = isSilver ? "white/68" : "[#F3E5AB]/78";
+
+              const purityLabel = metal.purityLabel || (isGold ? "BIS 916 Hallmarked" : isSilver ? "Purity 99.9%" : "Exclusive");
+              const description = metal.description || (isGold 
+                ? "From intricately crafted necklaces and statement bangles to elegant rings and resplendent bridal sets — each piece born from pure gold and the hands of a master."
+                : isSilver 
+                ? "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold."
+                : `Explore our stunning new ${metalName} collection, crafted with perfection and style.`);
 
               return (
                 <Link
                   key={slug}
                   href={`/jewellery-collections${isGold ? '' : `/${slug}`}`}
                   className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass} hover:border-${ThemeHoverClass} transition-all duration-300 shadow-xl`}
-                  style={{ minHeight: "320px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.2)`, backgroundColor: '#1a0b2e' }}
+                  style={{ minHeight: "320px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.2)` }}
                 >
-                  {imageSrc && (
-                    <img
-                      src={imageSrc}
-                      alt={`${metalName} Collections`}
-                      className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
+                  <img
+                    src={imageSrc}
+                    alt={`${metalName} Collections`}
+                    className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/92 via-[#0c0418]/45 to-transparent" />
                   <div className="absolute inset-0 flex flex-col justify-end p-8">
-                    {metal.purityLabel && (
-                      <div className="inline-flex items-center gap-2 mb-3">
-                        <span className="w-3 h-3 rounded-full" style={{ backgroundColor: ThemeColor }} />
-                        <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ThemeColor }}>
-                          {metal.purityLabel}
-                        </span>
-                      </div>
-                    )}
+                    <div className="inline-flex items-center gap-2 mb-3">
+                      <span className="w-3 h-3 rounded-full" style={{ backgroundColor: ThemeColor }} />
+                      <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ThemeColor }}>
+                        {purityLabel}
+                      </span>
+                    </div>
                     <h3 className="font-serif text-3xl font-bold text-white mb-2">{metalName} Jewellery</h3>
-                    {metal.description && (
-                      <p className="text-sm font-sans mb-4 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.78)` }}>
-                        {metal.description}
-                      </p>
-                    )}
+                    <p className="text-sm font-sans mb-4 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.78)` }}>
+                      {description}
+                    </p>
                     <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-colors mt-auto pt-2" style={{ color: ThemeColor }}>
                       Discover {metalName} Collections
                       <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />

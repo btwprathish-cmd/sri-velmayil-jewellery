@@ -53,7 +53,14 @@ export function getMetals(): MetalData[] {
     const stored = localStorage.getItem(METALS_KEY);
     if (stored) {
       const parsed = JSON.parse(stored);
-      return parsed.map((item: any) => typeof item === 'string' ? { name: item } : item);
+      return parsed.map((item: any) => {
+        const metalData = typeof item === 'string' ? { name: item } : item;
+        const defaultMatch = DEFAULT_METALS.find(m => m.name.toLowerCase() === metalData.name.toLowerCase());
+        if (defaultMatch) {
+          return { ...defaultMatch, ...metalData };
+        }
+        return metalData;
+      });
     }
   } catch (e) {}
   return [...DEFAULT_METALS];
