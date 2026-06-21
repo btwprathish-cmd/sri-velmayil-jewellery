@@ -71,45 +71,23 @@ function readHistory(): LiveRateRecord[] {
   return [];
 }
 
-async function fetchFromGoldApi(): Promise<LiveRateRecord | null> {
+async function fetchFromDrHint(): Promise<LiveRateRecord | null> {
   try {
-    const [goldRes, silverRes, fxRes] = await Promise.all([
-      fetch("https://api.gold-api.com/price/XAU"),
-      fetch("https://api.gold-api.com/price/XAG"),
-      fetch("https://api.frankfurter.app/latest?from=USD&to=INR"),
-    ]);
+    const response = await fetch(
+      "https://drhint.com/api/public/hooks/gold-rates"
+    );
 
-    if (!goldRes.ok || !silverRes.ok || !fxRes.ok) {
-      return null;
-    }
+    if (!response.ok) return null;
 
-    const goldData = (await goldRes.json()) as { price?: number };
-    const silverData = (await silverRes.json()) as { price?: number };
-    const fxData = (await fxRes.json()) as {
-      rates?: { INR?: number };
-    };
+    const data = await response.json();
 
-    const usdToInr = fxData?.rates?.INR;
-    const goldUsdPerOz = goldData?.price;
-    const silverUsdPerOz = silverData?.price;
-
-    if (!usdToInr || !goldUsdPerOz || !silverUsdPerOz) {
-      return null;
-    }
-
-    const gold24kPerGram =
-      (goldUsdPerOz * usdToInr) / TROY_OZ_GRAMS;
-
-    const silverPerGram =
-      (silverUsdPerOz * usdToInr) / TROY_OZ_GRAMS;
-
-    const gold22kPerGram =
-      gold24kPerGram * GOLD_22K_PURITY;
+    const gold24k = data.perGram24kInr;
+    const gold22k = gold24k * GOLD_22K_PURITY;
 
     const record = buildRecord(
-      gold22kPerGram,
-      silverPerGram,
-      "gold-api.com + frankfurter.app"
+      gold22k,
+      270,
+      "drhint"
     );
 
     const history = readHistory();
