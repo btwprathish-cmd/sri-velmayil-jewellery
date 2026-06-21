@@ -75,47 +75,48 @@ export default function CollectionsPage() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-        {metalsList.map((metalName) => {
+        {metalsList.map((metal: any) => {
+          const metalName = metal.name;
           const isSilver = metalName.toLowerCase() === "silver";
           const isGold = metalName.toLowerCase() === "gold";
           const slug = metalName.toLowerCase();
           
-          let imageSrc = "/images/GOLD.jpg";
-          if (isSilver) imageSrc = "/images/SILVER.jpg";
+          const imageSrc = metal.imageUrl;
 
           let ThemeColor = isSilver ? "white" : "#D4AF37";
           let ThemeClass = isSilver ? "white/80" : "[#D4AF37]";
-          let TextClass = isSilver ? "white/65" : "[#F3E5AB]/75";
           
           return (
             <Link
               key={slug}
               href={`/jewellery-collections/${slug}`}
               className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass}/25 hover:border-${ThemeClass}/55 transition-all duration-300 shadow-xl flex flex-col`}
-              style={{ minHeight: "340px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.25)` }}
+              style={{ minHeight: "340px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.25)`, backgroundColor: '#1a0b2e' }}
             >
-              <img
-                src={imageSrc}
-                alt={`${metalName} Jewellery Collections`}
-                className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
-              />
+              {imageSrc && (
+                <img
+                  src={imageSrc}
+                  alt={`${metalName} Jewellery Collections`}
+                  className="w-full h-full object-cover absolute inset-0 group-hover:scale-105 transition-transform duration-500"
+                />
+              )}
               <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/95 via-[#0c0418]/50 to-transparent" />
               <div className="absolute inset-0 flex flex-col justify-end p-8">
-                <div className="inline-flex items-center gap-2 mb-3">
-                  <span className="w-3 h-3 rounded-full" style={{ backgroundColor: ThemeColor }} />
-                  <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ThemeColor }}>
-                    {isGold ? "22K · 24K · 18K" : isSilver ? "Purity 99.9%" : "Exclusive"}
-                  </span>
-                </div>
+                {metal.purityLabel && (
+                  <div className="inline-flex items-center gap-2 mb-3">
+                    <span className="w-3 h-3 rounded-full" style={{ backgroundColor: ThemeColor }} />
+                    <span className="text-xs font-bold uppercase tracking-widest" style={{ color: ThemeColor }}>
+                      {metal.purityLabel}
+                    </span>
+                  </div>
+                )}
                 <h2 className="font-serif text-3xl sm:text-4xl font-bold text-white mb-2">{metalName} Collections</h2>
-                <p className="text-sm font-sans mb-5 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.75)` }}>
-                  {isGold 
-                    ? "Rings, chains, earrings, bangles, coins and anklets — all hallmarked 916 BIS certified pure gold."
-                    : isSilver 
-                    ? "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate."
-                    : `Explore our stunning new ${metalName} collection, crafted with perfection.`}
-                </p>
-                <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-all" style={{ color: ThemeColor }}>
+                {metal.description && (
+                  <p className="text-sm font-sans mb-5 max-w-xs leading-relaxed" style={{ color: `rgba(243, 229, 171, 0.75)` }}>
+                    {metal.description}
+                  </p>
+                )}
+                <span className="inline-flex items-center text-sm font-bold group-hover:brightness-125 transition-all mt-auto pt-2" style={{ color: ThemeColor }}>
                   Explore {metalName}
                   <ArrowRight className="ml-1.5 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                 </span>

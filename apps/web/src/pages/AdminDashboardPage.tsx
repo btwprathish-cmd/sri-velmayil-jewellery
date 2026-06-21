@@ -3,7 +3,7 @@ import { Link, useLocation } from "wouter";
 import { Package, LayoutDashboard, LogOut, PlusCircle, ChevronDown, ChevronUp, Image as ImageIcon, X, Loader2 } from "lucide-react";
 import { getSession, logout } from "@/utils/auth";
 import { uploadImage } from "@/utils/upload-image";
-import { getCollections, saveCollectionItem, getMetals, getCategories, addMetal, addCategory, type CollectionBlock } from "@/utils/collections";
+import { getCollections, saveCollectionItem, getMetals, getCategories, addMetal, addCategory, type CollectionBlock, type MetalData, type CategoryData } from "@/utils/collections";
 
 interface ProductFormState {
   name: string;
@@ -36,10 +36,15 @@ export default function AdminDashboardPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [collections, setCollections] = useState<CollectionBlock[]>([]);
-  const [metalsList, setMetalsList] = useState<string[]>([]);
-  const [categoriesList, setCategoriesList] = useState<string[]>([]);
-  const [newCollectionName, setNewCollectionName] = useState("");
-  const [newCategoryName, setNewCategoryName] = useState("");
+  const [metalsList, setMetalsList] = useState<MetalData[]>([]);
+  const [categoriesList, setCategoriesList] = useState<CategoryData[]>([]);
+  
+  const [newMetal, setNewMetal] = useState<MetalData>({ name: "", purityLabel: "", description: "" });
+  const [newMetalImage, setNewMetalImage] = useState<File | null>(null);
+  const [newMetalImagePreview, setNewMetalImagePreview] = useState<string | null>(null);
+  const [isSubmittingMetal, setIsSubmittingMetal] = useState(false);
+
+  const [newCategory, setNewCategory] = useState<CategoryData>({ name: "", description: "" });
   
   // Image Upload State
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -56,21 +61,34 @@ export default function AdminDashboardPage() {
     setCategoriesList(getCategories());
   }, [setLocation]);
 
-  const handleAddCollectionSubmit = (e: React.FormEvent) => {
+  const handleAddCollectionSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCollectionName.trim()) return;
-    addMetal(newCollectionName.trim());
-    setMetalsList(getMetals());
-    setNewCollectionName("");
-    setShowAddCollection(false);
+    if (!newMetal.name.trim()) return;
+    setIsSubmittingMetal(true);
+    try {
+      let imageUrl = "";
+      if (newMetalImage) {
+        imageUrl = await uploadImage(newMetalImage);
+      }
+      addMetal({ ...newMetal, imageUrl });
+      setMetalsList(getMetals());
+      setNewMetal({ name: "", purityLabel: "", description: "" });
+      setNewMetalImage(null);
+      setNewMetalImagePreview(null);
+      setShowAddCollection(false);
+    } catch (err) {
+      alert("Failed to upload metal image. Check configuration.");
+    } finally {
+      setIsSubmittingMetal(false);
+    }
   };
 
   const handleAddCategorySubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newCategoryName.trim()) return;
-    addCategory(newCategoryName.trim());
+    if (!newCategory.name.trim()) return;
+    addCategory(newCategory);
     setCategoriesList(getCategories());
-    setNewCategoryName("");
+    setNewCategory({ name: "", description: "" });
     setShowAddCategory(false);
   };
 
@@ -224,21 +242,90 @@ export default function AdminDashboardPage() {
           </button>
 
           {showAddCollection && (
-            <form onSubmit={handleAddCollectionSubmit} className="mt-6 flex flex-col sm:flex-row gap-4">
-              <input
-                type="text"
-                value={newCollectionName}
-                onChange={(e) => setNewCollectionName(e.target.value)}
-                required
-                placeholder="e.g. Platinum, Rose Gold"
-                className="flex-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
-              >
-                Save
-              </button>
+            <form onSubmit={handleAddCollectionSubmit} className="mt-6 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                    Collection Name *
+                  </label>
+                  <input
+                    type="text"
+                    value={newMetal.name}
+                    onChange={(e) => setNewMetal({ ...newMetal, name: e.target.value })}
+                    required
+                    placeholder="e.g. Platinum"
+                    className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                    Purity Label
+                  </label>
+                  <input
+                    type="text"
+                    value={newMetal.purityLabel}
+                    onChange={(e) => setNewMetal({ ...newMetal, purityLabel: e.target.value })}
+                    placeholder="e.g. 95% Pure Platinum"
+                    className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={newMetal.description}
+                  onChange={(e) => setNewMetal({ ...newMetal, description: e.target.value })}
+                  placeholder="Short description for the collections page..."
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-sky-400 text-sm resize-y"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Collection Cover Image
+                </label>
+                {newMetalImagePreview ? (
+                  <div className="relative inline-block border border-[#D4AF37]/30 rounded-lg overflow-hidden bg-[#0c0418]">
+                    <img src={newMetalImagePreview} alt="Preview" className="w-32 h-32 object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => { setNewMetalImage(null); setNewMetalImagePreview(null); }}
+                      className="absolute top-1 right-1 bg-red-500/80 text-white rounded-full p-1 hover:bg-red-500 transition-colors"
+                    >
+                      <X className="h-4 w-4" />
+                    </button>
+                  </div>
+                ) : (
+                  <label className="cursor-pointer inline-flex items-center gap-2 border border-dashed border-[#D4AF37]/30 rounded-lg px-4 py-2 hover:bg-[#D4AF37]/10 transition-colors">
+                    <ImageIcon className="h-4 w-4 text-[#F3E5AB]/50" />
+                    <span className="text-xs text-[#F3E5AB]/70">Upload Image</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          setNewMetalImage(file);
+                          setNewMetalImagePreview(URL.createObjectURL(file));
+                        }
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+                )}
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={isSubmittingMetal}
+                  className="px-6 py-2.5 bg-gradient-to-r from-sky-500 to-sky-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all disabled:opacity-50 flex items-center gap-2"
+                >
+                  {isSubmittingMetal ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  Save Collection
+                </button>
+              </div>
             </form>
           )}
         </div>
@@ -261,21 +348,40 @@ export default function AdminDashboardPage() {
           </button>
 
           {showAddCategory && (
-            <form onSubmit={handleAddCategorySubmit} className="mt-6 flex flex-col sm:flex-row gap-4">
-              <input
-                type="text"
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                required
-                placeholder="e.g. Pendant, Mangalsutra"
-                className="flex-1 bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm"
-              />
-              <button
-                type="submit"
-                className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
-              >
-                Save
-              </button>
+            <form onSubmit={handleAddCategorySubmit} className="mt-6 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Category Name *
+                </label>
+                <input
+                  type="text"
+                  value={newCategory.name}
+                  onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                  required
+                  placeholder="e.g. Pendant"
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-semibold text-[#F3E5AB]/70 uppercase tracking-wider mb-2">
+                  Description
+                </label>
+                <textarea
+                  rows={2}
+                  value={newCategory.description}
+                  onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                  placeholder="Short description for the categories grid..."
+                  className="w-full bg-[#0c0418] border border-[#D4AF37]/20 rounded-lg py-2.5 px-4 text-white focus:outline-none focus:border-purple-400 text-sm resize-y"
+                />
+              </div>
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  className="px-6 py-2.5 bg-gradient-to-r from-purple-500 to-purple-300 text-[#1a0b2e] font-bold rounded-lg uppercase tracking-wider text-sm hover:brightness-110 transition-all"
+                >
+                  Save Category
+                </button>
+              </div>
             </form>
           )}
         </div>
@@ -313,7 +419,7 @@ export default function AdminDashboardPage() {
                   >
                     <option value="" disabled>Select Collection</option>
                     {metalsList.map((m) => (
-                      <option key={m} value={m}>{m}</option>
+                      <option key={m.name} value={m.name}>{m.name}</option>
                     ))}
                   </select>
                 </div>
@@ -329,7 +435,7 @@ export default function AdminDashboardPage() {
                   >
                     <option value="" disabled>Select Category</option>
                     {categoriesList.map((c) => (
-                      <option key={c} value={c}>{c}</option>
+                      <option key={c.name} value={c.name}>{c.name}</option>
                     ))}
                   </select>
                 </div>

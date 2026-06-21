@@ -36,7 +36,7 @@ export default function MetalPage() {
   const metal = params?.metal ?? "";
   const metalLabel = metal.charAt(0).toUpperCase() + metal.slice(1).toLowerCase();
 
-  const [categoriesList, setCategoriesList] = useState<string[]>([]);
+  const [categoriesList, setCategoriesList] = useState<any[]>([]);
   useEffect(() => {
     setCategoriesList(getCategories());
   }, []);
@@ -108,13 +108,13 @@ export default function MetalPage() {
       )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {categoriesList.map((categoryName) => {
+        {categoriesList.map((category) => {
+          const categoryName = category.name;
           const id = categoryName.toLowerCase();
-          const info = DEFAULT_CATEGORY_INFO[id] || {
-            description: `Explore our beautiful collection of ${metalLabel} ${categoryName}s.`,
-            icon: Circle,
-          };
-          const Icon = info.icon;
+          const defaultInfo = DEFAULT_CATEGORY_INFO[id];
+          
+          const description = category.description || defaultInfo?.description || "";
+          const Icon = defaultInfo?.icon || Circle;
           
           return (
             <Link
@@ -130,7 +130,9 @@ export default function MetalPage() {
                   <h2 className="font-serif text-2xl font-bold text-[#F3E5AB] group-hover:text-[#D4AF37] transition-colors">
                     {categoryName}
                   </h2>
-                  <p className="text-sm text-[#F3E5AB]/60 leading-relaxed font-sans mt-2">{info.description}</p>
+                  {description && (
+                    <p className="text-sm text-[#F3E5AB]/60 leading-relaxed font-sans mt-2">{description}</p>
+                  )}
                 </div>
               </div>
               <div className="pt-5 mt-5 border-t border-[#D4AF37]/10 flex items-center justify-between">

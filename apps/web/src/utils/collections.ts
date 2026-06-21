@@ -1,5 +1,17 @@
 import collectionsData from "@/data/collections.json";
 
+export type MetalData = {
+  name: string;
+  purityLabel?: string;
+  description?: string;
+  imageUrl?: string;
+};
+
+export type CategoryData = {
+  name: string;
+  description?: string;
+};
+
 export type CollectionItem = {
   id: string;
   name: string;
@@ -23,39 +35,55 @@ const STORAGE_KEY = "svj_collections";
 const METALS_KEY = "svj_metals";
 const CATEGORIES_KEY = "svj_categories";
 
-const DEFAULT_METALS = ["Gold", "Silver"];
-const DEFAULT_CATEGORIES = ["Coin", "Ring", "Chain", "Earring", "Bracelet", "Anklet"];
+const DEFAULT_METALS: MetalData[] = [
+  { name: "Gold", purityLabel: "22K · 24K · 18K", description: "Rings, chains, earrings, bangles, coins and anklets — all hallmarked 916 BIS certified pure gold.", imageUrl: "/images/GOLD.jpg" },
+  { name: "Silver", purityLabel: "Purity 99.9%", description: "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.", imageUrl: "/images/SILVER.jpg" }
+];
+const DEFAULT_CATEGORIES: CategoryData[] = [
+  { name: "Coin", description: "Pure gold and silver coins in various weights — ideal for gifting and investment." },
+  { name: "Ring", description: "Engagement, wedding, and daily-wear rings in traditional and modern styles." },
+  { name: "Chain", description: "Necklaces and chains — from delicate daily wear to heavy bridal harems." },
+  { name: "Earring", description: "Studs, drops, jhumkas, and chandbalis crafted in 22K hallmarked gold." },
+  { name: "Bracelet", description: "Bangles and bracelets ranging from lightweight daily pieces to grand bridal sets." },
+  { name: "Anklet", description: "Traditional and contemporary anklets in pure gold and silver." }
+];
 
-export function getMetals(): string[] {
+export function getMetals(): MetalData[] {
   try {
     const stored = localStorage.getItem(METALS_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed.map((item: any) => typeof item === 'string' ? { name: item } : item);
+    }
   } catch (e) {}
   return [...DEFAULT_METALS];
 }
 
-export function addMetal(metal: string): void {
+export function addMetal(metal: MetalData): void {
   const metals = getMetals();
-  const trimmed = metal.trim();
-  if (trimmed && !metals.map(m => m.toLowerCase()).includes(trimmed.toLowerCase())) {
-    metals.push(trimmed);
+  const trimmed = metal.name.trim();
+  if (trimmed && !metals.map(m => m.name.toLowerCase()).includes(trimmed.toLowerCase())) {
+    metals.push({ ...metal, name: trimmed });
     localStorage.setItem(METALS_KEY, JSON.stringify(metals));
   }
 }
 
-export function getCategories(): string[] {
+export function getCategories(): CategoryData[] {
   try {
     const stored = localStorage.getItem(CATEGORIES_KEY);
-    if (stored) return JSON.parse(stored);
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      return parsed.map((item: any) => typeof item === 'string' ? { name: item } : item);
+    }
   } catch (e) {}
   return [...DEFAULT_CATEGORIES];
 }
 
-export function addCategory(category: string): void {
+export function addCategory(category: CategoryData): void {
   const categories = getCategories();
-  const trimmed = category.trim();
-  if (trimmed && !categories.map(c => c.toLowerCase()).includes(trimmed.toLowerCase())) {
-    categories.push(trimmed);
+  const trimmed = category.name.trim();
+  if (trimmed && !categories.map(c => c.name.toLowerCase()).includes(trimmed.toLowerCase())) {
+    categories.push({ ...category, name: trimmed });
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
   }
 }
