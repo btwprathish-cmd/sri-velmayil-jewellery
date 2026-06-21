@@ -35,66 +35,143 @@ function Layout({ children }: { children: React.ReactNode }) {
 }
 
 function AdminLayout({ children }: { children: React.ReactNode }) {
-  return <div className="min-h-screen bg-[#0c0418] text-[#fbf6e8]">{children}</div>;
+  return (
+    <div className="min-h-screen bg-[#0c0418] text-[#fbf6e8]">
+      {children}
+    </div>
+  );
 }
 
 function Router() {
   return (
     <Switch>
+      {/* Admin Routes */}
       <Route path="/admin/login">
-        <AdminLayout><AdminLoginPage /></AdminLayout>
+        <AdminLayout>
+          <AdminLoginPage />
+        </AdminLayout>
       </Route>
+
       <Route path="/admin/dashboard">
-        <AdminLayout><AdminDashboardPage /></AdminLayout>
+        <AdminLayout>
+          <AdminDashboardPage />
+        </AdminLayout>
       </Route>
+
       <Route path="/admin">
-        {() => { window.location.replace("/admin/dashboard"); return null; }}
+        {() => {
+          window.location.replace("/admin/dashboard");
+          return null;
+        }}
       </Route>
 
+      {/* Main Routes */}
       <Route path="/">
-        <Layout><HomePage /></Layout>
+        <Layout>
+          <HomePage />
+        </Layout>
       </Route>
+
       <Route path="/gold-rate-today-tirupur">
-        <Layout><GoldRateTodayPage /></Layout>
+        <Layout>
+          <GoldRateTodayPage />
+        </Layout>
       </Route>
+
       <Route path="/gold-rate-history">
-        <Layout><GoldRateHistoryPage /></Layout>
+        <Layout>
+          <GoldRateHistoryPage />
+        </Layout>
       </Route>
+
       <Route path="/gold-rate/:date">
-        <Layout><GoldRateDatePage /></Layout>
+        <Layout>
+          <GoldRateDatePage />
+        </Layout>
       </Route>
+
       <Route path="/silver-rate-today-tirupur">
-        <Layout><SilverRatePage /></Layout>
+        <Layout>
+          <SilverRatePage />
+        </Layout>
       </Route>
 
-      {/* Collections hierarchy — most specific routes first */}
+      {/* Collections Routes */}
       <Route path="/jewellery-collections/:metal/:category">
-        <Layout><MetalCategoryPage /></Layout>
+        <Layout>
+          <MetalCategoryPage />
+        </Layout>
       </Route>
+
       <Route path="/jewellery-collections/:metal">
-        <Layout><MetalPage /></Layout>
+        <Layout>
+          <MetalPage />
+        </Layout>
       </Route>
+
       <Route path="/jewellery-collections">
-        <Layout><CollectionsPage /></Layout>
+        <Layout>
+          <CollectionsPage />
+        </Layout>
       </Route>
 
+      {/* NEW SEO FRIENDLY ROUTE */}
+      <Route path="/collections">
+        <Layout>
+          <CollectionsPage />
+        </Layout>
+      </Route>
 
+      {/* About Routes */}
       <Route path="/about-us">
-        <Layout><AboutPage /></Layout>
-      </Route>
-      <Route path="/contact-us">
-        <Layout><ContactPage /></Layout>
-      </Route>
-      <Route path="/faq">
-        <Layout><FaqPage /></Layout>
+        <Layout>
+          <AboutPage />
+        </Layout>
       </Route>
 
+      {/* NEW SEO FRIENDLY ROUTE */}
+      <Route path="/about">
+        <Layout>
+          <AboutPage />
+        </Layout>
+      </Route>
+
+      {/* Contact Routes */}
+      <Route path="/contact-us">
+        <Layout>
+          <ContactPage />
+        </Layout>
+      </Route>
+
+      {/* NEW SEO FRIENDLY ROUTE */}
+      <Route path="/contact">
+        <Layout>
+          <ContactPage />
+        </Layout>
+      </Route>
+
+      <Route path="/faq">
+        <Layout>
+          <FaqPage />
+        </Layout>
+      </Route>
+
+      {/* 404 Route */}
       <Route>
         <Layout>
           <div className="py-32 text-center">
-            <h1 className="font-serif text-4xl font-bold text-[#D4AF37] mb-4">404 — Page Not Found</h1>
-            <p className="text-[#F3E5AB]/60 mb-8">The page you're looking for doesn't exist.</p>
-            <a href="/" className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg">
+            <h1 className="font-serif text-4xl font-bold text-[#D4AF37] mb-4">
+              404 — Page Not Found
+            </h1>
+
+            <p className="text-[#F3E5AB]/60 mb-8">
+              The page you're looking for doesn't exist.
+            </p>
+
+            <a
+              href="/"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg"
+            >
               Back to Home
             </a>
           </div>
