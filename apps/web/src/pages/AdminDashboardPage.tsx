@@ -211,7 +211,7 @@ export default function AdminDashboardPage() {
   const uniqueCategories = new Set(collections.map((c) => c.category.toLowerCase())).size;
 
   const cards = [
-    { title: "Add New", value: "Forms", icon: PlusCircle, view: "dashboard", color: "text-[#D4AF37]" },
+    { title: "Add New", value: "", icon: PlusCircle, view: "dashboard", color: "text-[#D4AF37]" },
     { title: "Collections", value: uniqueCollections, icon: LayoutDashboard, view: "collections", color: "text-sky-400" },
     { title: "Categories", value: uniqueCategories, icon: LayoutDashboard, view: "categories", color: "text-purple-400" },
     { title: "Products", value: totalProducts, icon: Package, view: "products", color: "text-emerald-400" },
