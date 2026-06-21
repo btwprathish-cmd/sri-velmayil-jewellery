@@ -74,7 +74,11 @@ export default function CollectionsPage() {
         </button>
       </div>
 
-      <div className="flex flex-wrap justify-center gap-8">
+      <div className={
+        metalsList.length === 1 ? "grid grid-cols-1 max-w-sm mx-auto gap-8" :
+        metalsList.length === 2 ? "grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto gap-8" :
+        "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+      }>
         {metalsList.map((metal: any) => {
           const metalName = metal.name;
           const isSilver = metalName.toLowerCase() === "silver";
@@ -98,7 +102,7 @@ export default function CollectionsPage() {
             <Link
               key={slug}
               href={`/jewellery-collections/${slug}`}
-              className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass}/25 hover:border-${ThemeClass}/55 transition-all duration-300 shadow-xl flex flex-col w-full max-w-[380px]`}
+              className={`group relative rounded-2xl overflow-hidden border border-${ThemeClass}/25 hover:border-${ThemeClass}/55 transition-all duration-300 shadow-xl flex flex-col`}
               style={{ minHeight: "340px", borderColor: `rgba(${isSilver ? '255,255,255' : '212,175,55'}, 0.25)` }}
             >
               <img
