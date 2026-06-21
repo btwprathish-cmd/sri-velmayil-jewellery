@@ -144,9 +144,12 @@ export default function AdminDashboardPage() {
   if (!session) return <div className="min-h-screen bg-[#0c0418] flex items-center justify-center text-[#D4AF37]">Loading...</div>;
 
   const totalProducts = collections.reduce((sum, cat) => sum + cat.items.length, 0);
+  const uniqueCollections = new Set(collections.map((c) => c.metal.toLowerCase())).size;
+  const uniqueCategories = new Set(collections.map((c) => c.category.toLowerCase())).size;
 
   const cards = [
-    { title: "Collections", value: collections.length, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
+    { title: "Collections", value: uniqueCollections, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-sky-400" },
+    { title: "Categories", value: uniqueCategories, icon: LayoutDashboard, href: "/jewellery-collections", color: "text-purple-400" },
     { title: "Products", value: totalProducts, icon: Package, href: "/jewellery-collections", color: "text-emerald-400" },
   ];
 
@@ -167,7 +170,7 @@ export default function AdminDashboardPage() {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 max-w-2xl mx-auto gap-6 mb-12 items-stretch">
+        <div className="grid grid-cols-1 sm:grid-cols-3 max-w-3xl mx-auto gap-6 mb-12 items-stretch">
           {cards.map((card) => (
             <Link key={card.title} href={card.href}
               className="bg-[#1a0b2e]/60 border border-[#D4AF37]/15 rounded-2xl p-6 hover:border-[#D4AF37]/40 transition-all group flex flex-col justify-between h-full shadow-lg"
