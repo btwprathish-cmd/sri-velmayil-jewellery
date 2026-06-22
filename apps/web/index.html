@@ -1,6 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <!-- Removed maximum-scale=1 for better accessibility and SEO (Lighthouse recommendation) -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Sri Velmayil Jewellery | Gold Jewellery Shop in Tirupur | Live Gold Rate Today</title>
 
@@ -14,12 +17,13 @@
     content="Sri Velmayil Jewellery, Jewellery Shop Tirupur, Gold Jewellery Tirupur, Silver Jewellery Tirupur, Gold Rate Today Tirupur, Silver Rate Today Tirupur, BIS 916 Hallmarked Jewellery, Bridal Jewellery Tirupur, Gold Shop Near Me"
   />
 
-  <meta name="robots" content="index, follow" />
+  <!-- Enhanced Robots Meta Tag -->
+  <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
   <meta name="author" content="Sri Velmayil Jewellery" />
 
   <link rel="canonical" href="https://srivelmayiljewellery.store/" />
 
-  <!-- Open Graph -->
+  <!-- Open Graph / Facebook -->
   <meta property="og:title" content="Sri Velmayil Jewellery | Gold Jewellery Shop in Tirupur" />
   <meta
     property="og:description"
@@ -28,6 +32,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://srivelmayiljewellery.store/" />
   <meta property="og:site_name" content="Sri Velmayil Jewellery" />
+  <meta property="og:image" content="https://srivelmayiljewellery.store/favicon.jpg" />
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
@@ -36,8 +41,10 @@
     name="twitter:description"
     content="Live Gold Rate Today, Silver Rate Today and Premium Jewellery Collections in Tirupur."
   />
+  <meta name="twitter:image" content="https://srivelmayiljewellery.store/favicon.jpg" />
 
   <link rel="icon" type="image/jpeg" href="/favicon.jpg" />
+  <link rel="apple-touch-icon" href="/favicon.jpg" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -45,4 +52,29 @@
     href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@400;700;800;900&display=swap"
     rel="stylesheet"
   />
+
+  <!-- Structured Data (JSON-LD) for Local Business SEO -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "JewelryStore",
+      "name": "Sri Velmayil Jewellery",
+      "image": "https://srivelmayiljewellery.store/favicon.jpg",
+      "url": "https://srivelmayiljewellery.store/",
+      "address": {
+        "@type": "PostalAddress",
+        "addressLocality": "Tirupur",
+        "addressRegion": "Tamil Nadu",
+        "addressCountry": "IN"
+      },
+      "description": "25 Years of Trusted Jewellery Excellence. Live Gold Rates, Silver Rates and Premium Jewellery Collections in Tirupur.",
+      "priceRange": "$$$"
+    }
+  </script>
 </head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/main.tsx"></script>
+</body>
+</html>
