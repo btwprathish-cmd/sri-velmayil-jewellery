@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "wouter";
 import { Award, ShieldCheck, Heart, Users, CheckCircle, ArrowRight, Gem, Clock, Star, Sparkles, Scale, Headphones } from "lucide-react";
 
@@ -38,7 +39,43 @@ const whyChooseUs = [
 export default function AboutPage() {
   return (
   <>
-    
+    <Helmet>
+      <title>
+        About Sri Velmayil Jewellery Tirupur | 25 Years of Trusted Excellence
+      </title>
+
+      <meta
+        name="description"
+        content="Learn about Sri Velmayil Jewellery, Tirupur. Trusted for over 25 years for BIS 916 hallmarked gold jewellery, transparent pricing and exceptional craftsmanship."
+      />
+
+      <meta
+        name="keywords"
+        content="About Sri Velmayil Jewellery, Jewellery Shop Tirupur, BIS Hallmarked Jewellery, Trusted Gold Shop Tirupur"
+      />
+
+      <link
+        rel="canonical"
+        href="https://srivelmayiljewellery.store/about-us"
+      />
+
+      <meta
+        property="og:title"
+        content="About Sri Velmayil Jewellery Tirupur"
+      />
+
+      <meta
+        property="og:description"
+        content="25 years of trusted jewellery excellence in Tirupur with BIS hallmarked gold jewellery and transparent pricing."
+      />
+
+      <meta
+        property="og:url"
+        content="https://srivelmayiljewellery.store/about-us"
+      />
+
+      <meta property="og:type" content="website" />
+    </Helmet>
     <div className="py-16 sm:py-24 relative overflow-hidden">
 
       {/* Hero */}

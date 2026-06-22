@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
+import { Helmet } from "react-helmet";
 import { Link, useLocation } from "wouter";
 import { Award, Plus, X, Lock, Loader2, ArrowRight } from "lucide-react";
 import { login } from "@/utils/auth";
@@ -52,6 +53,44 @@ export default function CollectionsPage() {
   }
 
   return (
+    <>
+      <Helmet>
+        <title>
+          Gold & Silver Jewellery Collections in Tirupur | Sri Velmayil Jewellery
+        </title>
+
+        <meta
+          name="description"
+          content="Explore premium gold and silver jewellery collections in Tirupur. Bridal jewellery, chains, bangles, earrings, rings, coins and exclusive hallmarked designs at Sri Velmayil Jewellery."
+        />
+
+        <meta
+          name="keywords"
+          content="Gold Jewellery Tirupur, Silver Jewellery Tirupur, Bridal Jewellery Tirupur, Jewellery Collections Tirupur, Gold Rings, Gold Chains, Gold Bangles, Sri Velmayil Jewellery"
+        />
+
+        <link
+          rel="canonical"
+          href="https://srivelmayiljewellery.store/jewellery-collections"
+        />
+
+        <meta
+          property="og:title"
+          content="Gold & Silver Jewellery Collections | Sri Velmayil Jewellery"
+        />
+
+        <meta
+          property="og:description"
+          content="Browse our premium gold and silver jewellery collections crafted for weddings, daily wear and special occasions."
+        />
+
+        <meta
+          property="og:url"
+          content="https://srivelmayiljewellery.store/jewellery-collections"
+        />
+
+        <meta property="og:type" content="website" />
+      </Helmet>
     <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="relative text-center mb-16">
         <div className="inline-flex items-center space-x-2 bg-[#D4AF37]/10 px-3 py-1 rounded-full border border-[#D4AF37]/20 mb-4">
@@ -198,5 +237,6 @@ export default function CollectionsPage() {
         </div>
       )}
     </div>
+    </>
   );
 }

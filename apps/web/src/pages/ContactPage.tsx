@@ -1,4 +1,5 @@
 import React from "react";
+import { Helmet } from "react-helmet";
 import ContactForm from "@/components/ContactForm";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { MapPin, Phone, Clock, Mail, Users } from "lucide-react";
@@ -6,6 +7,44 @@ import { BRAND, getWhatsAppUrl } from "@/utils/brand";
 
 export default function ContactPage() {
   return (
+    <>
+      <Helmet>
+        <title>
+          Contact Sri Velmayil Jewellery Tirupur | Jewellery Shop Contact
+        </title>
+
+        <meta
+          name="description"
+          content="Contact Sri Velmayil Jewellery in Tirupur. Visit our showroom, call us, message on WhatsApp or send an enquiry online."
+        />
+
+        <meta
+          name="keywords"
+          content="Contact Jewellery Shop Tirupur, Sri Velmayil Jewellery Contact, Gold Shop Tirupur Contact, Jewellery Showroom Tirupur"
+        />
+
+        <link
+          rel="canonical"
+          href="https://srivelmayiljewellery.store/contact-us"
+        />
+
+        <meta
+          property="og:title"
+          content="Contact Sri Velmayil Jewellery Tirupur"
+        />
+
+        <meta
+          property="og:description"
+          content="Get in touch with Sri Velmayil Jewellery for jewellery enquiries, gold rates and showroom visits."
+        />
+
+        <meta
+          property="og:url"
+          content="https://srivelmayiljewellery.store/contact-us"
+        />
+
+        <meta property="og:type" content="website" />
+      </Helmet>
     <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Breadcrumbs items={[{ name: "Contact Us", href: "/contact-us" }]} />
       <div className="text-center mb-16">
@@ -109,5 +148,6 @@ export default function ContactPage() {
         </div>
       </div>
     </div>
+    </>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet";
 import { Link } from "wouter";
 import { ArrowUpRight, ArrowDownRight, ShieldCheck, History } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -44,6 +45,44 @@ export default function GoldRateTodayPage() {
   const derived = getDerivedRates(latestRate);
 
   return (
+    <>
+      <Helmet>
+        <title>
+          Gold Rate Today in Tirupur | Live 22K & 24K Gold Rate | Sri Velmayil Jewellery
+        </title>
+
+        <meta
+          name="description"
+          content="Check today's live gold rate in Tirupur. Updated 22K gold rate, 24K gold rate and silver rate from Sri Velmayil Jewellery."
+        />
+
+        <meta
+          name="keywords"
+          content="Gold Rate Today Tirupur, 22K Gold Rate Tirupur, 24K Gold Rate Tirupur, Silver Rate Tirupur, Live Gold Rate Today"
+        />
+
+        <link
+          rel="canonical"
+          href="https://srivelmayiljewellery.store/gold-rate-today-tirupur"
+        />
+
+        <meta
+          property="og:title"
+          content="Live Gold Rate Today in Tirupur"
+        />
+
+        <meta
+          property="og:description"
+          content="Latest 22K and 24K gold rates in Tirupur updated daily."
+        />
+
+        <meta
+          property="og:url"
+          content="https://srivelmayiljewellery.store/gold-rate-today-tirupur"
+        />
+
+        <meta property="og:type" content="website" />
+      </Helmet>
     <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <Breadcrumbs items={[{ name: "Gold Rate Today", href: "/gold-rate-today-tirupur" }]} />
       <div className="text-center mb-12">
@@ -106,5 +145,6 @@ export default function GoldRateTodayPage() {
       </div>
 
     </div>
+    </>
   );
 }
