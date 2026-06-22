@@ -1,4 +1,4 @@
-import collectionsData from "@/data/collections.json";
+import { supabase } from "@/lib/supabase";
 
 export type MetalData = {
   name: string;
@@ -32,91 +32,155 @@ export type CollectionBlock = {
   items: CollectionItem[];
 };
 
-const STORAGE_KEY = "svj_collections";
-const METALS_KEY = "svj_metals";
-const CATEGORIES_KEY = "svj_categories";
-
-const DEFAULT_METALS: MetalData[] = [
-  { name: "Gold", purityLabel: "22K · 24K · 18K", description: "Rings, chains, earrings, bangles, coins and anklets — all hallmarked 916 BIS certified pure gold.", imageUrl: "/images/GOLD.jpg" },
-  { name: "Silver", purityLabel: "Purity 99.9%", description: "Fine silver ornaments, auspicious articles, and investment coins — priced at today's live silver rate with the same purity guarantee we extend to our gold.", imageUrl: "/images/SILVER.jpg" }
-];
-const DEFAULT_CATEGORIES: CategoryData[] = [
-  { name: "Coin", description: "Pure gold and silver coins in various weights — ideal for gifting and investment.", metals: ["Gold", "Silver"] },
-  { name: "Ring", description: "Engagement, wedding, and daily-wear rings in traditional and modern styles.", metals: ["Gold", "Silver"] },
-  { name: "Chain", description: "Necklaces and chains — from delicate daily wear to heavy bridal harems.", metals: ["Gold", "Silver"] },
-  { name: "Earring", description: "Studs, drops, jhumkas, and chandbalis crafted in 22K hallmarked gold.", metals: ["Gold", "Silver"] },
-  { name: "Bracelet", description: "Bangles and bracelets ranging from lightweight daily pieces to grand bridal sets.", metals: ["Gold", "Silver"] },
-  { name: "Anklet", description: "Traditional and contemporary anklets in pure gold and silver.", metals: ["Gold", "Silver"] }
-];
-
-export function getMetals(): MetalData[] {
-  try {
-    const stored = localStorage.getItem(METALS_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((item: any) => {
-        const metalData = typeof item === 'string' ? { name: item } : item;
-        const defaultMatch = DEFAULT_METALS.find(m => m.name.toLowerCase() === metalData.name.toLowerCase());
-        if (defaultMatch) {
-          return { ...defaultMatch, ...metalData };
-        }
-        return metalData;
-      });
-    }
-  } catch (e) {}
-  return [...DEFAULT_METALS];
+export async function getMetals(): Promise<MetalData[]> {
+  const { data, error } = await supabase.from('metals').select('*').order('created_at', { ascending: true });
+  if (error) {
+    console.error("Error fetching metals:", error);
+    return [];
+  }
+  return data.map(m => ({
+    name: m.name,
+    purityLabel: m.purity_label,
+    description: m.description,
+    imageUrl: m.image_url
+  }));
 }
 
-export function addMetal(metal: MetalData): void {
-  const metals = getMetals();
-  const trimmed = metal.name.trim();
-  if (trimmed && !metals.map(m => m.name.toLowerCase()).includes(trimmed.toLowerCase())) {
-    metals.push({ ...metal, name: trimmed });
-    localStorage.setItem(METALS_KEY, JSON.stringify(metals));
+export async function addMetal(metal: MetalData): Promise<void> {
+  const { error } = await supabase.from('metals').insert([{
+    name: metal.name.trim(),
+    purity_label: metal.purityLabel,
+    description: metal.description,
+    image_url: metal.imageUrl
+  }]);
+  if (error) console.error("Error adding metal:", error);
+}
+
+export async function updateMetal(oldName: string, metal: MetalData): Promise<void> {
+  const { error } = await supabase.from('metals').update({
+    name: metal.name.trim(),
+    purity_label: metal.purityLabel,
+    description: metal.description,
+    image_url: metal.imageUrl
+  }).eq('name', oldName);
+  if (error) console.error("Error updating metal:", error);
+}
+
+export async function deleteMetal(name: string): Promise<void> {
+  const { error } = await supabase.from('metals').delete().eq('name', name);
+  if (error) console.error("Error deleting metal:", error);
+}
+
+export async function getCategories(): Promise<CategoryData[]> {
+  const { data: cats, error: catErr } = await supabase.from('categories').select('*').order('created_at', { ascending: true });
+  if (catErr) {
+    console.error("Error fetching categories:", catErr);
+    return [];
+  }
+  
+  const { data: catMetals, error: mapErr } = await supabase.from('category_metals').select('*');
+  if (mapErr) {
+    console.error("Error fetching category_metals:", mapErr);
+    return [];
+  }
+
+  return cats.map(c => {
+    const metalsForCat = catMetals.filter(cm => cm.category_id === c.id).map(cm => cm.metal_name);
+    return {
+      name: c.name,
+      description: c.description,
+      metals: metalsForCat
+    };
+  });
+}
+
+export async function addCategory(category: CategoryData): Promise<void> {
+  const { data, error } = await supabase.from('categories').insert([{
+    name: category.name.trim(),
+    description: category.description
+  }]).select('id').single();
+  
+  if (error) {
+    console.error("Error adding category:", error);
+    return;
+  }
+
+  if (category.metals && category.metals.length > 0 && data) {
+    const mappings = category.metals.map(m => ({
+      category_id: data.id,
+      metal_name: m
+    }));
+    await supabase.from('category_metals').insert(mappings);
   }
 }
 
-export function getCategories(): CategoryData[] {
-  try {
-    const stored = localStorage.getItem(CATEGORIES_KEY);
-    if (stored) {
-      const parsed = JSON.parse(stored);
-      return parsed.map((item: any) => {
-        const catData = typeof item === 'string' ? { name: item } : item;
-        const defaultMatch = DEFAULT_CATEGORIES.find(c => c.name.toLowerCase() === catData.name.toLowerCase());
-        const merged = defaultMatch ? { ...defaultMatch, ...catData } : catData;
-        if (!merged.metals) {
-          merged.metals = ["Gold", "Silver"];
-        }
-        return merged;
-      });
-    }
-  } catch (e) {}
-  return [...DEFAULT_CATEGORIES];
-}
+export async function updateCategory(oldName: string, category: CategoryData): Promise<void> {
+  const { data, error } = await supabase.from('categories').update({
+    name: category.name.trim(),
+    description: category.description
+  }).eq('name', oldName).select('id').single();
 
-export function addCategory(category: CategoryData): void {
-  const categories = getCategories();
-  const trimmed = category.name.trim();
-  if (trimmed && !categories.map(c => c.name.toLowerCase()).includes(trimmed.toLowerCase())) {
-    categories.push({ ...category, name: trimmed });
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
+  if (error) {
+    console.error("Error updating category:", error);
+    return;
+  }
+
+  if (data) {
+    // Recreate mappings
+    await supabase.from('category_metals').delete().eq('category_id', data.id);
+    if (category.metals && category.metals.length > 0) {
+      const mappings = category.metals.map(m => ({
+        category_id: data.id,
+        metal_name: m
+      }));
+      await supabase.from('category_metals').insert(mappings);
+    }
   }
 }
 
-export function getCollections(): CollectionBlock[] {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      return JSON.parse(stored) as CollectionBlock[];
-    }
-  } catch (e) {
-    console.error("Failed to parse collections from localStorage", e);
-  }
-  return collectionsData as CollectionBlock[];
+export async function deleteCategory(name: string): Promise<void> {
+  const { error } = await supabase.from('categories').delete().eq('name', name);
+  if (error) console.error("Error deleting category:", error);
 }
 
-export function saveCollectionItem(payload: {
+export async function getCollections(): Promise<CollectionBlock[]> {
+  const { data: products, error } = await supabase.from('products').select('*').order('created_at', { ascending: false });
+  if (error) {
+    console.error("Error fetching products:", error);
+    return [];
+  }
+
+  // Group by metal and category
+  const grouped: Record<string, CollectionBlock> = {};
+  
+  for (const p of products) {
+    const key = `${p.metal}-${p.category}`;
+    if (!grouped[key]) {
+      const slug = `${p.metal.toLowerCase()}-${p.category.toLowerCase()}s`;
+      grouped[key] = {
+        id: slug,
+        name: `${p.metal} ${p.category}s`,
+        slug: slug,
+        metal: p.metal,
+        category: p.category,
+        description: `Explore our beautiful collection of ${p.metal} ${p.category}s.`,
+        items: []
+      };
+    }
+    grouped[key].items.push({
+      id: p.id,
+      name: p.name,
+      weight_g: p.weight_g,
+      making_charge_pct: p.making_charge_pct,
+      description: p.description,
+      image: p.image
+    });
+  }
+
+  return Object.values(grouped);
+}
+
+export async function saveCollectionItem(payload: {
   name: string;
   metal: string;
   category: string;
@@ -124,175 +188,37 @@ export function saveCollectionItem(payload: {
   making_charge_pct: number;
   description: string;
   imageUrl: string;
-}): void {
-  const collections = getCollections();
-  const targetMetal = payload.metal.toLowerCase();
-  const targetCategory = payload.category.toLowerCase();
-
-  let targetCollection = collections.find(
-    (c) => c.metal.toLowerCase() === targetMetal && c.category.toLowerCase() === targetCategory
-  );
-
-  if (!targetCollection) {
-    const slug = `${targetMetal}-${targetCategory}s`;
-    targetCollection = {
-      id: slug,
-      name: `${payload.metal} ${payload.category}s`,
-      slug: slug,
-      metal: payload.metal,
-      category: payload.category,
-      description: `Explore our beautiful collection of ${payload.metal} ${payload.category}s.`,
-      items: [],
-    };
-    collections.push(targetCollection);
-  }
-
-  const newItem: CollectionItem = {
+}): Promise<void> {
+  const { error } = await supabase.from('products').insert([{
     id: payload.name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now(),
     name: payload.name,
+    metal: payload.metal,
+    category: payload.category,
     weight_g: payload.weight_g,
     making_charge_pct: payload.making_charge_pct,
     description: payload.description || "",
-    image: payload.imageUrl || "",
-  };
-
-  targetCollection.items.push(newItem);
-
-  try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-  } catch (e) {
-    console.error("Failed to save to localStorage", e);
-    throw new Error("Local storage quota exceeded or unavailable. Could not save product.");
+    image: payload.imageUrl || ""
+  }]);
+  if (error) {
+    console.error("Error saving product:", error);
+    throw new Error(error.message);
   }
 }
 
-export function deleteMetal(name: string): void {
-  const metals = getMetals();
-  const updated = metals.filter(m => m.name.toLowerCase() !== name.toLowerCase());
-  localStorage.setItem(METALS_KEY, JSON.stringify(updated));
-
-  const collections = getCollections();
-  const updatedCollections = collections.filter(c => c.metal.toLowerCase() !== name.toLowerCase());
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCollections));
+export async function deleteProduct(productId: string): Promise<void> {
+  const { error } = await supabase.from('products').delete().eq('id', productId);
+  if (error) console.error("Error deleting product:", error);
 }
 
-export function updateMetal(oldName: string, metal: MetalData): void {
-  const metals = getMetals();
-  const index = metals.findIndex(m => m.name.toLowerCase() === oldName.toLowerCase());
-  if (index !== -1) {
-    metals[index] = metal;
-    localStorage.setItem(METALS_KEY, JSON.stringify(metals));
-  }
-
-  if (oldName.toLowerCase() !== metal.name.toLowerCase()) {
-    const collections = getCollections();
-    let changed = false;
-    collections.forEach(c => {
-      if (c.metal.toLowerCase() === oldName.toLowerCase()) {
-        c.metal = metal.name;
-        c.slug = `${metal.name.toLowerCase()}-${c.category.toLowerCase()}s`;
-        c.id = c.slug;
-        c.name = `${metal.name} ${c.category}s`;
-        changed = true;
-      }
-    });
-    if (changed) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-    }
-  }
-}
-
-export function deleteCategory(name: string): void {
-  const categories = getCategories();
-  const updated = categories.filter(c => c.name.toLowerCase() !== name.toLowerCase());
-  localStorage.setItem(CATEGORIES_KEY, JSON.stringify(updated));
-
-  const collections = getCollections();
-  const updatedCollections = collections.filter(c => c.category.toLowerCase() !== name.toLowerCase());
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedCollections));
-}
-
-export function updateCategory(oldName: string, category: CategoryData): void {
-  const categories = getCategories();
-  const index = categories.findIndex(c => c.name.toLowerCase() === oldName.toLowerCase());
-  if (index !== -1) {
-    categories[index] = category;
-    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(categories));
-  }
-
-  if (oldName.toLowerCase() !== category.name.toLowerCase()) {
-    const collections = getCollections();
-    let changed = false;
-    collections.forEach(c => {
-      if (c.category.toLowerCase() === oldName.toLowerCase()) {
-        c.category = category.name;
-        c.slug = `${c.metal.toLowerCase()}-${category.name.toLowerCase()}s`;
-        c.id = c.slug;
-        c.name = `${c.metal} ${category.name}s`;
-        changed = true;
-      }
-    });
-    if (changed) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-    }
-  }
-}
-
-export function deleteProduct(productId: string): void {
-  const collections = getCollections();
-  let changed = false;
-  collections.forEach(c => {
-    const initialLen = c.items.length;
-    c.items = c.items.filter(item => item.id !== productId);
-    if (c.items.length !== initialLen) changed = true;
-  });
-  if (changed) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-  }
-}
-
-export function updateProduct(productId: string, payload: any): void {
-  const collections = getCollections();
-  let oldItem: CollectionItem | null = null;
-  
-  collections.forEach(c => {
-    const index = c.items.findIndex(item => item.id === productId);
-    if (index !== -1) {
-      oldItem = c.items.splice(index, 1)[0];
-    }
-  });
-
-  if (oldItem) {
-    const updatedItem: CollectionItem = {
-      id: productId,
-      name: payload.name,
-      weight_g: payload.weight_g,
-      making_charge_pct: payload.making_charge_pct,
-      description: payload.description || "",
-      image: payload.imageUrl !== undefined ? payload.imageUrl : (oldItem as any).image,
-    };
-
-    const targetMetal = payload.metal.toLowerCase();
-    const targetCategory = payload.category.toLowerCase();
-    let targetCollection = collections.find(
-      (c) => c.metal.toLowerCase() === targetMetal && c.category.toLowerCase() === targetCategory
-    );
-
-    if (!targetCollection) {
-      const slug = `${targetMetal}-${targetCategory}s`;
-      targetCollection = {
-        id: slug,
-        name: `${payload.metal} ${payload.category}s`,
-        slug: slug,
-        metal: payload.metal,
-        category: payload.category,
-        description: `Explore our beautiful collection of ${payload.metal} ${payload.category}s.`,
-        items: [],
-      };
-      collections.push(targetCollection);
-    }
-
-    targetCollection.items.push(updatedItem);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(collections));
-  }
+export async function updateProduct(productId: string, payload: any): Promise<void> {
+  const { error } = await supabase.from('products').update({
+    name: payload.name,
+    metal: payload.metal,
+    category: payload.category,
+    weight_g: payload.weight_g,
+    making_charge_pct: payload.making_charge_pct,
+    description: payload.description,
+    image: payload.imageUrl !== undefined ? payload.imageUrl : undefined
+  }).eq('id', productId);
+  if (error) console.error("Error updating product:", error);
 }

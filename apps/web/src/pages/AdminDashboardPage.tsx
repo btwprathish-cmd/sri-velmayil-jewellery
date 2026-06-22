@@ -65,9 +65,11 @@ export default function AdminDashboardPage() {
       setSession(s);
       if (!s.authenticated) setLocation("/admin/login");
     });
-    setCollections(getCollections());
-    setMetalsList(getMetals());
-    setCategoriesList(getCategories());
+    Promise.all([getCollections(), getMetals(), getCategories()]).then(([cols, mets, cats]) => {
+      setCollections(cols);
+      setMetalsList(mets);
+      setCategoriesList(cats);
+    });
   }, [setLocation]);
 
   const handleAddCollectionSubmit = async (e: React.FormEvent) => {
@@ -80,13 +82,14 @@ export default function AdminDashboardPage() {
         imageUrl = await uploadImage(newMetalImage);
       }
       if (editingMetal) {
-        updateMetal(editingMetal, { ...newMetal, imageUrl });
+        await updateMetal(editingMetal, { ...newMetal, imageUrl });
         setEditingMetal(null);
       } else {
-        addMetal({ ...newMetal, imageUrl });
+        await addMetal({ ...newMetal, imageUrl });
       }
-      setMetalsList(getMetals());
-      setCollections(getCollections());
+      const [newMetals, newCols] = await Promise.all([getMetals(), getCollections()]);
+      setMetalsList(newMetals);
+      setCollections(newCols);
       setNewMetal({ name: "", purityLabel: "", description: "" });
       setNewMetalImage(null);
       setNewMetalImagePreview(null);
@@ -98,17 +101,18 @@ export default function AdminDashboardPage() {
     }
   };
 
-  const handleAddCategorySubmit = (e: React.FormEvent) => {
+  const handleAddCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.name.trim()) return;
     if (editingCategory) {
-      updateCategory(editingCategory, newCategory);
+      await updateCategory(editingCategory, newCategory);
       setEditingCategory(null);
     } else {
-      addCategory(newCategory);
+      await addCategory(newCategory);
     }
-    setCategoriesList(getCategories());
-    setCollections(getCollections());
+    const [newCats, newCols] = await Promise.all([getCategories(), getCollections()]);
+    setCategoriesList(newCats);
+    setCollections(newCols);
     setNewCategory({ name: "", description: "", metals: [] });
     setCategorySuccess(true);
   };
@@ -186,14 +190,15 @@ export default function AdminDashboardPage() {
       };
 
       if (editingProduct) {
-        updateProduct(editingProduct, payload);
+        await updateProduct(editingProduct, payload);
         setEditingProduct(null);
       } else {
-        saveCollectionItem(payload);
+        await saveCollectionItem(payload);
       }
       
       // Refresh dashboard counts
-      setCollections(getCollections());
+      const newCols = await getCollections();
+      setCollections(newCols);
 
       setFormSuccess(true);
       setForm(defaultForm);
@@ -703,12 +708,13 @@ export default function AdminDashboardPage() {
                       <Edit2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Edit</span>
                     </button>
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         const confirmDelete = window.confirm(`Are you sure you want to delete the ${metal.name} collection?`);
                         if (confirmDelete) {
-                          deleteMetal(metal.name);
-                          setMetalsList(getMetals());
-                          setCollections(getCollections());
+                          await deleteMetal(metal.name);
+                          const [newMetals, newCols] = await Promise.all([getMetals(), getCollections()]);
+                          setMetalsList(newMetals);
+                          setCollections(newCols);
                         }
                       }}
                       className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex items-center gap-2"
@@ -757,12 +763,13 @@ export default function AdminDashboardPage() {
                       <Edit2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Edit</span>
                     </button>
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         const confirmDelete = window.confirm(`Are you sure you want to delete the ${cat.name} category?`);
                         if (confirmDelete) {
-                          deleteCategory(cat.name);
-                          setCategoriesList(getCategories());
-                          setCollections(getCollections());
+                          await deleteCategory(cat.name);
+                          const [newCats, newCols] = await Promise.all([getCategories(), getCollections()]);
+                          setCategoriesList(newCats);
+                          setCollections(newCols);
                         }
                       }}
                       className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex items-center gap-2"
@@ -822,11 +829,12 @@ export default function AdminDashboardPage() {
                       <Edit2 className="h-4 w-4" /> <span className="text-xs font-bold sm:hidden">Edit</span>
                     </button>
                     <button 
-                      onClick={() => {
+                      onClick={async () => {
                         const confirmDelete = window.confirm(`Are you sure you want to delete ${product.name}?`);
                         if (confirmDelete) {
-                          deleteProduct(product.id);
-                          setCollections(getCollections());
+                          await deleteProduct(product.id);
+                          const newCols = await getCollections();
+                          setCollections(newCols);
                         }
                       }}
                       className="p-2 hover:bg-red-500/10 text-red-400 rounded-lg transition-colors flex items-center gap-2"

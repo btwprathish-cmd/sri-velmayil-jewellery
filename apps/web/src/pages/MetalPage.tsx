@@ -38,11 +38,12 @@ export default function MetalPage() {
 
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
   useEffect(() => {
-    const allCats = getCategories();
-    const filteredCats = allCats.filter(cat => 
-      !cat.metals || cat.metals.length === 0 || cat.metals.some((m: string) => m.toLowerCase() === metalLabel.toLowerCase())
-    );
-    setCategoriesList(filteredCats);
+    getCategories().then(allCats => {
+      const filteredCats = allCats.filter(cat => 
+        !cat.metals || cat.metals.length === 0 || cat.metals.some((m: string) => m.toLowerCase() === metalLabel.toLowerCase())
+      );
+      setCategoriesList(filteredCats);
+    });
   }, [metalLabel]);
 
   if (!metal) {

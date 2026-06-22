@@ -29,7 +29,7 @@ export default function HomePage() {
     fetchLatestRate()
       .then((r) => { setLatestRate(r); setRateLoading(false); })
       .catch(() => { setLatestRate(FALLBACK_RATE); setRateLoading(false); setRateError(false); });
-    setMetalsList(getMetals());
+    getMetals().then(setMetalsList);
   }, []);
 
   const displayRate = latestRate ?? FALLBACK_RATE;

@@ -21,7 +21,7 @@ export default function CollectionsPage() {
       if (e.key === "Escape") setShowAdminLogin(false);
     }
     document.addEventListener("keydown", onKeyDown);
-    setMetalsList(getMetals());
+    getMetals().then(setMetalsList);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, []);
 

@@ -26,13 +26,13 @@ export default function CategoryPage() {
   const [, params] = useRoute("/jewellery-collections/:category");
   const slug = params?.category ?? "";
   
-  const [collections, setCollections] = useState(() => getCollections());
+  const [collections, setCollections] = useState<any[]>([]);
   const category = collections.find((c) => c.slug === slug);
   const [latestRate, setLatestRate] = useState<LiveRateRecord>(FALLBACK_RATE);
 
   useEffect(() => { 
     fetchLatestRate().then(setLatestRate).catch(() => {}); 
-    setCollections(getCollections());
+    getCollections().then(setCollections);
   }, []);
 
   if (!category) {

@@ -31,14 +31,13 @@ export default function MetalCategoryPage() {
   const metal = params?.metal ?? "";
   const category = params?.category ?? "";
   const [latestRate, setLatestRate] = useState<LiveRateRecord>(FALLBACK_RATE);
-  const [collections, setCollections] = useState(() => getCollections());
+  const [collections, setCollections] = useState<any[]>([]);
 
   useEffect(() => {
     fetchLatestRate()
       .then(setLatestRate)
       .catch(() => {});
-    // Force hydration of local storage collections on mount
-    setCollections(getCollections());
+    getCollections().then(setCollections);
   }, []);
 
   const metalLabel = metal.charAt(0).toUpperCase() + metal.slice(1).toLowerCase();
