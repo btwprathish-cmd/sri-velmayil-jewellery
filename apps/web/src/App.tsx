@@ -18,6 +18,7 @@ import ContactPage from "@/pages/ContactPage";
 import FaqPage from "@/pages/FaqPage";
 import AdminLoginPage from "@/pages/AdminLoginPage";
 import AdminDashboardPage from "@/pages/AdminDashboardPage";
+import MigratePage from "@/pages/MigratePage";
 
 const queryClient = new QueryClient();
 
@@ -53,6 +54,12 @@ function Router() {
       <Route path="/admin/dashboard">
         <AdminLayout>
           <AdminDashboardPage />
+        </AdminLayout>
+      </Route>
+
+      <Route path="/admin/migrate">
+        <AdminLayout>
+          <MigratePage />
         </AdminLayout>
       </Route>
 
