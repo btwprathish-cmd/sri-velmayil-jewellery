@@ -87,7 +87,7 @@ export default function AboutPage() {
         <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
           The Art of Earning Trust,<br className="hidden sm:block" /> One Ornament at a Time
         </h1>
-        <div className="bg-red-500 text-white font-bold p-2 my-2 w-fit mx-auto rounded">ABOUT SEO TEST</div>
+
         <p className="mt-5 text-base sm:text-lg text-[#F3E5AB]/70 max-w-2xl mx-auto font-sans leading-relaxed">
           For a quarter century, Sri Velmayil Jewellery has stood at the intersection of heritage craftsmanship and honest commerce — turning precious metal into priceless memories.
         </p>

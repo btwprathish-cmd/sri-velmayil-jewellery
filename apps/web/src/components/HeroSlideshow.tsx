@@ -54,7 +54,6 @@ interface HeroSlideshowProps {
   gold22k8g: number;
   silver: number;
   gold24k: number;
-  onViewHistory: string;
 }
 
 export default function HeroSlideshow(_props: HeroSlideshowProps) {

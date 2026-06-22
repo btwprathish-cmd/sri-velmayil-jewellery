@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "wouter";
-import { ArrowUpRight, ArrowDownRight, ShieldCheck, History } from "lucide-react";
+import { ArrowUpRight, ArrowDownRight, ShieldCheck } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { fetchLatestRate, fetchRateHistory, getDerivedRates, type LiveRateRecord } from "@/utils/rates";
+import { fetchLatestRate, getDerivedRates, type LiveRateRecord } from "@/utils/rates";
 import { formatIndianDate } from "@/utils/date";
 
 const FALLBACK_RATE: LiveRateRecord = {
@@ -14,19 +14,13 @@ const FALLBACK_RATE: LiveRateRecord = {
 
 export default function GoldRateTodayPage() {
   const [latestRate, setLatestRate] = useState<LiveRateRecord>(FALLBACK_RATE);
-  const [rateHistory, setRateHistory] = useState<LiveRateRecord[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
   async function loadRates() {
     try {
-      const [rate, history] = await Promise.all([
-        fetchLatestRate(),
-        fetchRateHistory()
-      ]);
-
+      const rate = await fetchLatestRate();
       setLatestRate(rate);
-      setRateHistory(history);
     } catch (err) {
       console.error(err);
     } finally {
@@ -89,7 +83,7 @@ export default function GoldRateTodayPage() {
         <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
           Today's Gold Rate in Tirupur
         </h1>
-        <div className="bg-red-500 text-white font-bold p-2 my-2 w-fit mx-auto rounded">GOLD RATE SEO TEST</div>
+
         <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/75 max-w-xl mx-auto font-sans">
           {loading ? "Loading rates..." : `Live updates for ${formattedDate}. Rates verified at Sri Velmayil Jewellery.`}
         </p>

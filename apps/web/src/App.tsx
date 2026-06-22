@@ -8,8 +8,6 @@ import WhatsAppWidget from "@/components/WhatsAppWidget";
 
 import HomePage from "@/pages/HomePage";
 import GoldRateTodayPage from "@/pages/GoldRateTodayPage";
-import GoldRateHistoryPage from "@/pages/GoldRateHistoryPage";
-import GoldRateDatePage from "@/pages/GoldRateDatePage";
 import SilverRatePage from "@/pages/SilverRatePage";
 import CollectionsPage from "@/pages/CollectionsPage";
 import MetalPage from "@/pages/MetalPage";
@@ -75,18 +73,6 @@ function Router() {
       <Route path="/gold-rate-today-tirupur">
         <Layout>
           <GoldRateTodayPage />
-        </Layout>
-      </Route>
-
-      <Route path="/gold-rate-history">
-        <Layout>
-          <GoldRateHistoryPage />
-        </Layout>
-      </Route>
-
-      <Route path="/gold-rate/:date">
-        <Layout>
-          <GoldRateDatePage />
         </Layout>
       </Route>
 

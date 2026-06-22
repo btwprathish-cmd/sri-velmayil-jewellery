@@ -48,7 +48,6 @@ export default function Footer() {
             <ul className="space-y-3 text-sm">
               {[
                 { href: "/gold-rate-today-tirupur", label: "Today's Gold Rate" },
-                { href: "/gold-rate-history", label: "Gold Rate History" },
                 { href: "/jewellery-collections", label: "Jewellery Collections" },
                 { href: "/faq", label: "Frequently Asked Questions" },
               ].map(({ href, label }) => (

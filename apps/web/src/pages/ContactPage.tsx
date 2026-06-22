@@ -51,7 +51,7 @@ export default function ContactPage() {
         <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
           Contact Our Showroom
         </h1>
-        <div className="bg-red-500 text-white font-bold p-2 my-2 w-fit mx-auto rounded">CONTACT SEO TEST</div>
+
         <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/70 max-w-xl mx-auto font-sans">
           Have an inquiry about wedding gold designs or custom weights? Reach out to us or visit our Tirupur showroom.
         </p>

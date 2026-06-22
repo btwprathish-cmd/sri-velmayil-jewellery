@@ -15,7 +15,7 @@ const routes = [
   {
     path: '/gold-rate-today-tirupur',
     title: "Today's Gold Rate in Tirupur | Live Gold & Silver Rates",
-    description: "Check today's live gold rate and silver rate in Tirupur. Updated daily with gold rate history and market information.",
+    description: "Check today's live gold rate and silver rate in Tirupur. Updated daily with market information.",
     canonical: "https://srivelmayiljewellery.store/gold-rate-today-tirupur"
   },
   {

@@ -51,7 +51,6 @@ export default function HomePage() {
           gold22k8g={displayRate.gold22k_8g}
           silver={displayRate.silver_1g}
           gold24k={displayRate.gold24k_1g}
-          onViewHistory="/gold-rate-history"
         />
 
         {/* FEATURED COLLECTIONS */}

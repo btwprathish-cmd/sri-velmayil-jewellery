@@ -100,7 +100,7 @@ export default function CollectionsPage() {
         <h1 className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB]">
           Our Jewellery Collections
         </h1>
-        <div className="bg-red-500 text-white font-bold p-2 my-2 w-fit mx-auto rounded">COLLECTION SEO TEST</div>
+
         <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/70 max-w-2xl mx-auto font-sans">
           Explore our curated, hand-crafted designs. From light-weight daily wear to heavy traditional Tamil bridal ornaments.
         </p>

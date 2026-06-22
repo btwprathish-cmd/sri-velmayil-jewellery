@@ -42,16 +42,11 @@ export default function SilverRatePage() {
         </div>
       </div>
 
-      <div className="mt-12 text-center space-x-4">
+      <div className="mt-12 text-center">
         <Link href="/gold-rate-today-tirupur"
           className="inline-flex items-center px-6 py-3 border border-[#D4AF37] text-[#D4AF37] font-bold rounded-lg hover:bg-[#D4AF37]/10 transition-all text-sm"
         >
           View Gold Rate Today
-        </Link>
-        <Link href="/gold-rate-history"
-          className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-[#D4AF37] to-[#F3E5AB] text-[#1a0b2e] font-bold rounded-lg hover:brightness-110 transition-all text-sm"
-        >
-          View Rate History
         </Link>
       </div>
     </div>
