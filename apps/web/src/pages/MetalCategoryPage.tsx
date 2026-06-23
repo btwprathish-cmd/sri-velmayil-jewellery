@@ -81,7 +81,7 @@ export default function MetalCategoryPage() {
           {metalLabel} {categoryLabel}
         </h1>
         <p className="mt-3 text-sm sm:text-base text-[#F3E5AB]/75 font-sans leading-relaxed max-w-3xl">
-          All {categoryLabel.toLowerCase()} ornaments are crafted in {metalLabel.toLowerCase() === "gold" ? "22K gold" : "99.9% fine silver"}, stamped with the BIS logo, and carry a unique HUID.
+          All {categoryLabel.toLowerCase()} ornaments are beautifully crafted in {metalLabel.toLowerCase() === "gold" ? "22K gold" : metalLabel.toLowerCase() === "silver" ? "99.9% fine silver" : metalLabel}, stamped with the BIS logo, and carry a unique HUID.
         </p>
       </div>
 

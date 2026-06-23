@@ -2,8 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link, useRoute } from "wouter";
 import { Award, Gem, Link2, Star, Circle, Shield, ArrowLeft } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import { getCategories } from "@/utils/collections";
-
+import { getCategories, getMetals } from "@/utils/collections";
 const DEFAULT_CATEGORY_INFO: Record<string, { description: string; icon: any }> = {
   "coin": {
     description: "Pure gold and silver coins in various weights — ideal for gifting and investment.",
@@ -37,14 +36,21 @@ export default function MetalPage() {
   const metalLabel = metal.charAt(0).toUpperCase() + metal.slice(1).toLowerCase();
 
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
+  const [metalInfo, setMetalInfo] = useState<any>(null);
+
   useEffect(() => {
+    getMetals().then(allMetals => {
+      const found = allMetals.find(m => m.name.toLowerCase() === metal.toLowerCase());
+      setMetalInfo(found || { name: metalLabel });
+    });
+
     getCategories().then(allCats => {
       const filteredCats = allCats.filter(cat => 
         !cat.metals || cat.metals.length === 0 || cat.metals.some((m: string) => m.toLowerCase() === metalLabel.toLowerCase())
       );
       setCategoriesList(filteredCats);
     });
-  }, [metalLabel]);
+  }, [metal, metalLabel]);
 
   if (!metal) {
     return (
@@ -68,45 +74,25 @@ export default function MetalPage() {
         ]}
       />
 
-      {/* Hero image — Gold only */}
-      {isGold && (
+      {/* Dynamic Hero image */}
+      {metalInfo && (
         <div className="relative w-full rounded-2xl overflow-hidden mb-14 shadow-2xl border border-[#D4AF37]/25">
           <img
-            src="/images/gold-collection-hero.jpeg"
-            alt="Gold Jewellery Collection — Sri Velmayil Jewellery Tirupur"
+            src={metalInfo.imageUrl || (isGold ? "/images/gold-collection-hero.jpeg" : isSilver ? "/images/silver-collection-hero.jpeg" : "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=1200")}
+            alt={`${metalInfo.name} Jewellery Collection — Sri Velmayil Jewellery Tirupur`}
             className="w-full object-cover object-center"
             style={{ maxHeight: "520px" }}
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/80 via-transparent to-transparent" />
           <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
-            <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-1">BIS 916 Hallmarked</p>
+            <p className="text-[10px] font-bold text-[#D4AF37] uppercase tracking-widest mb-1">
+              {metalInfo.purityLabel || (isGold ? "BIS 916 Hallmarked" : isSilver ? "Purity 99.9%" : "Exclusive")}
+            </p>
             <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
-              Gold Collections
+              {metalInfo.name} Collections
             </h1>
             <p className="text-sm sm:text-base text-[#F3E5AB]/80 font-sans mt-1">
-              Timeless elegance — crafted in pure 22K gold.
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Hero image — Silver */}
-      {!isGold && (
-        <div className="relative w-full rounded-2xl overflow-hidden mb-14 shadow-2xl border border-white/15">
-          <img
-            src="/images/silver-collection-hero.jpeg"
-            alt="Silver Jewellery Collection — Sri Velmayil Jewellery Tirupur"
-            className="w-full object-cover object-center"
-            style={{ maxHeight: "520px" }}
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0c0418]/80 via-transparent to-transparent" />
-          <div className="absolute bottom-6 left-6 sm:bottom-10 sm:left-10">
-            <p className="text-[10px] font-bold text-white/70 uppercase tracking-widest mb-1">Purity 99.9%</p>
-            <h1 className="font-serif text-3xl sm:text-5xl font-extrabold text-white drop-shadow-lg">
-              Silver Collections
-            </h1>
-            <p className="text-sm sm:text-base text-white/75 font-sans mt-1">
-              Pure. Stylish. Forever.
+              {metalInfo.description || (isGold ? "Timeless elegance — crafted in pure 22K gold." : isSilver ? "Pure. Stylish. Forever." : `Discover our exquisite ${metalInfo.name} collection.`)}
             </p>
           </div>
         </div>
