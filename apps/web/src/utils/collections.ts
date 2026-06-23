@@ -53,7 +53,10 @@ export async function addMetal(metal: MetalData): Promise<void> {
     description: metal.description,
     image_url: metal.imageUrl
   }]);
-  if (error) console.error("Error adding metal:", error);
+  if (error) {
+    console.error("Error adding metal:", error);
+    throw new Error(error.message);
+  }
 }
 
 export async function updateMetal(oldName: string, metal: MetalData): Promise<void> {
@@ -63,12 +66,18 @@ export async function updateMetal(oldName: string, metal: MetalData): Promise<vo
     description: metal.description,
     image_url: metal.imageUrl
   }).eq('name', oldName);
-  if (error) console.error("Error updating metal:", error);
+  if (error) {
+    console.error("Error updating metal:", error);
+    throw new Error(error.message);
+  }
 }
 
 export async function deleteMetal(name: string): Promise<void> {
   const { error } = await supabase.from('metals').delete().eq('name', name);
-  if (error) console.error("Error deleting metal:", error);
+  if (error) {
+    console.error("Error deleting metal:", error);
+    throw new Error(error.message);
+  }
 }
 
 export async function getCategories(): Promise<CategoryData[]> {
@@ -102,7 +111,7 @@ export async function addCategory(category: CategoryData): Promise<void> {
   
   if (error) {
     console.error("Error adding category:", error);
-    return;
+    throw new Error(error.message);
   }
 
   if (category.metals && category.metals.length > 0 && data) {
@@ -110,7 +119,11 @@ export async function addCategory(category: CategoryData): Promise<void> {
       category_id: data.id,
       metal_name: m
     }));
-    await supabase.from('category_metals').insert(mappings);
+    const { error: mapErr } = await supabase.from('category_metals').insert(mappings);
+    if (mapErr) {
+      console.error("Error adding category mappings:", mapErr);
+      throw new Error(mapErr.message);
+    }
   }
 }
 
@@ -122,7 +135,7 @@ export async function updateCategory(oldName: string, category: CategoryData): P
 
   if (error) {
     console.error("Error updating category:", error);
-    return;
+    throw new Error(error.message);
   }
 
   if (data) {
@@ -133,14 +146,21 @@ export async function updateCategory(oldName: string, category: CategoryData): P
         category_id: data.id,
         metal_name: m
       }));
-      await supabase.from('category_metals').insert(mappings);
+      const { error: mapErr } = await supabase.from('category_metals').insert(mappings);
+      if (mapErr) {
+        console.error("Error updating category mappings:", mapErr);
+        throw new Error(mapErr.message);
+      }
     }
   }
 }
 
 export async function deleteCategory(name: string): Promise<void> {
   const { error } = await supabase.from('categories').delete().eq('name', name);
-  if (error) console.error("Error deleting category:", error);
+  if (error) {
+    console.error("Error deleting category:", error);
+    throw new Error(error.message);
+  }
 }
 
 export async function getCollections(): Promise<CollectionBlock[]> {
@@ -207,7 +227,10 @@ export async function saveCollectionItem(payload: {
 
 export async function deleteProduct(productId: string): Promise<void> {
   const { error } = await supabase.from('products').delete().eq('id', productId);
-  if (error) console.error("Error deleting product:", error);
+  if (error) {
+    console.error("Error deleting product:", error);
+    throw new Error(error.message);
+  }
 }
 
 export async function updateProduct(productId: string, payload: any): Promise<void> {
@@ -220,5 +243,8 @@ export async function updateProduct(productId: string, payload: any): Promise<vo
     description: payload.description,
     image: payload.imageUrl !== undefined ? payload.imageUrl : undefined
   }).eq('id', productId);
-  if (error) console.error("Error updating product:", error);
+  if (error) {
+    console.error("Error updating product:", error);
+    throw new Error(error.message);
+  }
 }

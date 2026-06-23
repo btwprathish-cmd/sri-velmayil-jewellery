@@ -94,8 +94,8 @@ export default function AdminDashboardPage() {
       setNewMetalImage(null);
       setNewMetalImagePreview(null);
       setCollectionSuccess(true);
-    } catch (err) {
-      alert("Failed to upload metal image. Check configuration.");
+    } catch (err: any) {
+      alert(err.message || "Failed to save metal. Check configuration.");
     } finally {
       setIsSubmittingMetal(false);
     }
@@ -104,17 +104,21 @@ export default function AdminDashboardPage() {
   const handleAddCategorySubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCategory.name.trim()) return;
-    if (editingCategory) {
-      await updateCategory(editingCategory, newCategory);
-      setEditingCategory(null);
-    } else {
-      await addCategory(newCategory);
+    try {
+      if (editingCategory) {
+        await updateCategory(editingCategory, newCategory);
+        setEditingCategory(null);
+      } else {
+        await addCategory(newCategory);
+      }
+      const [newCats, newCols] = await Promise.all([getCategories(), getCollections()]);
+      setCategoriesList(newCats);
+      setCollections(newCols);
+      setNewCategory({ name: "", description: "", metals: [] });
+      setCategorySuccess(true);
+    } catch (err: any) {
+      alert(err.message || "Failed to save category.");
     }
-    const [newCats, newCols] = await Promise.all([getCategories(), getCollections()]);
-    setCategoriesList(newCats);
-    setCollections(newCols);
-    setNewCategory({ name: "", description: "", metals: [] });
-    setCategorySuccess(true);
   };
 
   const handleLogout = async () => {
