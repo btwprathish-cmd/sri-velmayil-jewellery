@@ -4,6 +4,7 @@ import { Award, HelpCircle } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import EnquiryButtons from "@/components/EnquiryButtons";
 import collectionsData from "@/data/collections.json";
+import { fetchCollections } from "@/lib/api";
 import { fetchLatestRate, type LiveRateRecord } from "@/utils/rates";
 
 const FALLBACK_RATE: LiveRateRecord = {
@@ -50,18 +51,20 @@ export default function MetalCategoryPage() {
   const metalLabel = metal.charAt(0).toUpperCase() + metal.slice(1).toLowerCase();
   const categoryLabel = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
 
-  const matchingCollections = (collectionsData as Array<{
-    id: string;
-    metal: string;
-    category: string;
-    items: CollectionItem[];
-  }>).filter(
-    (c) =>
-      c.metal.toLowerCase() === metal.toLowerCase() &&
-      c.category.toLowerCase() === category.toLowerCase()
-  );
+  const [matchingCollections, setMatchingCollections] = useState<any[]>([]);
+  useEffect(() => {
+    (async () => {
+      try {
+        const cols = await fetchCollections({ metal, category });
+        setMatchingCollections(cols);
+      } catch (e) {
+        const cols = (collectionsData as Array<any>).filter((c) => c.metal.toLowerCase() === metal.toLowerCase() && c.category.toLowerCase() === category.toLowerCase());
+        setMatchingCollections(cols);
+      }
+    })();
+  }, [metal, category]);
 
-  const allItems: CollectionItem[] = matchingCollections.flatMap((c) => c.items);
+  const allItems: CollectionItem[] = matchingCollections.flatMap((c) => c.items || c.products || []);
   const goldRate22k = latestRate.gold22k_1g;
 
   if (metal.toLowerCase() !== "gold" && metal.toLowerCase() !== "silver") {

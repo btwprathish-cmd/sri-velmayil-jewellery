@@ -4,6 +4,7 @@ import { Award, HelpCircle } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import EnquiryButtons from "@/components/EnquiryButtons";
 import collectionsData from "@/data/collections.json";
+import { fetchCollectionBySlug } from "@/lib/api";
 import { fetchLatestRate, type LiveRateRecord } from "@/utils/rates";
 
 const FALLBACK_RATE: LiveRateRecord = {
@@ -25,10 +26,22 @@ const productImages: Record<string, string> = {
 export default function CategoryPage() {
   const [, params] = useRoute("/jewellery-collections/:category");
   const slug = params?.category ?? "";
-  const category = collectionsData.find((c) => c.slug === slug);
+  const [category, setCategory] = useState<any | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!slug) return;
+    setLoading(true);
+    fetchCollectionBySlug(slug)
+      .then((c) => setCategory(c))
+      .catch(() => setCategory(null))
+      .finally(() => setLoading(false));
+  }, [slug]);
   const [latestRate, setLatestRate] = useState<LiveRateRecord>(FALLBACK_RATE);
 
   useEffect(() => { fetchLatestRate().then(setLatestRate).catch(() => {}); }, []);
+
+  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   if (!category) {
     return (
