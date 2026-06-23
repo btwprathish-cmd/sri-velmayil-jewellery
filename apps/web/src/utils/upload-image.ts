@@ -1,28 +1,26 @@
+import { supabase } from "@/lib/supabase";
+
 export async function uploadImage(file: File): Promise<string> {
-  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
-  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+  const fileExt = file.name.split('.').pop() || "png";
+  const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
+  
+  // Upload to the 'jewellery-images' bucket
+  const { error } = await supabase.storage
+    .from('jewellery-images')
+    .upload(fileName, file, {
+      cacheControl: '3600',
+      upsert: false
+    });
 
-  if (!cloudName || !uploadPreset) {
-    throw new Error(
-      "Missing Cloudinary configuration. Please ensure VITE_CLOUDINARY_CLOUD_NAME and VITE_CLOUDINARY_UPLOAD_PRESET are set in your .env file."
-    );
+  if (error) {
+    console.error("Error uploading image to Supabase:", error);
+    throw new Error(`Storage upload failed: ${error.message}`);
   }
 
-  const url = `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`;
-  const formData = new FormData();
-  formData.append("file", file);
-  formData.append("upload_preset", uploadPreset);
+  // Retrieve the public URL
+  const { data: publicUrlData } = supabase.storage
+    .from('jewellery-images')
+    .getPublicUrl(fileName);
 
-  const response = await fetch(url, {
-    method: "POST",
-    body: formData,
-  });
-
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}));
-    throw new Error(errorData.error?.message || "Failed to upload image to Cloudinary");
-  }
-
-  const data = await response.json();
-  return data.secure_url;
+  return publicUrlData.publicUrl;
 }
