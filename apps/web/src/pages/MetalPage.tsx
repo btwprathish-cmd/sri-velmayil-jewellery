@@ -64,6 +64,7 @@ export default function MetalPage() {
   }
 
   const isGold = metal.toLowerCase() === "gold";
+  const isSilver = metal.toLowerCase() === "silver";
 
   return (
     <div className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

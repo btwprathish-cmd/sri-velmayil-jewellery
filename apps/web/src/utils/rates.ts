@@ -29,4 +29,22 @@ export async function fetchLatestRate(): Promise<LiveRateRecord> {
 
   return await response.json();
 }
-
+
+export async function fetchRateByDate(date: string): Promise<LiveRateRecord | null> {
+  const response = await fetch(`/api/rates/date/${date}`);
+  if (response.status === 404) return null;
+  if (!response.ok) {
+    throw new Error(`Failed to fetch rate for date ${date}`);
+  }
+  return await response.json();
+}
+
+export async function fetchRateHistory(): Promise<LiveRateRecord[]> {
+  const response = await fetch("/api/rates/history", {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to fetch rate history");
+  }
+  return await response.json();
+}

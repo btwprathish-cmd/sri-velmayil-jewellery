@@ -75,7 +75,7 @@ export default function HeroSlideshow(_props: HeroSlideshowProps) {
     <section
       className="relative overflow-hidden w-full bg-black"
       onMouseEnter={() => setPaused(true)}
-      onMouseLeave={() => { setPaused(false); setHoveredBtn(false); }}
+      onMouseLeave={() => { setPaused(false); }}
     >
       {/* Invisible sizer to give the absolute container a fluid height matching the images */}
       <img

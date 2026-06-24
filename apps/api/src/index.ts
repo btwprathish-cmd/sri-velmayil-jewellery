@@ -1,3 +1,9 @@
+import dotenv from "dotenv";
+import path from "path";
+
+dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
+
 import app from "./app";
 import { logger } from "./lib/logger";
 import { scheduleDailyRateFetch } from "./lib/live-rates";

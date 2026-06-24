@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
     try {
       let imageUrl = newMetalImagePreview && !newMetalImage ? newMetalImagePreview : "";
       if (newMetalImage) {
-        imageUrl = await uploadImage(newMetalImage);
+        imageUrl = await uploadImage(newMetalImage, "collection");
       }
       if (editingMetal) {
         await updateMetal(editingMetal, { ...newMetal, imageUrl });
@@ -177,9 +177,9 @@ export default function AdminDashboardPage() {
       let imageUrl = imagePreview && !imageFile ? imagePreview : "";
       if (imageFile) {
         try {
-          imageUrl = await uploadImage(imageFile);
+          imageUrl = await uploadImage(imageFile, "product");
         } catch (uploadErr: any) {
-          throw new Error("Image upload failed: Please check your Cloudinary configuration (.env).");
+          throw new Error(uploadErr.message || "Image upload failed. Please try again.");
         }
       }
 
