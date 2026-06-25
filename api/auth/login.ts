@@ -4,7 +4,7 @@ import {
   validateCredentials,
   createSessionToken,
   SESSION_COOKIE,
-} from "./_auth.js";
+} from "./_auth";
 
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 const MAX_ATTEMPTS = 5;

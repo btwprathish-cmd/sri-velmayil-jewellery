@@ -4,7 +4,7 @@ export async function uploadImage(file: File, type: "collection" | "category" | 
 
   const res = await fetch(`/api/admin/upload?type=${type}`, {
     method: "POST",
-    body: formData
+    body: formData,
   });
 
   if (!res.ok) {
