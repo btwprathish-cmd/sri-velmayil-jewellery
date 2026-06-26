@@ -4,9 +4,9 @@
   "license": "MIT",
   "packageManager": "pnpm@10.26.1",
   "scripts": {
-    "build": "corepack pnpm run typecheck && corepack pnpm -r --if-present run build",
+    "build": "corepack pnpm run typecheck && corepack pnpm --filter @workspace/web --filter @workspace/api run build",
     "typecheck:libs": "tsc --build",
-    "typecheck": "corepack pnpm run typecheck:libs && corepack pnpm -r --filter \"./apps/**\" --filter \"./scripts\" --if-present run typecheck"
+    "typecheck": "corepack pnpm run typecheck:libs && corepack pnpm --filter @workspace/web --filter @workspace/api --filter \"./scripts\" run typecheck"
   },
   "private": true,
   "devDependencies": {
