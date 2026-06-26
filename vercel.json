@@ -1,6 +1,5 @@
 {
   "framework": null,
-  "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/web run build",
   "outputDirectory": "apps/web/dist",
   "builds": [
@@ -13,6 +12,11 @@
       "use": "@vercel/static-build"
     }
   ],
+  "build": {
+    "env": {
+      "ENABLE_EXPERIMENTAL_COREPACK": "1"
+    }
+  },
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/apps/api/src/app.ts" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
