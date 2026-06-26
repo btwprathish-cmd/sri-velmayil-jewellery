@@ -8,16 +8,7 @@ import { logger } from "./lib/logger";
 
 const app: Express = express();
 
-// Initialize upload directories on startup
-const UPLOAD_BASE_DIR = path.resolve(process.env.UPLOAD_PATH || "./public/uploads");
-try {
-  fs.mkdirSync(path.join(UPLOAD_BASE_DIR, "collections"), { recursive: true });
-  fs.mkdirSync(path.join(UPLOAD_BASE_DIR, "categories"), { recursive: true });
-  fs.mkdirSync(path.join(UPLOAD_BASE_DIR, "products"), { recursive: true });
-  logger.info({ uploadDir: UPLOAD_BASE_DIR }, "Upload directories initialized");
-} catch (err) {
-  logger.error({ err }, "Failed to initialize upload directories");
-}
+// Removed local upload directory initialization in favor of Supabase
 
 // Inline HTTP request logger — avoids pino-http ESM/CJS typing issues on Vercel
 app.use((req: Request, res: Response, next: NextFunction) => {
@@ -36,9 +27,7 @@ app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Serve static uploads
-app.use("/uploads", express.static(UPLOAD_BASE_DIR));
-
+// Static uploads are now handled via Supabase public URLs
 app.use("/api", router);
 
 export default app;
