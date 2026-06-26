@@ -3,8 +3,18 @@
   "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/web run build",
   "outputDirectory": "apps/web/dist",
+  "builds": [
+    {
+      "src": "apps/api/src/app.ts",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "package.json",
+      "use": "@vercel/static-build"
+    }
+  ],
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/index.ts" },
+    { "source": "/api/(.*)", "destination": "/apps/api/src/app.ts" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
