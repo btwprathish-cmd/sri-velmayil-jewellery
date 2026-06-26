@@ -1,4 +1,4 @@
-import { supabase } from './apps/web/src/lib/supabase.ts';
+import { supabase } from './apps/web/src/lib/';
 
 async function seed() {
   const { data: cats } = await supabase.from('categories').select('*');

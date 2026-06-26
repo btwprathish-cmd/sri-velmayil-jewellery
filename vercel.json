@@ -4,10 +4,8 @@
   "buildCommand": "pnpm --filter @workspace/web run build",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
-    { "source": "/api/rates/history", "destination": "/api/rates/history" },
-    { "source": "/api/rates/latest",  "destination": "/api/rates/latest" },
-    { "source": "/api/rates/:date",   "destination": "/api/rates/[date]" },
-    { "source": "/((?!api/).*)",      "destination": "/index.html" }
+    { "source": "/api/(.*)", "destination": "/api/index.ts" },
+    { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [
     {

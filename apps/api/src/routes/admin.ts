@@ -6,33 +6,12 @@ import { db } from "@workspace/db";
 import { metalsTable, categoriesTable, categoryMetalsTable, productsTable } from "@workspace/db";
 import { eq } from "drizzle-orm";
 import { verifySessionToken, SESSION_COOKIE } from "../lib/auth.js";
+import { supabase } from "../lib/supabase.js";
 
 const router = Router();
 
-// Configure storage path
-const UPLOAD_BASE_DIR = path.resolve(process.env.UPLOAD_PATH || "./public/uploads");
-
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    let subDir = "products";
-    const type = req.query.type as string | undefined;
-    if (req.originalUrl.includes("collections") || req.originalUrl.includes("metals") || type === "collection" || type === "metal") {
-      subDir = "collections";
-    } else if (req.originalUrl.includes("categories") || type === "category") {
-      subDir = "categories";
-    }
-    
-    const targetDir = path.join(UPLOAD_BASE_DIR, subDir);
-    fs.mkdirSync(targetDir, { recursive: true });
-    cb(null, targetDir);
-  },
-  filename: (req, file, cb) => {
-    const fileExt = path.extname(file.originalname) || ".png";
-    const cleanBase = path.basename(file.originalname, fileExt).replace(/[^a-zA-Z0-9.\-_]/g, "_");
-    const safeName = `${Date.now()}-${cleanBase}${fileExt}`;
-    cb(null, safeName);
-  }
-});
+// Configure storage path for multer
+const storage = multer.memoryStorage();
 
 const fileFilter = (req: any, file: Express.Multer.File, cb: any) => {
   const allowedTypes = ["image/jpeg", "image/jpg", "image/png", "image/webp"];
@@ -50,6 +29,27 @@ const upload = multer({
     fileSize: 5 * 1024 * 1024 // 5MB
   }
 });
+
+const BUCKET = "jewellery-images";
+
+async function uploadToSupabase(file: Express.Multer.File, subDir: string): Promise<string> {
+  const fileExt = path.extname(file.originalname) || ".png";
+  const cleanBase = path.basename(file.originalname, fileExt).replace(/[^a-zA-Z0-9.\-_]/g, "_");
+  const safeName = `${Date.now()}-${cleanBase}${fileExt}`;
+  const key = `${subDir}/${safeName}`;
+
+  const { data, error } = await supabase.storage.from(BUCKET).upload(key, file.buffer, {
+    contentType: file.mimetype,
+    upsert: false,
+  });
+
+  if (error) {
+    throw new Error(`Supabase upload failed: ${error.message}`);
+  }
+
+  const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(data.path);
+  return urlData.publicUrl;
+}
 
 // Multer error handling wrapper
 function handleUpload(fieldName: string) {
@@ -162,7 +162,7 @@ router.get("/collections", async (req: Request, res: Response) => {
 });
 
 // POST /api/admin/upload (Generic upload endpoint)
-router.post("/admin/upload", requireAdmin, handleUpload("image"), (req: Request, res: Response) => {
+router.post("/admin/upload", requireAdmin, handleUpload("image"), async (req: Request, res: Response) => {
   if (!req.file) {
     res.status(400).json({ error: "No file uploaded" });
     return;
@@ -176,8 +176,12 @@ router.post("/admin/upload", requireAdmin, handleUpload("image"), (req: Request,
     subDir = "categories";
   }
 
-  const imageUrl = `/uploads/${subDir}/${req.file.filename}`;
-  res.status(200).json({ success: true, imageUrl });
+  try {
+    const imageUrl = await uploadToSupabase(req.file, subDir);
+    res.status(200).json({ success: true, imageUrl });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
 // --- ADMIN WRITE ENDPOINTS (SECURED) ---
@@ -196,7 +200,7 @@ router.post("/admin/collections", requireAdmin, handleUpload("image"), async (re
 
     let imageUrl = req.body.imageUrl || "";
     if (req.file) {
-      imageUrl = `/uploads/collections/${req.file.filename}`;
+      imageUrl = await uploadToSupabase(req.file, "collections");
     }
 
     const trimmedName = name.trim();
@@ -240,7 +244,7 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
 
     let imageUrl = req.body.imageUrl;
     if (req.file) {
-      imageUrl = `/uploads/collections/${req.file.filename}`;
+      imageUrl = await uploadToSupabase(req.file, "collections");
     }
 
     const existing = await db.select().from(metalsTable).where(eq(metalsTable.name, oldName));
@@ -274,7 +278,7 @@ router.delete("/admin/collections/:name", requireAdmin, async (req: Request, res
 });
 
 // POST /api/admin/categories (Adds / Updates a Category)
-router.post("/api/admin/categories", requireAdmin, async (req: Request, res: Response) => {
+router.post("/admin/categories", requireAdmin, async (req: Request, res: Response) => {
   try {
     const name = req.body.name as string | undefined;
     const description = req.body.description as string | undefined;
@@ -366,7 +370,7 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
 });
 
 // DELETE /api/admin/categories/:name (Deletes a Category)
-router.delete("/api/admin/categories/:name", requireAdmin, async (req: Request, res: Response) => {
+router.delete("/admin/categories/:name", requireAdmin, async (req: Request, res: Response) => {
   try {
     const name = req.params.name as string;
     await db.delete(categoriesTable).where(eq(categoriesTable.name, name));
@@ -391,7 +395,7 @@ router.post("/admin/products", requireAdmin, handleUpload("image"), async (req: 
 
     let imagePath = req.body.imageUrl || "";
     if (req.file) {
-      imagePath = `/uploads/products/${req.file.filename}`;
+      imagePath = await uploadToSupabase(req.file, "products");
     }
 
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
@@ -427,7 +431,7 @@ router.put("/admin/products/:id", requireAdmin, handleUpload("image"), async (re
 
     let imagePath = req.body.imageUrl;
     if (req.file) {
-      imagePath = `/uploads/products/${req.file.filename}`;
+      imagePath = await uploadToSupabase(req.file, "products");
     }
 
     const finalWeight = parseFloat(weight_g || weightG);
