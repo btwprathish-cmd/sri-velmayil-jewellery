@@ -2,7 +2,7 @@
   "framework": null,
   "builds": [
     {
-      "src": "apps/api/src/app.ts",
+      "src": "apps/api/dist/index.mjs",
       "use": "@vercel/node"
     },
     {
@@ -19,7 +19,7 @@
     }
   },
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/apps/api/src/app.ts" },
+    { "source": "/api/(.*)", "destination": "/apps/api/dist/index.mjs" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ],
   "headers": [

@@ -1,4 +1,4 @@
-import express, { type Request, type Response, type NextFunction } from "express";
+import express from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
 import path from "path";
@@ -11,7 +11,7 @@ const app = express();
 // Removed local upload directory initialization in favor of Supabase
 
 // Inline HTTP request logger — avoids pino-http ESM/CJS typing issues on Vercel
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((req, res, next) => {
   const start = Date.now();
   res.on("finish", () => {
     logger.info(
@@ -21,6 +21,7 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   });
   next();
 });
+
 
 app.use(cors({ credentials: true, origin: true }));
 app.use(cookieParser());
