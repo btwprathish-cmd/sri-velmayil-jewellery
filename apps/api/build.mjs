@@ -120,6 +120,8 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
   });
 
   // Second build: app handler only (for Vercel serverless — no listen() call)
+  // No pino plugin here (it generates multiple worker files which requires outdir)
+  // Pino is externalized instead for the serverless handler
   await esbuild({
     entryPoints: [path.resolve(artifactDir, "src/app.ts")],
     platform: "node",
@@ -128,13 +130,11 @@ globalThis.__dirname = __bannerPath.dirname(globalThis.__filename);
     outfile: path.join(distDir, "app.mjs"),
     logLevel: "info",
     external: [
-      "*.node", "sharp", "better-sqlite3", "sqlite3", "canvas", "bcrypt",
+      "*.node", "pino", "pino-pretty", "pino/file", "thread-stream",
+      "sharp", "better-sqlite3", "sqlite3", "canvas", "bcrypt",
       "argon2", "fsevents", "re2", "pg-native", "mysql2", "sequelize",
     ],
     sourcemap: "linked",
-    plugins: [
-      esbuildPluginPino({ transports: ["pino-pretty"] })
-    ],
     banner: {
       js: `import { createRequire as __bannerCrReq } from 'node:module';
 import __bannerPath from 'node:path';
