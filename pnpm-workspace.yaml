@@ -2,6 +2,7 @@ packages:
   - "apps/*"
   - "lib/api-client-react"
   - "lib/api-spec"
+  - "lib/db"
   - "packages/*"
   - "scripts"
 

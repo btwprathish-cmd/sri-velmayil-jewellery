@@ -1,1 +1,0 @@
-// Obsolete. Safe to delete the entire lib/supabase folder.
