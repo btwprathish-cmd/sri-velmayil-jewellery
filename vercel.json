@@ -1,40 +1,50 @@
 {
+  "version": 2,
   "framework": null,
-  "builds": [
-    {
-      "src": "apps/api/dist/index.mjs",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "apps/web/dist"
-      }
-    }
-  ],
+  "buildCommand": "pnpm run build",
+  "outputDirectory": "apps/web/dist",
   "build": {
     "env": {
       "ENABLE_EXPERIMENTAL_COREPACK": "1"
     }
   },
-  "rewrites": [
-    { "source": "/api/(.*)", "destination": "/apps/api/dist/index.mjs" },
-    { "source": "/((?!api/).*)", "destination": "/index.html" }
+  "functions": {
+    "apps/api/dist/index.mjs": {
+      "runtime": "nodejs20.x"
+    }
+  },
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/apps/api/dist/index.mjs"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|webp|svg|ico|woff|woff2|ttf|eot|json|map))",
+      "dest": "/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin",  "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS" }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization" }
       ]
     },
     {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options",        "value": "DENY" }
+        { "key": "X-Frame-Options", "value": "DENY" }
       ]
     }
   ]
