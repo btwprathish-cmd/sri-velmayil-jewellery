@@ -4,9 +4,9 @@ import path from "path";
 dotenv.config();
 dotenv.config({ path: path.resolve(process.cwd(), "../../.env") });
 
-import app from "./app";
-import { logger } from "./lib/logger";
-import { scheduleDailyRateFetch } from "./lib/live-rates";
+import app from "./app.js";
+import { logger } from "./lib/logger.js";
+import { scheduleDailyRateFetch } from "./lib/live-rates.js";
 
 const rawPort = process.env["PORT"];
 

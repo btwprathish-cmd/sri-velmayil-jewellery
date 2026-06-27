@@ -1,8 +1,9 @@
 packages:
-  - apps/*
-  - "lib/supabase"
+  - "apps/*"
+  - "lib/api-client-react"
+  - "lib/api-spec"
   - "packages/*"
-  - scripts
+  - "scripts"
 
 autoInstallPeers: false
 

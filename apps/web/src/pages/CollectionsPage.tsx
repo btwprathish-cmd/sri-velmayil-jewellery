@@ -6,6 +6,13 @@ import { login } from "@/utils/auth";
 import { BRAND } from "@/utils/brand";
 import { getMetals } from "@/utils/collections";
 
+interface MetalData {
+  name: string;
+  imageUrl?: string;
+  purityLabel?: string;
+  description?: string;
+}
+
 export default function CollectionsPage() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [, setLocation] = useLocation();

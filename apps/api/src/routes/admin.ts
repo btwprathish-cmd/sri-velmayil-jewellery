@@ -93,7 +93,7 @@ router.get("/metals", async (req: Request, res: Response) => {
     const { data, error } = await supabase.from('metals').select('*').order('created_at', { ascending: true });
     if (error) throw error;
     
-    const mapped = (data || []).map(m => ({
+    const mapped = (data || []).map((m: any) => ({
       name: m.name,
       purityLabel: m.purity_label || m.purityLabel, // Fallbacks in case columns are camelCased
       description: m.description,
@@ -114,7 +114,7 @@ router.get("/categories", async (req: Request, res: Response) => {
     const { data: catMetals, error: cmErr } = await supabase.from('category_metals').select('*');
     if (cmErr) throw cmErr;
 
-    const mapped = (cats || []).map(c => {
+    const mapped = (cats || []).map((c: any)=> {
       const metals = (catMetals || [])
         .filter(cm => cm.category_id === c.id || cm.categoryId === c.id)
         .map(cm => cm.metal_name || cm.metalName);

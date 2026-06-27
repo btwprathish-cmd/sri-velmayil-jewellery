@@ -6,6 +6,15 @@ import EnquiryButtons from "@/components/EnquiryButtons";
 import { getCollections } from "@/utils/collections";
 import { fetchLatestRate, type LiveRateRecord } from "@/utils/rates";
 
+interface CollectionItem {
+  id: string;
+  name: string;
+  weight_g: number;
+  making_charge_pct: number;
+  description: string;
+  image: string;
+}
+
 const FALLBACK_RATE: LiveRateRecord = {
   date: new Date().toISOString().split("T")[0],
   gold22k_1g: 13860, gold22k_8g: 110880, silver_1g: 270, gold24k_1g: 15131,
