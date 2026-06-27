@@ -6,7 +6,7 @@ import { verifySessionToken, SESSION_COOKIE } from "../lib/auth.js";
 import { getDb, schema } from "@workspace/db";
 import { eq, desc } from "drizzle-orm";
 
-const router = Router();
+const router: any = Router();
 
 // Configure storage path for multer (in memory, then we write it manually)
 const storage = multer.memoryStorage();

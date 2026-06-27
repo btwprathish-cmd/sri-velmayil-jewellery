@@ -1,7 +1,7 @@
-import { Router, type IRouter } from "express";
+import { Router } from "express";
 import { getLiveRates, getRateHistory, getRateByDate } from "../lib/live-rates.js";
 
-const router: IRouter = Router();
+const router: any = Router();
 
 router.get("/rates/latest", async (_req, res) => {
   try {

@@ -1,4 +1,4 @@
-import { Router, type IRouter, type Request, type Response } from "express";
+import { Router, type Request, type Response } from "express";
 import {
   isAdminConfigured,
   validateCredentials,
@@ -7,7 +7,7 @@ import {
   SESSION_COOKIE,
 } from "../lib/auth.js";
 
-const router: IRouter = Router();
+const router: any = Router();
 
 const loginAttempts = new Map<string, { count: number; resetAt: number }>();
 const MAX_ATTEMPTS = 5;
