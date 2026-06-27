@@ -11,7 +11,9 @@ const app = express();
 // Removed local upload directory initialization in favor of Supabase
 
 // Inline HTTP request logger — avoids pino-http ESM/CJS typing issues on Vercel
-app.use((req, res, next) => {
+import type { Request, Response, NextFunction } from "express";
+
+app.use((req: Request, res: Response, next: NextFunction) => {
   const start = Date.now();
   res.on("finish", () => {
     logger.info(
