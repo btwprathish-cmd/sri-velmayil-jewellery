@@ -1,25 +1,26 @@
-  {
-    "compilerOptions": {
-      "incremental": true,
-      "isolatedModules": true,
-      "lib": ["es2022"],
-      "module": "esnext",
-      "moduleResolution": "bundler",
-      "noEmitOnError": true,
-      "noFallthroughCasesInSwitch": true,
-      "noImplicitOverride": false,
-      "noImplicitReturns": true,
-      "noUnusedLocals": false,
-      "noImplicitAny": true,
-      "noImplicitThis": true,
-      "strictNullChecks": true,
-      "strictFunctionTypes": false,
-      "strictBindCallApply": true,
-      "strictPropertyInitialization": true,
-      "useUnknownInCatchVariables": true,
-      "alwaysStrict": true,
-      "target": "es2022",
-      "types": ["node"],
-      "customConditions": ["workspace"]
-    }
+{
+  "compilerOptions": {
+    "incremental": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "lib": ["es2022"],
+    "module": "esnext",
+    "moduleResolution": "bundler",
+    "noEmitOnError": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": false,
+    "noImplicitReturns": true,
+    "noUnusedLocals": false,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": false,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "useUnknownInCatchVariables": true,
+    "alwaysStrict": true,
+    "target": "es2022",
+    "types": ["node"],
+    "customConditions": ["workspace"]
   }
+}
