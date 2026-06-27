@@ -21,6 +21,40 @@ import AdminDashboardPage from "@/pages/AdminDashboardPage";
 
 const queryClient = new QueryClient();
 
+// ─── Error Boundary ───────────────────────────────────────────────────────────
+class ErrorBoundary extends React.Component<
+  { children: React.ReactNode },
+  { error: Error | null }
+> {
+  constructor(props: { children: React.ReactNode }) {
+    super(props);
+    this.state = { error: null };
+  }
+  static getDerivedStateFromError(error: Error) {
+    return { error };
+  }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ minHeight: "100vh", background: "#0c0418", display: "flex", alignItems: "center", justifyContent: "center", flexDirection: "column", color: "#F3E5AB", fontFamily: "sans-serif", padding: "2rem", textAlign: "center" }}>
+          <h1 style={{ color: "#D4AF37", fontSize: "2rem", marginBottom: "1rem" }}>Sri Velmayil Jewellery</h1>
+          <p style={{ opacity: 0.7, marginBottom: "1.5rem" }}>Something went wrong loading the page. Please refresh.</p>
+          <button onClick={() => window.location.reload()} style={{ padding: "0.75rem 2rem", background: "#D4AF37", color: "#0c0418", borderRadius: "8px", border: "none", fontWeight: "bold", cursor: "pointer", fontSize: "1rem" }}>
+            Refresh Page
+          </button>
+          {import.meta.env.DEV && (
+            <pre style={{ marginTop: "2rem", fontSize: "0.75rem", opacity: 0.5, textAlign: "left", maxWidth: "600px", overflow: "auto" }}>
+              {this.state.error.toString()}
+            </pre>
+          )}
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen bg-[#0c0418] text-[#fbf6e8] flex flex-col">
@@ -168,11 +202,16 @@ function Router() {
 }
 
 export default function App() {
+  // Safely get the base URL — defaults to "" if undefined (Vercel production)
+  const base = (import.meta.env.BASE_URL ?? "/").replace(/\/$/, "");
   return (
-    <QueryClientProvider client={queryClient}>
-      <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-        <Router />
-      </WouterRouter>
-    </QueryClientProvider>
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <WouterRouter base={base}>
+          <Router />
+        </WouterRouter>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }
+
