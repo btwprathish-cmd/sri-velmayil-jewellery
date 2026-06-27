@@ -47,9 +47,10 @@ async function fetchApi(url: string, options?: RequestInit) {
 
 export async function getMetals(): Promise<MetalData[]> {
   try {
-    return await fetchApi("/api/metals");
+    const data = await fetchApi("/api/metals");
+    return Array.isArray(data) ? data : [];
   } catch (error) {
-    console.error("Error fetching metals:", error);
+    console.error("Failed to fetch metals:", error);
     return [];
   }
 }
@@ -76,7 +77,8 @@ export async function deleteMetal(name: string): Promise<void> {
 
 export async function getCategories(): Promise<CategoryData[]> {
   try {
-    return await fetchApi("/api/categories");
+    const data = await fetchApi("/api/categories");
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Error fetching categories:", error);
     return [];
@@ -105,7 +107,8 @@ export async function deleteCategory(name: string): Promise<void> {
 
 export async function getCollections(): Promise<CollectionBlock[]> {
   try {
-    return await fetchApi("/api/collections");
+    const data = await fetchApi("/api/collections");
+    return Array.isArray(data) ? data : [];
   } catch (error) {
     console.error("Error fetching collections:", error);
     return [];
