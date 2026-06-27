@@ -133,7 +133,7 @@ export async function deleteProduct(productId: string): Promise<void> {
   });
 }
 
-export async function updateProduct(productId: string, payload: any): Promise<void> {
+export async function updateProduct(productId: string, payload: Partial<CollectionItem>): Promise<void> {
   await fetchApi(`/api/admin/products/${encodeURIComponent(productId)}`, {
     method: "PUT",
     body: JSON.stringify(payload),

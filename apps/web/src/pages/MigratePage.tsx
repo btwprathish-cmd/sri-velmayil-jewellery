@@ -15,7 +15,17 @@ export default function MigratePage() {
     try {
       const metalsSet = new Set<string>();
       const categoriesSet = new Set<string>();
-      const products: any[] = [];
+      interface MigrationProduct {
+        id: string;
+        name: string;
+        metal: string;
+        category: string;
+        weight_g: number;
+        making_charge_pct: number;
+        description: string;
+        image: string;
+      }
+      const products: MigrationProduct[] = [];
 
       for (const block of localData) {
         metalsSet.add(block.metal);
@@ -87,8 +97,9 @@ export default function MigratePage() {
       }
 
       addLog("✅ Migration complete! You can now visit the admin dashboard.");
-    } catch (err: any) {
-      addLog(`❌ Fatal Error: ${err.message}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Unknown fatal error";
+      addLog(`❌ Fatal Error: ${message}`);
     } finally {
       setIsMigrating(false);
     }

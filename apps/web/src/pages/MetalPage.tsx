@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { Link, useRoute } from "wouter";
-import { Award, Gem, Link2, Star, Circle, Shield, ArrowLeft } from "lucide-react";
+import { Award, Gem, Link2, Star, Circle, Shield, ArrowLeft, type LucideIcon } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { getCategories, getMetals } from "@/utils/collections";
-const DEFAULT_CATEGORY_INFO: Record<string, { description: string; icon: any }> = {
+const DEFAULT_CATEGORY_INFO: Record<string, { description: string; icon: LucideIcon }> = {
   "coin": {
     description: "Pure gold and silver coins in various weights — ideal for gifting and investment.",
     icon: Award,

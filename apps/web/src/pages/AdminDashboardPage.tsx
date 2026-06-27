@@ -94,8 +94,9 @@ export default function AdminDashboardPage() {
       setNewMetalImage(null);
       setNewMetalImagePreview(null);
       setCollectionSuccess(true);
-    } catch (err: any) {
-      alert(err.message || "Failed to save metal. Check configuration.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save metal. Check configuration.";
+      alert(message);
     } finally {
       setIsSubmittingMetal(false);
     }
@@ -116,8 +117,9 @@ export default function AdminDashboardPage() {
       setCollections(newCols);
       setNewCategory({ name: "", description: "", metals: [] });
       setCategorySuccess(true);
-    } catch (err: any) {
-      alert(err.message || "Failed to save category.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save category.";
+      alert(message);
     }
   };
 
@@ -178,8 +180,9 @@ export default function AdminDashboardPage() {
       if (imageFile) {
         try {
           imageUrl = await uploadImage(imageFile, "product");
-        } catch (uploadErr: any) {
-          throw new Error(uploadErr.message || "Image upload failed. Please try again.");
+        } catch (uploadErr: unknown) {
+          const message = uploadErr instanceof Error ? uploadErr.message : "Image upload failed. Please try again.";
+          throw new Error(message);
         }
       }
 

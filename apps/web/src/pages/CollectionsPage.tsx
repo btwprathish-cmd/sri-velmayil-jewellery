@@ -119,7 +119,7 @@ export default function CollectionsPage() {
         metalsList.length === 2 ? "grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto gap-8" :
         "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
       }>
-        {metalsList.map((metal: any) => {
+        {metalsList.map((metal: MetalData) => {
           const metalName = metal.name;
           const isSilver = metalName.toLowerCase() === "silver";
           const isGold = metalName.toLowerCase() === "gold";
