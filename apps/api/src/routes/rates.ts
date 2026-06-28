@@ -1,9 +1,9 @@
-import { Router, Request, Response } from "express";
+import { Router } from "express";
 import { getLiveRates, getRateHistory, getRateByDate } from "../lib/live-rates.js";
 
-const router: any = Router();
+const router = Router();
 
-router.get("/rates/latest", async (_req: Request, res: Response) => {
+router.get("/rates/latest", async (_req, res) => {
   try {
     const rate = await getLiveRates();
     res.json(rate);
@@ -12,7 +12,7 @@ router.get("/rates/latest", async (_req: Request, res: Response) => {
   }
 });
 
-router.get("/rates/history", (_req: Request, res: Response) => {
+router.get("/rates/history", (_req, res) => {
   try {
     const history = getRateHistory();
     const sorted = history.sort((a, b) => b.date.localeCompare(a.date));
@@ -22,7 +22,7 @@ router.get("/rates/history", (_req: Request, res: Response) => {
   }
 });
 
-router.get("/rates/date/:date", (req: Request, res: Response) => {
+router.get("/rates/date/:date", (req, res) => {
   const { date } = req.params;
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) {
     res.status(400).json({ error: "Invalid date format. Use YYYY-MM-DD." });
