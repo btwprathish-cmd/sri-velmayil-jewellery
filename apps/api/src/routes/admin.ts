@@ -1,12 +1,10 @@
 import { Router, type Request, type Response, type NextFunction } from "express";
 import multer from "multer";
 import path from "path";
-import fs from "fs/promises";
 import { verifySessionToken, SESSION_COOKIE } from "../lib/auth.js";
-import { getDb, schema } from "@workspace/db";
-import { eq, desc } from "drizzle-orm";
+import { supabase } from "../lib/supabase.js";
 
-const router: any = Router();
+const router = Router();
 
 // Configure storage path for multer (in memory, then we write it manually)
 const storage = multer.memoryStorage();
@@ -28,19 +26,28 @@ const upload = multer({
   }
 });
 
-async function saveLocalUpload(file: Express.Multer.File): Promise<string> {
+// Upload image to Supabase Storage instead of local file system
+async function uploadToSupabaseStorage(file: Express.Multer.File): Promise<string> {
   const fileExt = path.extname(file.originalname) || ".png";
   const cleanBase = path.basename(file.originalname, fileExt).replace(/[^a-zA-Z0-9.\-_]/g, "_");
   const safeName = `${Date.now()}-${cleanBase}${fileExt}`;
   
-  // Save to frontend public/images directory so it serves properly
-  const uploadDir = path.join(process.cwd(), '../web/public/images');
-  await fs.mkdir(uploadDir, { recursive: true });
-  
-  const targetPath = path.join(uploadDir, safeName);
-  await fs.writeFile(targetPath, file.buffer);
-  
-  return `/images/${safeName}`;
+  const { data, error } = await supabase.storage
+    .from("images")
+    .upload(safeName, file.buffer, {
+      contentType: file.mimetype,
+      upsert: true
+    });
+
+  if (error) {
+    throw new Error(`Supabase Storage upload failed: ${error.message}`);
+  }
+
+  const { data: publicUrlData } = supabase.storage
+    .from("images")
+    .getPublicUrl(data.path);
+
+  return publicUrlData.publicUrl;
 }
 
 // Multer error handling wrapper
@@ -85,9 +92,14 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
 // GET /api/metals
 router.get("/metals", async (req: Request, res: Response) => {
   try {
-    const data = await getDb().select().from(schema.metalsTable).orderBy(desc(schema.metalsTable.createdAt));
+    const { data, error } = await supabase
+      .from('metalsTable')
+      .select('*')
+      .order('createdAt', { ascending: false });
+
+    if (error) throw error;
     
-    const mapped = data.map(m => ({
+    const mapped = (data || []).map(m => ({
       name: m.name,
       purityLabel: m.purityLabel,
       description: m.description,
@@ -103,11 +115,21 @@ router.get("/metals", async (req: Request, res: Response) => {
 // GET /api/categories
 router.get("/categories", async (req: Request, res: Response) => {
   try {
-    const cats = await getDb().select().from(schema.categoriesTable).orderBy(desc(schema.categoriesTable.createdAt));
-    const catMetals = await getDb().select().from(schema.categoryMetalsTable);
+    const { data: cats, error: catsError } = await supabase
+      .from('categoriesTable')
+      .select('*')
+      .order('createdAt', { ascending: false });
+    
+    if (catsError) throw catsError;
 
-    const mapped = cats.map(c => {
-      const metals = catMetals
+    const { data: catMetals, error: cmError } = await supabase
+      .from('categoryMetalsTable')
+      .select('*');
+
+    if (cmError) throw cmError;
+
+    const mapped = (cats || []).map(c => {
+      const metals = (catMetals || [])
         .filter(cm => cm.categoryId === c.id)
         .map(cm => cm.metalName);
       
@@ -126,11 +148,16 @@ router.get("/categories", async (req: Request, res: Response) => {
 // GET /api/collections (returns grouped products)
 router.get("/collections", async (req: Request, res: Response) => {
   try {
-    const products = await getDb().select().from(schema.productsTable).orderBy(desc(schema.productsTable.createdAt));
+    const { data: products, error } = await supabase
+      .from('productsTable')
+      .select('*')
+      .order('createdAt', { ascending: false });
+
+    if (error) throw error;
 
     const grouped: Record<string, any> = {};
     
-    for (const p of products) {
+    for (const p of (products || [])) {
       const key = `${p.metal}-${p.category}`;
       if (!grouped[key]) {
         const slug = `${p.metal.toLowerCase()}-${p.category.toLowerCase()}s`;
@@ -172,7 +199,7 @@ router.post("/admin/upload", requireAdmin, handleUpload("image"), async (req: Re
   }
 
   try {
-    const imageUrl = await saveLocalUpload(req.file);
+    const imageUrl = await uploadToSupabaseStorage(req.file);
     res.status(200).json({ success: true, imageUrl });
   } catch (error: unknown) {
     res.status(500).json({ error: error instanceof Error ? error.message : "Unknown error" });
@@ -195,28 +222,45 @@ router.post("/admin/collections", requireAdmin, handleUpload("image"), async (re
 
     let imageUrl = req.body.imageUrl || "";
     if (req.file) {
-      imageUrl = await saveLocalUpload(req.file);
+      imageUrl = await uploadToSupabaseStorage(req.file);
     }
 
     const trimmedName = name.trim();
     
-    const existing = await getDb().select().from(schema.metalsTable).where(eq(schema.metalsTable.name, trimmedName)).limit(1);
+    const { data: existing, error: fetchError } = await supabase
+      .from('metalsTable')
+      .select('*')
+      .eq('name', trimmedName)
+      .limit(1);
     
-    if (existing.length > 0) {
-      await getDb().update(schema.metalsTable).set({
-        description: description || existing[0].description,
-        purityLabel: purityLabel || existing[0].purityLabel,
-        imageUrl: imageUrl || existing[0].imageUrl
-      }).where(eq(schema.metalsTable.name, trimmedName));
+    if (fetchError) throw fetchError;
+    
+    if (existing && existing.length > 0) {
+      const { error: updateError } = await supabase
+        .from('metalsTable')
+        .update({
+          description: description !== undefined ? description : existing[0].description,
+          purityLabel: purityLabel !== undefined ? purityLabel : existing[0].purityLabel,
+          imageUrl: imageUrl || existing[0].imageUrl
+        })
+        .eq('name', trimmedName);
+        
+      if (updateError) throw updateError;
+      
       res.status(200).json({ success: true, message: "Metal updated successfully" });
       return;
     } else {
-      await getDb().insert(schema.metalsTable).values({
-        name: trimmedName,
-        description: description || "",
-        purityLabel: purityLabel || "",
-        imageUrl: imageUrl
-      });
+      const { error: insertError } = await supabase
+        .from('metalsTable')
+        .insert({
+          name: trimmedName,
+          description: description || "",
+          purityLabel: purityLabel || "",
+          imageUrl: imageUrl
+        });
+        
+      if (insertError) throw insertError;
+      
       res.status(201).json({ success: true, message: "Metal created successfully" });
       return;
     }
@@ -240,22 +284,33 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
 
     let imageUrl = req.body.imageUrl;
     if (req.file) {
-      imageUrl = await saveLocalUpload(req.file);
+      imageUrl = await uploadToSupabaseStorage(req.file);
     }
 
-    const existing = await getDb().select().from(schema.metalsTable).where(eq(schema.metalsTable.name, oldName)).limit(1);
+    const { data: existing, error: fetchError } = await supabase
+      .from('metalsTable')
+      .select('*')
+      .eq('name', oldName)
+      .limit(1);
 
-    if (existing.length === 0) {
+    if (fetchError) throw fetchError;
+
+    if (!existing || existing.length === 0) {
       res.status(404).json({ error: `Metal ${oldName} not found` });
       return;
     }
 
-    await getDb().update(schema.metalsTable).set({
-      name: name.trim(),
-      description: description !== undefined ? description : existing[0].description,
-      purityLabel: purityLabel !== undefined ? purityLabel : existing[0].purityLabel,
-      imageUrl: imageUrl !== undefined ? imageUrl : existing[0].imageUrl
-    }).where(eq(schema.metalsTable.name, oldName));
+    const { error: updateError } = await supabase
+      .from('metalsTable')
+      .update({
+        name: name.trim(),
+        description: description !== undefined ? description : existing[0].description,
+        purityLabel: purityLabel !== undefined ? purityLabel : existing[0].purityLabel,
+        imageUrl: imageUrl !== undefined ? imageUrl : existing[0].imageUrl
+      })
+      .eq('name', oldName);
+
+    if (updateError) throw updateError;
 
     res.json({ success: true, message: "Metal updated successfully" });
   } catch (error: unknown) {
@@ -267,7 +322,14 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
 router.delete("/admin/collections/:name", requireAdmin, async (req: Request, res: Response) => {
   try {
     const name = req.params.name as string;
-    await getDb().delete(schema.metalsTable).where(eq(schema.metalsTable.name, name));
+    
+    const { error } = await supabase
+      .from('metalsTable')
+      .delete()
+      .eq('name', name);
+      
+    if (error) throw error;
+    
     res.json({ success: true, message: "Metal deleted successfully" });
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to delete metal", details: error instanceof Error ? error.message : "Unknown error" });
@@ -291,29 +353,57 @@ router.post("/admin/categories", requireAdmin, async (req: Request, res: Respons
       ? metals 
       : (typeof metals === "string" ? metals.split(",").map(m => m.trim()).filter(Boolean) : []);
 
-    const existing = await getDb().select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, trimmedName)).limit(1);
+    const { data: existing, error: fetchError } = await supabase
+      .from('categoriesTable')
+      .select('*')
+      .eq('name', trimmedName)
+      .limit(1);
+
+    if (fetchError) throw fetchError;
+
     let categoryId: string;
 
-    if (existing.length > 0) {
+    if (existing && existing.length > 0) {
       categoryId = existing[0].id;
-      await getDb().update(schema.categoriesTable).set({ description }).where(eq(schema.categoriesTable.id, categoryId));
+      const { error: updateError } = await supabase
+        .from('categoriesTable')
+        .update({ description: description !== undefined ? description : existing[0].description })
+        .eq('id', categoryId);
+        
+      if (updateError) throw updateError;
     } else {
-      const inserted = await getDb().insert(schema.categoriesTable).values({
-        name: trimmedName,
-        description: description || ""
-      }).returning();
+      const { data: inserted, error: insertError } = await supabase
+        .from('categoriesTable')
+        .insert({
+          name: trimmedName,
+          description: description || ""
+        })
+        .select();
+        
+      if (insertError) throw insertError;
+      if (!inserted || inserted.length === 0) throw new Error("Failed to return inserted category");
+      
       categoryId = inserted[0].id;
     }
 
     // Recreate mappings
-    await getDb().delete(schema.categoryMetalsTable).where(eq(schema.categoryMetalsTable.categoryId, categoryId));
+    const { error: deleteError } = await supabase
+      .from('categoryMetalsTable')
+      .delete()
+      .eq('categoryId', categoryId);
+      
+    if (deleteError) throw deleteError;
     
     if (metalList.length > 0) {
       const mappings = metalList.map(m => ({
         categoryId: categoryId,
         metalName: m as string
       }));
-      await getDb().insert(schema.categoryMetalsTable).values(mappings);
+      const { error: mappingError } = await supabase
+        .from('categoryMetalsTable')
+        .insert(mappings);
+        
+      if (mappingError) throw mappingError;
     }
 
     res.status(201).json({ success: true, message: "Category saved successfully" });
@@ -335,32 +425,52 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
       return;
     }
 
-    const existing = await getDb().select().from(schema.categoriesTable).where(eq(schema.categoriesTable.name, oldName)).limit(1);
+    const { data: existing, error: fetchError } = await supabase
+      .from('categoriesTable')
+      .select('*')
+      .eq('name', oldName)
+      .limit(1);
 
-    if (existing.length === 0) {
+    if (fetchError) throw fetchError;
+
+    if (!existing || existing.length === 0) {
       res.status(404).json({ error: `Category ${oldName} not found` });
       return;
     }
 
     const categoryId = existing[0].id;
-    await getDb().update(schema.categoriesTable).set({
-      name: name.trim(),
-      description: description !== undefined ? description : existing[0].description
-    }).where(eq(schema.categoriesTable.id, categoryId));
+    const { error: updateError } = await supabase
+      .from('categoriesTable')
+      .update({
+        name: name.trim(),
+        description: description !== undefined ? description : existing[0].description
+      })
+      .eq('id', categoryId);
+
+    if (updateError) throw updateError;
 
     const metalList = Array.isArray(metals) 
       ? metals 
       : (typeof metals === "string" ? metals.split(",").map(m => m.trim()).filter(Boolean) : []);
 
     // Recreate mappings
-    await getDb().delete(schema.categoryMetalsTable).where(eq(schema.categoryMetalsTable.categoryId, categoryId));
+    const { error: deleteError } = await supabase
+      .from('categoryMetalsTable')
+      .delete()
+      .eq('categoryId', categoryId);
+      
+    if (deleteError) throw deleteError;
 
     if (metalList.length > 0) {
       const mappings = metalList.map(m => ({
         categoryId: categoryId,
         metalName: m as string
       }));
-      await getDb().insert(schema.categoryMetalsTable).values(mappings);
+      const { error: insertError } = await supabase
+        .from('categoryMetalsTable')
+        .insert(mappings);
+        
+      if (insertError) throw insertError;
     }
 
     res.json({ success: true, message: "Category updated successfully" });
@@ -373,7 +483,14 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
 router.delete("/admin/categories/:name", requireAdmin, async (req: Request, res: Response) => {
   try {
     const name = req.params.name as string;
-    await getDb().delete(schema.categoriesTable).where(eq(schema.categoriesTable.name, name));
+    
+    const { error } = await supabase
+      .from('categoriesTable')
+      .delete()
+      .eq('name', name);
+      
+    if (error) throw error;
+    
     res.json({ success: true, message: "Category deleted successfully" });
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to delete category", details: error instanceof Error ? error.message : "Unknown error" });
@@ -395,21 +512,25 @@ router.post("/admin/products", requireAdmin, handleUpload("image"), async (req: 
 
     let imagePath = req.body.imageUrl || "";
     if (req.file) {
-      imagePath = await saveLocalUpload(req.file);
+      imagePath = await uploadToSupabaseStorage(req.file);
     }
 
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
 
-    await getDb().insert(schema.productsTable).values({
-      id,
-      name,
-      metal,
-      category,
-      weight_g: finalWeight.toString(),
-      making_charge_pct: finalMakingCharge.toString(),
-      description: description || "",
-      image: imagePath
-    });
+    const { error } = await supabase
+      .from('productsTable')
+      .insert({
+        id,
+        name,
+        metal,
+        category,
+        weight_g: finalWeight.toString(),
+        making_charge_pct: finalMakingCharge.toString(),
+        description: description || "",
+        image: imagePath
+      });
+      
+    if (error) throw error;
 
     res.status(201).json({ success: true, message: "Product created successfully", id });
   } catch (error: unknown) {
@@ -423,30 +544,41 @@ router.put("/admin/products/:id", requireAdmin, handleUpload("image"), async (re
     const id = req.params.id as string;
     const { name, metal, category, weight_g, weightG, making_charge_pct, makingChargePct, description } = req.body;
 
-    const existing = await getDb().select().from(schema.productsTable).where(eq(schema.productsTable.id, id)).limit(1);
+    const { data: existing, error: fetchError } = await supabase
+      .from('productsTable')
+      .select('*')
+      .eq('id', id)
+      .limit(1);
 
-    if (existing.length === 0) {
+    if (fetchError) throw fetchError;
+
+    if (!existing || existing.length === 0) {
       res.status(404).json({ error: "Product not found" });
       return;
     }
 
     let imagePath = req.body.imageUrl;
     if (req.file) {
-      imagePath = await saveLocalUpload(req.file);
+      imagePath = await uploadToSupabaseStorage(req.file);
     }
 
     const finalWeight = parseFloat(weight_g || weightG);
     const finalMakingCharge = parseFloat(making_charge_pct || makingChargePct);
 
-    await getDb().update(schema.productsTable).set({
-      name: name !== undefined ? name : existing[0].name,
-      metal: metal !== undefined ? metal : existing[0].metal,
-      category: category !== undefined ? category : existing[0].category,
-      weight_g: !isNaN(finalWeight) ? finalWeight.toString() : existing[0].weight_g,
-      making_charge_pct: !isNaN(finalMakingCharge) ? finalMakingCharge.toString() : existing[0].making_charge_pct,
-      description: description !== undefined ? description : existing[0].description,
-      image: imagePath !== undefined ? imagePath : existing[0].image
-    }).where(eq(schema.productsTable.id, id));
+    const { error: updateError } = await supabase
+      .from('productsTable')
+      .update({
+        name: name !== undefined ? name : existing[0].name,
+        metal: metal !== undefined ? metal : existing[0].metal,
+        category: category !== undefined ? category : existing[0].category,
+        weight_g: !isNaN(finalWeight) ? finalWeight.toString() : existing[0].weight_g,
+        making_charge_pct: !isNaN(finalMakingCharge) ? finalMakingCharge.toString() : existing[0].making_charge_pct,
+        description: description !== undefined ? description : existing[0].description,
+        image: imagePath !== undefined ? imagePath : existing[0].image
+      })
+      .eq('id', id);
+
+    if (updateError) throw updateError;
 
     res.json({ success: true, message: "Product updated successfully" });
   } catch (error: unknown) {
@@ -458,7 +590,14 @@ router.put("/admin/products/:id", requireAdmin, handleUpload("image"), async (re
 router.delete("/admin/products/:id", requireAdmin, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
-    await getDb().delete(schema.productsTable).where(eq(schema.productsTable.id, id));
+    
+    const { error } = await supabase
+      .from('productsTable')
+      .delete()
+      .eq('id', id);
+      
+    if (error) throw error;
+    
     res.json({ success: true, message: "Product deleted successfully" });
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to delete product", details: error instanceof Error ? error.message : "Unknown error" });
@@ -466,3 +605,4 @@ router.delete("/admin/products/:id", requireAdmin, async (req: Request, res: Res
 });
 
 export default router;
+
