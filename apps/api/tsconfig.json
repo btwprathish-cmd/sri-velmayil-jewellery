@@ -8,7 +8,7 @@
     "tsBuildInfoFile": ".tsbuildinfo",
     "outDir": "dist",
     "rootDir": "src",
-    "types": ["node"],
+    "types": ["node", "express"],
     "lib": ["es2022", "dom", "dom.iterable"]
   },
   "include": ["src"],
