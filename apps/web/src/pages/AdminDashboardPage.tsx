@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
     try {
       let imageUrl = newMetalImagePreview && !newMetalImage ? newMetalImagePreview : "";
       if (newMetalImage) {
-        imageUrl = await uploadImage(newMetalImage);
+        imageUrl = await uploadImage(newMetalImage, "collection");
       }
       if (editingMetal) {
         await updateMetal(editingMetal, { ...newMetal, imageUrl });
@@ -94,8 +94,9 @@ export default function AdminDashboardPage() {
       setNewMetalImage(null);
       setNewMetalImagePreview(null);
       setCollectionSuccess(true);
-    } catch (err: any) {
-      alert(err.message || "Failed to save metal. Check configuration.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save metal. Check configuration.";
+      alert(message);
     } finally {
       setIsSubmittingMetal(false);
     }
@@ -116,8 +117,9 @@ export default function AdminDashboardPage() {
       setCollections(newCols);
       setNewCategory({ name: "", description: "", metals: [] });
       setCategorySuccess(true);
-    } catch (err: any) {
-      alert(err.message || "Failed to save category.");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to save category.";
+      alert(message);
     }
   };
 
@@ -177,9 +179,10 @@ export default function AdminDashboardPage() {
       let imageUrl = imagePreview && !imageFile ? imagePreview : "";
       if (imageFile) {
         try {
-          imageUrl = await uploadImage(imageFile);
-        } catch (uploadErr: any) {
-          throw new Error("Image upload failed: Please check your Cloudinary configuration (.env).");
+          imageUrl = await uploadImage(imageFile, "product");
+        } catch (uploadErr: unknown) {
+          const message = uploadErr instanceof Error ? uploadErr.message : "Image upload failed. Please try again.";
+          throw new Error(message);
         }
       }
 

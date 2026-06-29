@@ -1,26 +1,17 @@
-import { supabase } from "@/lib/supabase";
+export async function uploadImage(file: File, type: "collection" | "category" | "product" = "product"): Promise<string> {
+  const formData = new FormData();
+  formData.append("image", file);
 
-export async function uploadImage(file: File): Promise<string> {
-  const fileExt = file.name.split('.').pop() || "png";
-  const fileName = `${Math.random().toString(36).substring(2, 15)}_${Date.now()}.${fileExt}`;
-  
-  // Upload to the 'jewellery-images' bucket
-  const { error } = await supabase.storage
-    .from('jewellery-images')
-    .upload(fileName, file, {
-      cacheControl: '3600',
-      upsert: false
-    });
+  const res = await fetch(`/api/admin/upload?type=${type}`, {
+    method: "POST",
+    body: formData,
+  });
 
-  if (error) {
-    console.error("Error uploading image to Supabase:", error);
-    throw new Error(`Storage upload failed: ${error.message}`);
+  if (!res.ok) {
+    const errorData = await res.json().catch(() => ({}));
+    throw new Error(errorData.error || "File upload failed. Only JPG, PNG, and WEBP under 5MB are allowed.");
   }
 
-  // Retrieve the public URL
-  const { data: publicUrlData } = supabase.storage
-    .from('jewellery-images')
-    .getPublicUrl(fileName);
-
-  return publicUrlData.publicUrl;
+  const data = await res.json();
+  return data.imageUrl;
 }

@@ -1,28 +1,33 @@
 {
-  "framework": null,
-  "installCommand": "corepack enable && corepack prepare pnpm@10.26.1 --activate && pnpm install --no-frozen-lockfile",
-  "buildCommand": "pnpm --filter @workspace/web run build",
+  "version": 2,
+  "framework": "vite",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
-    { "source": "/api/rates/history", "destination": "/api/rates/history" },
-    { "source": "/api/rates/latest",  "destination": "/api/rates/latest" },
-    { "source": "/api/rates/:date",   "destination": "/api/rates/[date]" },
-    { "source": "/((?!api/).*)",      "destination": "/index.html" }
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
     {
       "source": "/api/(.*)",
       "headers": [
-        { "key": "Access-Control-Allow-Origin",  "value": "*" },
-        { "key": "Access-Control-Allow-Methods", "value": "GET,OPTIONS" }
+        { "key": "Access-Control-Allow-Origin", "value": "*" },
+        { "key": "Access-Control-Allow-Methods", "value": "GET,POST,PUT,DELETE,OPTIONS" },
+        { "key": "Access-Control-Allow-Headers", "value": "Content-Type,Authorization" }
       ]
     },
     {
       "source": "/(.*)",
       "headers": [
         { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options",        "value": "DENY" }
+        { "key": "X-Frame-Options", "value": "DENY" }
       ]
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/update-rates",
+      "schedule": "0 * * * *"
     }
   ]
 }

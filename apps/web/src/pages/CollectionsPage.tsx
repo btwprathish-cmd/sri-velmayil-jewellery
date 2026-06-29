@@ -6,6 +6,13 @@ import { login } from "@/utils/auth";
 import { BRAND } from "@/utils/brand";
 import { getMetals, type MetalData } from "@/utils/collections";
 
+interface MetalData {
+  name: string;
+  imageUrl?: string;
+  purityLabel?: string;
+  description?: string;
+}
+
 export default function CollectionsPage() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
   const [, setLocation] = useLocation();
@@ -14,7 +21,11 @@ export default function CollectionsPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+<<<<<<< HEAD
   const [metalsList, setMetalsList] = useState<MetalData[]>([]);
+=======
+  const [metalsList, setMetalsList] = useState<any[]>([]);
+>>>>>>> 34c34b9fa8c642b26ff438d0ad170bfeeb00bcff
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
@@ -119,7 +130,7 @@ export default function CollectionsPage() {
         metalsList.length === 2 ? "grid grid-cols-1 sm:grid-cols-2 max-w-3xl mx-auto gap-8" :
         "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
       }>
-        {metalsList.map((metal: any) => {
+        {metalsList.map((metal: MetalData) => {
           const metalName = metal.name;
           const isSilver = metalName.toLowerCase() === "silver";
           const isGold = metalName.toLowerCase() === "gold";
