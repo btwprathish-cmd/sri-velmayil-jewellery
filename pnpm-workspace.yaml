@@ -1,7 +1,7 @@
 packages:
-  - apps/*
-  - lib/*
-  - lib/integrations/*
+  - apps/web
+  - apps/mobile
+  - apps/sandbox
   - scripts
 
 autoInstallPeers: false

@@ -1,6 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fs from "node:fs";
-import path from "node:path";
+import { supabase } from "../lib/supabase.js";
 
 interface LiveRateRecord {
   date: string;
@@ -9,53 +8,37 @@ interface LiveRateRecord {
   silver_1g: number;
   gold24k_1g: number;
   source: string;
-  fetchedAt: string;
+  fetched_at?: string;
   trend_gold?: number | null;
   trend_silver?: number | null;
 }
 
-function readHistory(): LiveRateRecord[] {
-  const candidates = [
-    path.resolve(
-      process.cwd(),
-      "artifacts/sabarish/src/data/rate-history.json"
-    ),
-  ];
+async function readHistory(): Promise<LiveRateRecord[]> {
+  const { data, error } = await supabase
+    .from("live_rates")
+    .select("*")
+    .order("date", { ascending: false })
+    .limit(30);
 
-  for (const p of candidates) {
-    try {
-      if (fs.existsSync(p)) {
-        const raw = fs.readFileSync(p, "utf-8");
-        const parsed = JSON.parse(raw);
-
-        if (Array.isArray(parsed)) {
-          return parsed;
-        }
-
-        if (parsed?.records && Array.isArray(parsed.records)) {
-          return parsed.records;
-        }
-      }
-    } catch {
-      // Skip invalid file
-    }
+  if (error || !data) {
+    console.error("Error reading history from Supabase:", error);
+    return [];
   }
-
-  return [];
+  return data as LiveRateRecord[];
 }
 
-export default function handler(
+export default async function handler(
   _req: VercelRequest,
   res: VercelResponse
 ) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
-  "Cache-Control",
-  "no-store, no-cache, must-revalidate"
-);
+    "Cache-Control",
+    "no-store, no-cache, must-revalidate"
+  );
 
   try {
-    const history = readHistory();
+    const history = await readHistory();
     const sorted = history.sort((a, b) =>
       b.date.localeCompare(a.date)
     );

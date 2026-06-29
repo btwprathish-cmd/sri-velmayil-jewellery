@@ -67,7 +67,7 @@ export default function CategoryPage() {
         category.items.length === 2 ? "grid grid-cols-1 md:grid-cols-2 max-w-3xl mx-auto gap-8" :
         "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
       }>
-        {category.items.map((item) => {
+        {category.items.map((item: any) => {
           const isSilver = category.metal.toLowerCase() === "silver";
           const baseRate = isSilver ? latestRate.silver_1g : latestRate.gold22k_1g;
           const metalValue = item.weight_g * baseRate;

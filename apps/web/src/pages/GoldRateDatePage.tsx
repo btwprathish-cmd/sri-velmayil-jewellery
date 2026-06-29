@@ -14,7 +14,7 @@ export default function GoldRateDatePage() {
   useEffect(() => {
     if (!date) return;
     fetchRateByDate(date)
-      .then((r) => { if (r) setRate(r); else setNotFound(true); })
+      .then((r: LiveRateRecord | null) => { if (r) setRate(r); else setNotFound(true); })
       .catch(() => setNotFound(true))
       .finally(() => setLoading(false));
   }, [date]);

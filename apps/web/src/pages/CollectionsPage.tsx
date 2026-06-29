@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { Award, Plus, X, Lock, Loader2, ArrowRight } from "lucide-react";
 import { login } from "@/utils/auth";
 import { BRAND } from "@/utils/brand";
-import { getMetals } from "@/utils/collections";
+import { getMetals, type MetalData } from "@/utils/collections";
 
 export default function CollectionsPage() {
   const [showAdminLogin, setShowAdminLogin] = useState(false);
@@ -14,7 +14,7 @@ export default function CollectionsPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const [metalsList, setMetalsList] = useState<string[]>([]);
+  const [metalsList, setMetalsList] = useState<MetalData[]>([]);
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {

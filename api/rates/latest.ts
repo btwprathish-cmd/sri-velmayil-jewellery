@@ -1,7 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fs from "node:fs";
-import path from "node:path";
-
+import { supabase } from "../lib/supabase.js";
 
 const GOLD_22K_PURITY = 0.916;
 const LOCAL_PREMIUM_PERCENT = 1.5;
@@ -13,7 +11,7 @@ interface LiveRateRecord {
   silver_1g: number;
   gold24k_1g: number;
   source: string;
-  fetchedAt: string;
+  fetched_at?: string;
   trend_gold?: number | null;
   trend_silver?: number | null;
 }
@@ -39,36 +37,44 @@ function buildRecord(
     silver_1g: silver,
     gold24k_1g: Math.round(gold22k / GOLD_22K_PURITY),
     source,
-    fetchedAt: new Date().toISOString(),
+    fetched_at: new Date().toISOString(),
   };
 }
 
-function readHistory(): LiveRateRecord[] {
-  const candidates = [
-    path.resolve(
-      process.cwd(),
-      "artifacts/sabarish/src/data/rate-history.json"
-    ),
-  ];
+async function readHistory(): Promise<LiveRateRecord[]> {
+  const { data, error } = await supabase
+    .from("live_rates")
+    .select("*")
+    .order("date", { ascending: false })
+    .limit(30);
 
-  for (const p of candidates) {
-    try {
-      if (fs.existsSync(p)) {
-        const raw = fs.readFileSync(p, "utf-8");
-        const parsed = JSON.parse(raw);
-
-        if (Array.isArray(parsed)) return parsed;
-
-        if (parsed?.records && Array.isArray(parsed.records)) {
-          return parsed.records;
-        }
-      }
-    } catch {
-      // skip
-    }
+  if (error || !data) {
+    console.error("Error reading history from Supabase:", error);
+    return [];
   }
+  return data as LiveRateRecord[];
+}
 
-  return [];
+async function saveToHistory(record: LiveRateRecord): Promise<void> {
+  const { error } = await supabase
+    .from("live_rates")
+    .upsert(
+      {
+        date: record.date,
+        gold22k_1g: record.gold22k_1g,
+        gold22k_8g: record.gold22k_8g,
+        silver_1g: record.silver_1g,
+        gold24k_1g: record.gold24k_1g,
+        source: record.source,
+        trend_gold: record.trend_gold,
+        trend_silver: record.trend_silver,
+        fetched_at: record.fetched_at,
+      },
+      { onConflict: "date" }
+    );
+  if (error) {
+    console.error("Error saving history to Supabase:", error);
+  }
 }
 
 async function fetchFromCurrencyApi(): Promise<LiveRateRecord | null> {
@@ -92,10 +98,7 @@ async function fetchFromCurrencyApi(): Promise<LiveRateRecord | null> {
     const goldSpotPerGram = xauInr / TROY_OUNCE_IN_GRAMS;
     const silverSpotPerGram = xagInr / TROY_OUNCE_IN_GRAMS;
 
-    // Apply standard Indian import duties (approx 15% overall difference to retail)
-    // before the local premium is applied in buildRecord
     const GOLD_INDIAN_MULTIPLIER = 1.15; 
-    // Silver in Tamil Nadu carries a significantly higher local retail premium + import duty + GST
     const SILVER_INDIAN_MULTIPLIER = 1.28; 
 
     const gold24kBase = goldSpotPerGram * GOLD_INDIAN_MULTIPLIER;
@@ -109,16 +112,20 @@ async function fetchFromCurrencyApi(): Promise<LiveRateRecord | null> {
       "currency-api"
     );
 
-    const history = readHistory();
+    const history = await readHistory();
 
-    if (history.length > 0) {
-      record.trend_gold =
-        record.gold22k_1g - history[0].gold22k_1g;
-
-      record.trend_silver =
-        record.silver_1g - history[0].silver_1g;
+    if (history.length > 0 && history[0].date !== record.date) {
+      record.trend_gold = record.gold22k_1g - history[0].gold22k_1g;
+      record.trend_silver = record.silver_1g - history[0].silver_1g;
+    } else if (history.length > 1 && history[0].date === record.date) {
+      record.trend_gold = record.gold22k_1g - history[1].gold22k_1g;
+      record.trend_silver = record.silver_1g - history[1].silver_1g;
+    } else if (history.length > 0 && history[0].date === record.date) {
+      record.trend_gold = history[0].trend_gold;
+      record.trend_silver = history[0].trend_silver;
     }
 
+    await saveToHistory(record);
     return record;
   } catch (err) {
     console.error("Error fetching rates:", err);
@@ -144,7 +151,7 @@ export default async function handler(
       return;
     }
 
-    const history = readHistory();
+    const history = await readHistory();
 
     if (history.length > 0) {
       res.json({

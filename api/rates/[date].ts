@@ -1,51 +1,10 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
-import fs from "node:fs";
-import path from "node:path";
+import { supabase } from "../lib/supabase.js";
 
-interface LiveRateRecord {
-  date: string;
-  gold22k_1g: number;
-  gold22k_8g: number;
-  silver_1g: number;
-  gold24k_1g: number;
-  source: string;
-  fetchedAt: string;
-  trend_gold?: number | null;
-  trend_silver?: number | null;
-}
-
-function readHistory(): LiveRateRecord[] {
-  const candidates = [
-    path.resolve(
-      process.cwd(),
-      "artifacts/sabarish/src/data/rate-history.json"
-    ),
-  ];
-
-  for (const p of candidates) {
-    try {
-      if (fs.existsSync(p)) {
-        const raw = fs.readFileSync(p, "utf-8");
-        const parsed = JSON.parse(raw);
-
-        if (Array.isArray(parsed)) return parsed;
-
-        if (parsed?.records && Array.isArray(parsed.records)) {
-          return parsed.records;
-        }
-      }
-    } catch {
-      // skip
-    }
-  }
-
-  return [];
-}
-
-export default function handler(
+export default async function handler(
   req: VercelRequest,
   res: VercelResponse
-): void {
+): Promise<void> {
   res.setHeader("Access-Control-Allow-Origin", "*");
 
   const { date } = req.query;
@@ -59,18 +18,20 @@ export default function handler(
   }
 
   try {
-    const history = readHistory();
+    const { data, error } = await supabase
+      .from("live_rates")
+      .select("*")
+      .eq("date", dateStr)
+      .single();
 
-    const record = history.find((r) => r.date === dateStr);
-
-    if (!record) {
+    if (error || !data) {
       res.status(404).json({
         error: `No rate found for ${dateStr}`,
       });
       return;
     }
 
-    res.json(record);
+    res.json(data);
     return;
   } catch {
     res.status(500).json({
@@ -78,4 +39,4 @@ export default function handler(
     });
     return;
   }
-}
+}

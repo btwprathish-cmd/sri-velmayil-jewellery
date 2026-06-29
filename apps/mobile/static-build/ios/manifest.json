@@ -1,0 +1,93 @@
+{
+  "id": "2f2c18df-674b-4cbb-96bb-d348926fd728",
+  "createdAt": "2026-06-29T18:08:03.793Z",
+  "runtimeVersion": "exposdk:54.0.0",
+  "launchAsset": {
+    "key": "bundle-1782756483793-25844",
+    "contentType": "application/javascript",
+    "url": "https://localhost/1782756483793-25844/_expo/static/js/ios/bundle.js"
+  },
+  "assets": [],
+  "metadata": {},
+  "extra": {
+    "eas": {},
+    "expoClient": {
+      "name": "Sri Velmayil Jewellery Mobile",
+      "slug": "sabarish-mobile",
+      "version": "1.0.0",
+      "orientation": "portrait",
+      "icon": "./assets/images/icon.png",
+      "scheme": "sabarish-mobile",
+      "userInterfaceStyle": "automatic",
+      "newArchEnabled": true,
+      "splash": {
+        "image": "./assets/images/icon.png",
+        "resizeMode": "contain",
+        "backgroundColor": "#0c0418"
+      },
+      "ios": {
+        "supportsTablet": false,
+        "bundleIdentifier": "com.srivelmayil.mobile"
+      },
+      "android": {},
+      "web": {
+        "favicon": "./assets/images/favicon.jpg"
+      },
+      "plugins": [
+        [
+          "expo-router",
+          {
+            "origin": false
+          }
+        ],
+        "expo-font",
+        "expo-web-browser"
+      ],
+      "experiments": {
+        "typedRoutes": true,
+        "reactCompiler": true
+      },
+      "_internal": {
+        "isDebug": false,
+        "projectRoot": "D:\\Develop\\Jewel 2\\sri-velmayil-jewellery\\apps\\mobile",
+        "dynamicConfigPath": {},
+        "staticConfigPath": "D:\\Develop\\Jewel 2\\sri-velmayil-jewellery\\apps\\mobile\\app.json",
+        "packageJsonPath": "D:\\Develop\\Jewel 2\\sri-velmayil-jewellery\\apps\\mobile\\package.json",
+        "pluginHistory": {
+          "expo-font": {
+            "name": "expo-font",
+            "version": "14.0.12"
+          },
+          "expo-web-browser": {
+            "name": "expo-web-browser",
+            "version": "15.0.11"
+          }
+        }
+      },
+      "sdkVersion": "54.0.0",
+      "platforms": [
+        "ios",
+        "android",
+        "web"
+      ],
+      "extra": {
+        "router": {
+          "origin": false
+        }
+      },
+      "hostUri": "localhost/ios"
+    },
+    "expoGo": {
+      "debuggerHost": "localhost/ios",
+      "developer": {
+        "tool": "expo-cli",
+        "projectRoot": "D:\\Develop\\Jewel 2\\sri-velmayil-jewellery\\apps\\mobile"
+      },
+      "packagerOpts": {
+        "dev": false
+      },
+      "mainModuleName": "node_modules/.pnpm/expo-router@6.0.24_@types+r_4094ee48018c5b5c8f1246009fce9036/node_modules/expo-router/entry"
+    },
+    "scopeKey": "@anonymous/sabarish-mobile-be1b1049-112a-48d8-a839-f4d02a6fce51"
+  }
+}
