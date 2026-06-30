@@ -84,10 +84,10 @@ async function fetchFromCurrencyApi(): Promise<LiveRateRecord | null> {
       fetch("https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/xag.json", { cache: "no-store" })
     ]);
 
-    if (!goldRes.ok || !silverRes.ok) return null;
+    if (!(goldRes as any).ok || !(silverRes as any).ok) return null;
 
-    const goldData = await goldRes.json();
-    const silverData = await silverRes.json();
+    const goldData = await (goldRes as any).json();
+    const silverData = await (silverRes as any).json();
 
     const xauInr = goldData.xau.inr;
     const xagInr = silverData.xag.inr;
