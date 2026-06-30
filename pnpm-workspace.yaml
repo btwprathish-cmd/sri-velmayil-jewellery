@@ -1,17 +1,8 @@
 packages:
-<<<<<<< HEAD
   - apps/web
   - apps/mobile
   - apps/sandbox
   - scripts
-=======
-  - "apps/*"
-  - "lib/api-client-react"
-  - "lib/api-spec"
-  - "lib/db"
-  - "packages/*"
-  - "scripts"
->>>>>>> 34c34b9fa8c642b26ff438d0ad170bfeeb00bcff
 
 autoInstallPeers: false
 

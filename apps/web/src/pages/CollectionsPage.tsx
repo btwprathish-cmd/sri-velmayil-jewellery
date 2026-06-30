@@ -21,11 +21,7 @@ export default function CollectionsPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-<<<<<<< HEAD
   const [metalsList, setMetalsList] = useState<MetalData[]>([]);
-=======
-  const [metalsList, setMetalsList] = useState<any[]>([]);
->>>>>>> 34c34b9fa8c642b26ff438d0ad170bfeeb00bcff
 
   useEffect(() => {
     function onKeyDown(e: KeyboardEvent) {
