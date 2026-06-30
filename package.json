@@ -9,6 +9,9 @@
     "typecheck": "pnpm -r --filter \"./apps/**\" --filter \"./scripts\" --if-present run typecheck"
     },
   "private": true,
+  "dependencies": {
+    "@supabase/supabase-js": "^2.108.2"
+  },
   "devDependencies": {
     "@rollup/rollup-win32-x64-msvc": "*",
     "lightningcss-win32-x64-msvc": "*",
