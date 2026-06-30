@@ -10,7 +10,7 @@
     "rootDir": "src",
     "types": ["node", "express", "express-serve-static-core", "qs", "serve-static"],
     "lib": ["es2022", "dom", "dom.iterable"],
-    "noImplicitAny": false
+    "strict": false
   },
   "include": ["src"],
   "references": []
