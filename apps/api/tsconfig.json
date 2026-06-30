@@ -9,7 +9,8 @@
     "outDir": "dist",
     "rootDir": "src",
     "types": ["node", "express"],
-    "lib": ["es2022", "dom", "dom.iterable"]
+    "lib": ["es2022", "dom", "dom.iterable"],
+    "noImplicitAny": false
   },
   "include": ["src"],
   "references": []
