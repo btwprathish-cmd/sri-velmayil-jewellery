@@ -2,6 +2,7 @@ packages:
   - apps/web
   - apps/mobile
   - apps/sandbox
+  - apps/api
   - scripts
 
 autoInstallPeers: false

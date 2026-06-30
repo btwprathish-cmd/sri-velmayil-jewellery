@@ -4,6 +4,7 @@
   "buildCommand": "pnpm run build",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
     { "source": "/(.*)", "destination": "/index.html" }
   ],
   "headers": [
@@ -25,7 +26,7 @@
   ],
   "crons": [
     {
-      "path": "/api/rates/latest",
+      "path": "/api/cron/update-rates",
       "schedule": "0 1 * * *"
     }
   ]
