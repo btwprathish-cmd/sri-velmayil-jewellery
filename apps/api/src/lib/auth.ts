@@ -8,11 +8,12 @@ const SESSION_COOKIE = "admin_session";
 const SESSION_TTL_MS = 24 * 60 * 60 * 1000;
 
 export function isAdminConfigured(): boolean {
-  return Boolean(getEnvVar("ADMIN_USERNAME") && getEnvVar("ADMIN_PASSWORD") && getEnvVar("ADMIN_SESSION_SECRET"));
+  return Boolean(getEnvVar("ADMIN_USERNAME") && getEnvVar("ADMIN_PASSWORD") && (getEnvVar("ADMIN_SESSION_SECRET") || getEnvVar("ADMTN_SFSSTON_SFCRFT")));
 }
 
 function signPayload(payload: string): string {
-  return crypto.createHmac("sha256", getEnvVar("ADMIN_SESSION_SECRET")).update(payload).digest("hex");
+  const secret = getEnvVar("ADMIN_SESSION_SECRET") || getEnvVar("ADMTN_SFSSTON_SFCRFT");
+  return crypto.createHmac("sha256", secret).update(payload).digest("hex");
 }
 
 export function createSessionToken(username: string): string {
