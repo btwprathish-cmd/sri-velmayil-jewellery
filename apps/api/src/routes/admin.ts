@@ -99,7 +99,7 @@ router.get("/metals", async (req: Request, res: Response) => {
 
     if (error) throw error;
     
-    const mapped = (data || []).map(m => ({
+    const mapped = (data || []).map((m: any) => ({
       name: m.name,
       purityLabel: m.purityLabel,
       description: m.description,
@@ -128,10 +128,10 @@ router.get("/categories", async (req: Request, res: Response) => {
 
     if (cmError) throw cmError;
 
-    const mapped = (cats || []).map(c => {
+    const mapped = (cats || []).map((c: any) => {
       const metals = (catMetals || [])
-        .filter(cm => cm.categoryId === c.id)
-        .map(cm => cm.metalName);
+        .filter((cm: any) => cm.categoryId === c.id)
+        .map((cm: any) => cm.metalName);
       
       return {
         name: c.name,
