@@ -31,7 +31,7 @@ async function uploadToSupabaseStorage(file: Express.Multer.File): Promise<strin
   const fileExt = path.extname(file.originalname) || ".png";
   const cleanBase = path.basename(file.originalname, fileExt).replace(/[^a-zA-Z0-9.\-_]/g, "_");
   const safeName = `${Date.now()}-${cleanBase}${fileExt}`;
-  
+
   const { data, error } = await supabase.storage
     .from("images")
     .upload(safeName, file.buffer, {
@@ -93,17 +93,17 @@ function requireAdmin(req: Request, res: Response, next: NextFunction) {
 router.get("/metals", async (req: Request, res: Response) => {
   try {
     const { data, error } = await supabase
-      .from('metalsTable')
+      .from('metals')
       .select('*')
-      .order('createdAt', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
-    
+
     const mapped = (data || []).map((m: any) => ({
       name: m.name,
-      purityLabel: m.purityLabel,
+      purityLabel: m.purity_label,
       description: m.description,
-      imageUrl: m.imageUrl
+      imageUrl: m.image_url
     }));
     res.json(mapped);
   } catch (error: unknown) {
@@ -116,23 +116,23 @@ router.get("/metals", async (req: Request, res: Response) => {
 router.get("/categories", async (req: Request, res: Response) => {
   try {
     const { data: cats, error: catsError } = await supabase
-      .from('categoriesTable')
+      .from('categories')
       .select('*')
-      .order('createdAt', { ascending: false });
-    
+      .order('created_at', { ascending: false });
+
     if (catsError) throw catsError;
 
     const { data: catMetals, error: cmError } = await supabase
-      .from('categoryMetalsTable')
+      .from('category_metals')
       .select('*');
 
     if (cmError) throw cmError;
 
     const mapped = (cats || []).map((c: any) => {
       const metals = (catMetals || [])
-        .filter((cm: any) => cm.categoryId === c.id)
-        .map((cm: any) => cm.metalName);
-      
+        .filter((cm: any) => cm.category_id === c.id)
+        .map((cm: any) => cm.metal_name);
+
       return {
         name: c.name,
         description: c.description,
@@ -149,14 +149,14 @@ router.get("/categories", async (req: Request, res: Response) => {
 router.get("/collections", async (req: Request, res: Response) => {
   try {
     const { data: products, error } = await supabase
-      .from('productsTable')
+      .from('products')
       .select('*')
-      .order('createdAt', { ascending: false });
+      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
     const grouped: Record<string, any> = {};
-    
+
     for (const p of (products || [])) {
       const key = `${p.metal}-${p.category}`;
       if (!grouped[key]) {
@@ -171,7 +171,7 @@ router.get("/collections", async (req: Request, res: Response) => {
           items: []
         };
       }
-      
+
       const weight_g = parseFloat(p.weight_g as string);
       const making_charge_pct = parseFloat(p.making_charge_pct as string);
 
@@ -184,7 +184,7 @@ router.get("/collections", async (req: Request, res: Response) => {
         image: p.image || ""
       });
     }
-    
+
     res.json(Object.values(grouped));
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to fetch collections", details: error instanceof Error ? error.message : "Unknown error" });
@@ -226,41 +226,41 @@ router.post("/admin/collections", requireAdmin, handleUpload("image"), async (re
     }
 
     const trimmedName = name.trim();
-    
+
     const { data: existing, error: fetchError } = await supabase
-      .from('metalsTable')
+      .from('metals')
       .select('*')
       .eq('name', trimmedName)
       .limit(1);
-    
+
     if (fetchError) throw fetchError;
-    
+
     if (existing && existing.length > 0) {
       const { error: updateError } = await supabase
-        .from('metalsTable')
+        .from('metals')
         .update({
           description: description !== undefined ? description : existing[0].description,
-          purityLabel: purityLabel !== undefined ? purityLabel : existing[0].purityLabel,
-          imageUrl: imageUrl || existing[0].imageUrl
+          purity_label: purityLabel !== undefined ? purityLabel : existing[0].purity_label,
+          image_url: imageUrl || existing[0].image_url
         })
         .eq('name', trimmedName);
-        
+
       if (updateError) throw updateError;
-      
+
       res.status(200).json({ success: true, message: "Metal updated successfully" });
       return;
     } else {
       const { error: insertError } = await supabase
-        .from('metalsTable')
+        .from('metals')
         .insert({
           name: trimmedName,
           description: description || "",
-          purityLabel: purityLabel || "",
-          imageUrl: imageUrl
+          purity_label: purityLabel || "",
+          image_url: imageUrl
         });
-        
+
       if (insertError) throw insertError;
-      
+
       res.status(201).json({ success: true, message: "Metal created successfully" });
       return;
     }
@@ -276,7 +276,7 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
     const name = req.body.name as string | undefined;
     const description = req.body.description as string | undefined;
     const purityLabel = req.body.purityLabel as string | undefined;
-    
+
     if (!name || !name.trim()) {
       res.status(400).json({ error: "Missing required field: name. Please fill all required fields." });
       return;
@@ -288,7 +288,7 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
     }
 
     const { data: existing, error: fetchError } = await supabase
-      .from('metalsTable')
+      .from('metals')
       .select('*')
       .eq('name', oldName)
       .limit(1);
@@ -301,12 +301,12 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
     }
 
     const { error: updateError } = await supabase
-      .from('metalsTable')
+      .from('metals')
       .update({
         name: name.trim(),
         description: description !== undefined ? description : existing[0].description,
-        purityLabel: purityLabel !== undefined ? purityLabel : existing[0].purityLabel,
-        imageUrl: imageUrl !== undefined ? imageUrl : existing[0].imageUrl
+        purity_label: purityLabel !== undefined ? purityLabel : existing[0].purity_label,
+        image_url: imageUrl !== undefined ? imageUrl : existing[0].image_url
       })
       .eq('name', oldName);
 
@@ -322,14 +322,14 @@ router.put("/admin/collections/:oldName", requireAdmin, handleUpload("image"), a
 router.delete("/admin/collections/:name", requireAdmin, async (req: Request, res: Response) => {
   try {
     const name = req.params.name as string;
-    
+
     const { error } = await supabase
-      .from('metalsTable')
+      .from('metals')
       .delete()
       .eq('name', name);
-      
+
     if (error) throw error;
-    
+
     res.json({ success: true, message: "Metal deleted successfully" });
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to delete metal", details: error instanceof Error ? error.message : "Unknown error" });
@@ -349,12 +349,12 @@ router.post("/admin/categories", requireAdmin, async (req: Request, res: Respons
     }
 
     const trimmedName = name.trim();
-    const metalList = Array.isArray(metals) 
-      ? metals 
+    const metalList = Array.isArray(metals)
+      ? metals
       : (typeof metals === "string" ? metals.split(",").map(m => m.trim()).filter(Boolean) : []);
 
     const { data: existing, error: fetchError } = await supabase
-      .from('categoriesTable')
+      .from('categories')
       .select('*')
       .eq('name', trimmedName)
       .limit(1);
@@ -366,43 +366,43 @@ router.post("/admin/categories", requireAdmin, async (req: Request, res: Respons
     if (existing && existing.length > 0) {
       categoryId = existing[0].id;
       const { error: updateError } = await supabase
-        .from('categoriesTable')
+        .from('categories')
         .update({ description: description !== undefined ? description : existing[0].description })
         .eq('id', categoryId);
-        
+
       if (updateError) throw updateError;
     } else {
       const { data: inserted, error: insertError } = await supabase
-        .from('categoriesTable')
+        .from('categories')
         .insert({
           name: trimmedName,
           description: description || ""
         })
         .select();
-        
+
       if (insertError) throw insertError;
       if (!inserted || inserted.length === 0) throw new Error("Failed to return inserted category");
-      
+
       categoryId = inserted[0].id;
     }
 
     // Recreate mappings
     const { error: deleteError } = await supabase
-      .from('categoryMetalsTable')
+      .from('category_metals')
       .delete()
-      .eq('categoryId', categoryId);
-      
+      .eq('category_id', categoryId);
+
     if (deleteError) throw deleteError;
-    
+
     if (metalList.length > 0) {
       const mappings = metalList.map(m => ({
-        categoryId: categoryId,
-        metalName: m as string
+        category_id: categoryId,
+        metal_name: m as string
       }));
       const { error: mappingError } = await supabase
-        .from('categoryMetalsTable')
+        .from('category_metals')
         .insert(mappings);
-        
+
       if (mappingError) throw mappingError;
     }
 
@@ -426,7 +426,7 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
     }
 
     const { data: existing, error: fetchError } = await supabase
-      .from('categoriesTable')
+      .from('categories')
       .select('*')
       .eq('name', oldName)
       .limit(1);
@@ -440,7 +440,7 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
 
     const categoryId = existing[0].id;
     const { error: updateError } = await supabase
-      .from('categoriesTable')
+      .from('categories')
       .update({
         name: name.trim(),
         description: description !== undefined ? description : existing[0].description
@@ -449,27 +449,27 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
 
     if (updateError) throw updateError;
 
-    const metalList = Array.isArray(metals) 
-      ? metals 
+    const metalList = Array.isArray(metals)
+      ? metals
       : (typeof metals === "string" ? metals.split(",").map(m => m.trim()).filter(Boolean) : []);
 
     // Recreate mappings
     const { error: deleteError } = await supabase
-      .from('categoryMetalsTable')
+      .from('category_metals')
       .delete()
-      .eq('categoryId', categoryId);
-      
+      .eq('category_id', categoryId);
+
     if (deleteError) throw deleteError;
 
     if (metalList.length > 0) {
       const mappings = metalList.map(m => ({
-        categoryId: categoryId,
-        metalName: m as string
+        category_id: categoryId,
+        metal_name: m as string
       }));
       const { error: insertError } = await supabase
-        .from('categoryMetalsTable')
+        .from('category_metals')
         .insert(mappings);
-        
+
       if (insertError) throw insertError;
     }
 
@@ -483,14 +483,14 @@ router.put("/admin/categories/:oldName", requireAdmin, async (req: Request, res:
 router.delete("/admin/categories/:name", requireAdmin, async (req: Request, res: Response) => {
   try {
     const name = req.params.name as string;
-    
+
     const { error } = await supabase
-      .from('categoriesTable')
+      .from('categories')
       .delete()
       .eq('name', name);
-      
+
     if (error) throw error;
-    
+
     res.json({ success: true, message: "Category deleted successfully" });
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to delete category", details: error instanceof Error ? error.message : "Unknown error" });
@@ -501,7 +501,7 @@ router.delete("/admin/categories/:name", requireAdmin, async (req: Request, res:
 router.post("/admin/products", requireAdmin, handleUpload("image"), async (req: Request, res: Response) => {
   try {
     const { name, metal, category, weight_g, weightG, making_charge_pct, makingChargePct, description } = req.body;
-    
+
     const finalWeight = parseFloat(weight_g || weightG);
     const finalMakingCharge = parseFloat(making_charge_pct || makingChargePct);
 
@@ -518,7 +518,7 @@ router.post("/admin/products", requireAdmin, handleUpload("image"), async (req: 
     const id = name.toLowerCase().replace(/[^a-z0-9]+/g, "-") + "-" + Date.now();
 
     const { error } = await supabase
-      .from('productsTable')
+      .from('products')
       .insert({
         id,
         name,
@@ -529,7 +529,7 @@ router.post("/admin/products", requireAdmin, handleUpload("image"), async (req: 
         description: description || "",
         image: imagePath
       });
-      
+
     if (error) throw error;
 
     res.status(201).json({ success: true, message: "Product created successfully", id });
@@ -545,7 +545,7 @@ router.put("/admin/products/:id", requireAdmin, handleUpload("image"), async (re
     const { name, metal, category, weight_g, weightG, making_charge_pct, makingChargePct, description } = req.body;
 
     const { data: existing, error: fetchError } = await supabase
-      .from('productsTable')
+      .from('products')
       .select('*')
       .eq('id', id)
       .limit(1);
@@ -566,7 +566,7 @@ router.put("/admin/products/:id", requireAdmin, handleUpload("image"), async (re
     const finalMakingCharge = parseFloat(making_charge_pct || makingChargePct);
 
     const { error: updateError } = await supabase
-      .from('productsTable')
+      .from('products')
       .update({
         name: name !== undefined ? name : existing[0].name,
         metal: metal !== undefined ? metal : existing[0].metal,
@@ -590,14 +590,14 @@ router.put("/admin/products/:id", requireAdmin, handleUpload("image"), async (re
 router.delete("/admin/products/:id", requireAdmin, async (req: Request, res: Response) => {
   try {
     const id = req.params.id as string;
-    
+
     const { error } = await supabase
-      .from('productsTable')
+      .from('products')
       .delete()
       .eq('id', id);
-      
+
     if (error) throw error;
-    
+
     res.json({ success: true, message: "Product deleted successfully" });
   } catch (error: unknown) {
     res.status(500).json({ error: "Failed to delete product", details: error instanceof Error ? error.message : "Unknown error" });
