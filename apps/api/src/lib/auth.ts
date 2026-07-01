@@ -1,7 +1,12 @@
 import crypto from "crypto";
 
 function getEnvVar(key: string): string {
-  return (process.env[key] || "").trim();
+  let val = (process.env[key] || "").trim();
+  // Remove surrounding quotes if present (e.g. if user copy-pasted with quotes into Vercel)
+  if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
+    val = val.slice(1, -1);
+  }
+  return val;
 }
 
 const SESSION_COOKIE = "admin_session";
