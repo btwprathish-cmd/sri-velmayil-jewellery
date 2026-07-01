@@ -32,7 +32,7 @@ async function readHistory(): Promise<LiveRateRecord[]> {
       return [];
     }
 
-    return (data || []).map(row => ({
+    return (data || []).map((row: any) => ({
       date: row.date,
       gold22k_1g: Number(row.gold22k_1g),
       gold22k_8g: Number(row.gold22k_8g),
@@ -126,7 +126,7 @@ async function fetchFromMetalpriceApi(): Promise<LiveRateRecord | null> {
   try {
     const res = await fetch(
       `https://api.metalpriceapi.com/v1/latest?api_key=${apiKey}&base=USD&currencies=XAU,XAG,INR`
-    );
+    ) as any;
     if (!res.ok) return null;
     const data = await res.json() as { success?: boolean; rates?: Record<string, number> };
     if (!data?.success || !data?.rates) return null;
@@ -147,9 +147,9 @@ async function fetchFromMetalpriceApi(): Promise<LiveRateRecord | null> {
 async function fetchFromGoldApi(): Promise<LiveRateRecord | null> {
   try {
     const [goldRes, silverRes, fxRes] = await Promise.all([
-      fetch("https://api.gold-api.com/price/XAU"),
-      fetch("https://api.gold-api.com/price/XAG"),
-      fetch("https://api.frankfurter.app/latest?from=USD&to=INR"),
+      fetch("https://api.gold-api.com/price/XAU") as any,
+      fetch("https://api.gold-api.com/price/XAG") as any,
+      fetch("https://api.frankfurter.app/latest?from=USD&to=INR") as any,
     ]);
     if (!goldRes.ok || !silverRes.ok || !fxRes.ok) return null;
 
